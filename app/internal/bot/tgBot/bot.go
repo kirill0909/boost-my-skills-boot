@@ -3,7 +3,10 @@ package tgbot
 import (
 	"boost-my-skills-bot/config"
 	"boost-my-skills-bot/internal/bot"
+	"context"
 	"log"
+
+	models "boost-my-skills-bot/internal/models/bot"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -12,7 +15,7 @@ type TgBot struct {
 	BotAPI *tgbotapi.BotAPI
 	cfg    *config.Config
 	tgRepo bot.PgRepository
-	tgUc   bot.Usecase
+	tgUC   bot.Usecase
 }
 
 func NewTgBot(
@@ -25,7 +28,7 @@ func NewTgBot(
 		cfg:    cfg,
 		tgRepo: repo,
 		BotAPI: botAPI,
-		tgUc:   usecase,
+		tgUC:   usecase,
 	}
 }
 
@@ -47,7 +50,9 @@ func (t *TgBot) Run() error {
 					continue
 				}
 			case getUUIDCommand:
-				if err := t.handleGetUUIDButton(update.Message.Chat.ID); err != nil {
+				if err := t.handleGetUUIDButton(
+					update.Message.Chat.ID,
+					models.GetUUID{ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}); err != nil {
 					log.Printf("bot.TgBot.handleGetUUIDButton: %s", err.Error())
 					continue
 				}
@@ -57,9 +62,15 @@ func (t *TgBot) Run() error {
 	return nil
 }
 
-func (t *TgBot) handleGetUUIDButton(chatID int64) (err error) {
-	msg := tgbotapi.NewMessage(chatID, "You tap on the get uuid buttons")
-	msg.ReplyMarkup = t.createMainMenuKeyboard()
+func (t *TgBot) handleGetUUIDButton(chatID int64, params models.GetUUID) (err error) {
+	ctx := context.Background()
+
+	result, err := t.tgUC.GetUUID(ctx, params)
+	if err != nil {
+		return
+	}
+
+	msg := tgbotapi.NewMessage(chatID, result)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}

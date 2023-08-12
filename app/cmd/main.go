@@ -74,10 +74,10 @@ func mapHandler(cfg *config.Config, db *sqlx.DB) (tgBot *tgbot.TgBot, err error)
 	}
 
 	// repository
-	botRepo := repository.NewBotPGRepo()
+	botRepo := repository.NewBotPGRepo(db)
 
 	// usecase
-	botUC := usecase.NewBotUC()
+	botUC := usecase.NewBotUC(cfg, botRepo, botAPI)
 
 	// bot
 	tgBot = tgbot.NewTgBot(cfg, botRepo, botUC, botAPI)

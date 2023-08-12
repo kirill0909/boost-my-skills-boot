@@ -31,3 +31,11 @@ func (r *BotPGRepo) IsAdmin(ctx context.Context, params models.GetUUID) (result 
 
 	return
 }
+
+func (r *BotPGRepo) UserActivation(ctx context.Context, params models.UserActivation) (err error) {
+	if _, err = r.db.ExecContext(ctx, queryUserActivation, params.TgName, params.ChatID, params.UUID); err != nil {
+		return
+	}
+
+	return
+}

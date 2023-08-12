@@ -41,3 +41,7 @@ func (u *BotUC) GetUUID(ctx context.Context, params models.GetUUID) (result stri
 func (u *BotUC) createTgLink(param string) string {
 	return fmt.Sprintf(u.cfg.TgBot.Prefix, param)
 }
+
+func (u *BotUC) UserActivation(ctx context.Context, params models.UserActivation) (err error) {
+	return u.pgRepo.UserActivation(ctx, params)
+}

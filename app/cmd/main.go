@@ -80,7 +80,7 @@ func mapHandler(cfg *config.Config, db *sqlx.DB) (tgBot *tgbot.TgBot, err error)
 	botUC := usecase.NewBotUC(cfg, botRepo, botAPI)
 
 	// bot
-	tgBot = tgbot.NewTgBot(cfg, botRepo, botUC, botAPI)
+	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI)
 
 	return tgBot, nil
 }

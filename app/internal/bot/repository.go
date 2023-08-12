@@ -8,4 +8,5 @@ import (
 type PgRepository interface {
 	GetUUID(ctx context.Context) (result string, err error)
 	IsAdmin(ctx context.Context, params models.GetUUID) (result bool, err error)
+	UserActivation(ctx context.Context, params models.UserActivation) (err error)
 }

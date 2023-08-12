@@ -40,10 +40,28 @@ func (t *TgBot) Run() error {
 	for update := range updates {
 		if update.Message != nil {
 			if update.Message.Command() == "start" {
-				log.Println("hello from boost my skills bot")
+				if err := t.sendMessage(update.Message.Chat.ID, "Hello from boost bot"); err != nil {
+					log.Println(err)
+					continue
+				}
 				continue
 			}
 		}
 	}
 	return nil
+}
+
+func (t *TgBot) sendMessage(chatID int64, text ...string) (err error) {
+	var msg tgbotapi.MessageConfig
+	if len(text) > 0 {
+		msg = tgbotapi.NewMessage(chatID, text[0])
+	} else {
+		msg = tgbotapi.NewMessage(chatID, "")
+	}
+
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return err
+	}
+
+	return
 }

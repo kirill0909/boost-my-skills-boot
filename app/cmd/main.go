@@ -68,7 +68,7 @@ func main() {
 
 func mapHandler(cfg *config.Config, db *sqlx.DB) (tgBot *tgbot.TgBot, err error) {
 
-	botAPI, err := tgbotapi.NewBotAPI(cfg.APIKey)
+	botAPI, err := tgbotapi.NewBotAPI(cfg.TgBot.ApiKey)
 	if err != nil {
 		return
 	}

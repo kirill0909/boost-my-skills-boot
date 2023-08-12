@@ -10,7 +10,7 @@ import (
 
 type Config struct {
 	Postgres Postgres
-	APIKey   string `validate:"required"`
+	TgBot    TgBot
 }
 
 type Postgres struct {
@@ -20,6 +20,11 @@ type Postgres struct {
 	Password string `validate:"required"`
 	DBName   string `validate:"required"`
 	SSLMode  string `validate:"required"`
+}
+
+type TgBot struct {
+	ApiKey string `validate:"required"`
+	Prefix string `validate:"required"`
 }
 
 func LoadConfig() (*viper.Viper, error) {

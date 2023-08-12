@@ -39,29 +39,45 @@ func (t *TgBot) Run() error {
 
 	for update := range updates {
 		if update.Message != nil {
-			if update.Message.Command() == "start" {
-				if err := t.sendMessage(update.Message.Chat.ID, "Hello from boost bot"); err != nil {
-					log.Println(err)
-					continue
+			switch update.Message.Command() {
+			case "start":
+				if err := t.handleStartCommand(update.Message.Chat.ID); err != nil {
+					log.Printf("bot.TgBot.handleStartCommand: %s", err.Error())
 				}
-				continue
 			}
 		}
 	}
 	return nil
 }
 
-func (t *TgBot) sendMessage(chatID int64, text ...string) (err error) {
-	var msg tgbotapi.MessageConfig
-	if len(text) > 0 {
-		msg = tgbotapi.NewMessage(chatID, text[0])
-	} else {
-		msg = tgbotapi.NewMessage(chatID, "")
+func (t *TgBot) handleStartCommand(chatID int64) (err error) {
+	msg := tgbotapi.NewMessage(chatID, wellcomeMessage)
+	msg.ReplyMarkup = t.createMainMenuKeyboard()
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
 	}
 
-	if _, err = t.BotAPI.Send(msg); err != nil {
-		return err
-	}
+	return
+}
+
+func (t *TgBot) createMainMenuKeyboard() (keyboard tgbotapi.ReplyKeyboardMarkup) {
+
+	keyboard = tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("/option1"),
+			tgbotapi.NewKeyboardButton("/option1.1"),
+			tgbotapi.NewKeyboardButton("/option1.2"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("/option2"),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("/option3"),
+		),
+	)
+
+	keyboard.OneTimeKeyboard = false // Set this to true if you want the keyboard to hide after one use
+	keyboard.ResizeKeyboard = true   // Resizes keyboard depending on the user's device
 
 	return
 }

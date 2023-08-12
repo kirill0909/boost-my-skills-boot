@@ -1,11 +1,9 @@
 package tgbot
 
 import (
-	"aifory-pay-admin-bot/config"
-	"aifory-pay-admin-bot/internal/bot"
+	"boost-my-skills-bot/config"
+	"boost-my-skills-bot/internal/bot"
 	"log"
-
-	"aifory-pay-admin-bot/internal/utils"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -35,13 +33,14 @@ func (t *TgBot) Run() error {
 	log.Printf("Authorized on account %s", t.BotAPI.Self.UserName)
 
 	updateConfig := tgbotapi.NewUpdate(0)
-	updateConfig.Timeout = utils.UpdateConfigTime
+	updateConfig.Timeout = 30
 
 	updates := t.BotAPI.GetUpdatesChan(updateConfig)
 
 	for update := range updates {
 		if update.Message != nil {
 			if update.Message.Command() == "start" {
+				log.Println("hello from boost my skills bot")
 				continue
 			}
 		}

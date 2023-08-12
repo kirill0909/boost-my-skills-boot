@@ -1,5 +1,3 @@
 package bot
 
-// TODO: add some methods later
-type PgRepository interface {
-}
+type PgRepository interface{}

@@ -1,4 +1,4 @@
-package utils
+package config
 
 const (
 	ConfigFileName  = "config"

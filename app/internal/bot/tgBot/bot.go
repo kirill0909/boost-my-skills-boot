@@ -40,14 +40,31 @@ func (t *TgBot) Run() error {
 	for update := range updates {
 		if update.Message != nil {
 			switch update.Message.Command() {
-			case "start":
+
+			case startCommand:
 				if err := t.handleStartCommand(update.Message.Chat.ID); err != nil {
 					log.Printf("bot.TgBot.handleStartCommand: %s", err.Error())
+					continue
+				}
+			case getUUIDCommand:
+				if err := t.handleGetUUIDButton(update.Message.Chat.ID); err != nil {
+					log.Printf("bot.TgBot.handleGetUUIDButton: %s", err.Error())
+					continue
 				}
 			}
 		}
 	}
 	return nil
+}
+
+func (t *TgBot) handleGetUUIDButton(chatID int64) (err error) {
+	msg := tgbotapi.NewMessage(chatID, "You tap on the get uuid buttons")
+	msg.ReplyMarkup = t.createMainMenuKeyboard()
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
+	}
+
+	return
 }
 
 func (t *TgBot) handleStartCommand(chatID int64) (err error) {
@@ -64,19 +81,11 @@ func (t *TgBot) createMainMenuKeyboard() (keyboard tgbotapi.ReplyKeyboardMarkup)
 
 	keyboard = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("/option1"),
-			tgbotapi.NewKeyboardButton("/option1.1"),
-			tgbotapi.NewKeyboardButton("/option1.2"),
-		),
-		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("/option2"),
-		),
-		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton("/option3"),
+			tgbotapi.NewKeyboardButton(getUUIDButton),
 		),
 	)
 
-	keyboard.OneTimeKeyboard = false // Set this to true if you want the keyboard to hide after one use
+	keyboard.OneTimeKeyboard = false // Hide keyboard after one use
 	keyboard.ResizeKeyboard = true   // Resizes keyboard depending on the user's device
 
 	return

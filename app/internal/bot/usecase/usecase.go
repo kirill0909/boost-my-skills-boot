@@ -5,6 +5,8 @@ import (
 	"boost-my-skills-bot/internal/bot"
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
+	"fmt"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -25,9 +27,17 @@ func (u *BotUC) GetUUID(ctx context.Context, params models.GetUUID) (result stri
 		return
 	}
 	if !isAdmin {
-		result = notAdmin
+		return notAdmin, nil
+	}
+
+	result, err = u.pgRepo.GetUUID(ctx, params)
+	if err != nil {
 		return
 	}
 
-	return
+	return u.createTgLink(result), nil
+}
+
+func (u *BotUC) createTgLink(param string) string {
+	return fmt.Sprintf(u.cfg.TgBot.Prefix, param)
 }

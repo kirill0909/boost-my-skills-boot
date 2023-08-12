@@ -2,6 +2,7 @@ package repository
 
 const (
 	queryGetUUID = `
+	INSERT INTO users.user (name, tg_chat_id) VALUES ($1, $2) RETURNING tg_uuid
   `
 
 	queryIsAdmin = `

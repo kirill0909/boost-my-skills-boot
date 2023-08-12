@@ -16,8 +16,8 @@ func NewBotPGRepo(db *sqlx.DB) bot.PgRepository {
 	return &BotPGRepo{db: db}
 }
 
-func (r *BotPGRepo) GetUUID(ctx context.Context, params models.GetUUID) (result string, err error) {
-	if err = r.db.GetContext(ctx, &result, queryGetUUID, params.TgName, params.ChatID); err != nil {
+func (r *BotPGRepo) GetUUID(ctx context.Context) (result string, err error) {
+	if err = r.db.GetContext(ctx, &result, queryGetUUID); err != nil {
 		return
 	}
 

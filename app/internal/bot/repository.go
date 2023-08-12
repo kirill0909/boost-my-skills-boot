@@ -6,6 +6,6 @@ import (
 )
 
 type PgRepository interface {
-	GetUUID(ctx context.Context, params models.GetUUID) (result string, err error)
+	GetUUID(ctx context.Context) (result string, err error)
 	IsAdmin(ctx context.Context, params models.GetUUID) (result bool, err error)
 }

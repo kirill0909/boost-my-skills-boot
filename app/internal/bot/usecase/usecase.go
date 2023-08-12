@@ -30,7 +30,7 @@ func (u *BotUC) GetUUID(ctx context.Context, params models.GetUUID) (result stri
 		return notAdmin, nil
 	}
 
-	result, err = u.pgRepo.GetUUID(ctx, params)
+	result, err = u.pgRepo.GetUUID(ctx)
 	if err != nil {
 		return
 	}

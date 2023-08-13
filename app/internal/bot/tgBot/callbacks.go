@@ -47,8 +47,12 @@ func (t *TgBot) handleBackendCallbackData(chatID int64, messageID int) (err erro
 	return
 }
 
-func (t *TgBot) handleGetAnswerCallbackData(chatID int64, questionID string) (err error) {
+func (t *TgBot) handleGetAnswerCallbackData(chatID int64, questionID string, messageID int) (err error) {
 	ctx := context.Background()
+
+	if err = t.hideKeyboard(chatID, messageID); err != nil {
+		return
+	}
 
 	id, err := strconv.Atoi(questionID)
 	if err != nil {

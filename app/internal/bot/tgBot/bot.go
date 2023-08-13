@@ -95,7 +95,7 @@ func (t *TgBot) Run() error {
 					continue
 				}
 			case getAnswerCallbackData:
-				if err := t.handleGetAnswerCallbackData(chatID, callbackData[1]); err != nil {
+				if err := t.handleGetAnswerCallbackData(chatID, callbackData[1], messageID); err != nil {
 					log.Printf("bot.TgBot.handleGetAnswerCallbackData: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue

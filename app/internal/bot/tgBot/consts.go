@@ -24,10 +24,11 @@ const (
 	readyMessage = "Отлично! Как будете готовы жмите \"ask me\" и бот будет присылать вам вопросы"
 
 	// Buttons
-	getUUIDButton  = "/get_uuid"
-	askMeButton    = "/ask_me"
-	backenddButton = "I ❤️  backend"
-	frontendButton = "I ❤️  frontend"
+	getUUIDButton   = "/get_uuid"
+	askMeButton     = "/ask_me"
+	backenddButton  = "I ❤️  backend"
+	frontendButton  = "I ❤️  frontend"
+	getAnswerButton = "Get an answer"
 
 	// Commands name
 	startCommand   = "start"
@@ -35,8 +36,9 @@ const (
 	askMeCommend   = "ask_me"
 
 	// Callback data
-	backendCallbackData  = "backend"
-	frontednCallbackData = "frontend"
+	backendCallbackData   = "backend"
+	frontednCallbackData  = "frontend"
+	getAnswerCallbackData = "Get_an_answer"
 
 	// errors
 	errUserActivation = "Ошибка активации аккаута"

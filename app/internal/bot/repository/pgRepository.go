@@ -55,3 +55,23 @@ func (r *BotPGRepo) SetUpFrontendDirection(ctx context.Context, chatID int64) (e
 
 	return
 }
+
+func (r *BotPGRepo) GetRandomQuestion(ctx context.Context, params models.AskMeParams) (result models.AskMeResult, err error) {
+	rows, err := r.db.QueryContext(ctx, queryGetRandomQuestion, params.ChatID)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		if err = rows.Scan(&result.QuestionID, &result.Question, &result.Code); err != nil {
+			return
+		}
+	}
+
+	if err = rows.Err(); err != nil {
+		return
+	}
+
+	return
+}

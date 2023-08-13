@@ -53,3 +53,7 @@ func (u *BotUC) SetUpBackendDirection(ctx context.Context, chatID int64) (err er
 func (u *BotUC) SetUpFrontendDirection(ctx context.Context, chatID int64) (err error) {
 	return u.pgRepo.SetUpFrontendDirection(ctx, chatID)
 }
+
+func (u *BotUC) GetRandomQuestion(ctx context.Context, params models.AskMeParams) (result models.AskMeResult, err error) {
+	return u.pgRepo.GetRandomQuestion(ctx, params)
+}

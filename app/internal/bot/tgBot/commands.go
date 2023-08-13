@@ -5,8 +5,9 @@ import (
 	"context"
 
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"strings"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 func (t *TgBot) handleGetUUIDCommand(chatID int64, params models.GetUUID) (err error) {
@@ -44,6 +45,34 @@ func (t *TgBot) handleStartCommand(chatID int64, params models.UserActivation, t
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
+
+	return
+}
+
+func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err error) {
+	ctx := context.Background()
+
+	result, err := t.tgUC.GetRandomQuestion(ctx, params)
+	if err != nil {
+		return
+	}
+
+	msg := tgbotapi.NewMessage(params.ChatID, result.Question)
+	msg.ParseMode = "MarkdownV2"
+	msg.ReplyMarkup = t.createAnswerKeyboard(fmt.Sprintf("%d", result.QuestionID))
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
+	}
+
+	return
+}
+
+func (t *TgBot) createAnswerKeyboard(questionID string) (keyboard tgbotapi.InlineKeyboardMarkup) {
+	keyboard = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData(getAnswerButton, fmt.Sprintf("%s %s", getAnswerCallbackData, questionID)),
+		),
+	)
 
 	return
 }

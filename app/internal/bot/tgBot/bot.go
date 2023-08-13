@@ -4,7 +4,9 @@ import (
 	"boost-my-skills-bot/config"
 	"boost-my-skills-bot/internal/bot"
 	"context"
+	"fmt"
 	"log"
+	"strings"
 
 	models "boost-my-skills-bot/internal/models/bot"
 
@@ -59,16 +61,26 @@ func (t *TgBot) Run() error {
 					continue
 				}
 			case askMeCommend:
-				log.Println("---------ASK ME")
-
+				if err := t.handleAskMeCommand(
+					update.Message.Chat.ID,
+					models.AskMeParams{ChatID: update.Message.Chat.ID}); err != nil {
+					log.Printf("bot.TgBot.handleAskMeCommand: %s", err.Error())
+					continue
+				}
 			}
 		}
 
 		if update.CallbackQuery != nil {
-			callbackData := update.CallbackQuery.Data
+			// callbackData := update.CallbackQuery.Data
+			callbackData, err := t.extractCallbackData(update.CallbackQuery.Data)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
 			chatID := update.CallbackQuery.From.ID
 			messageID := update.CallbackQuery.Message.MessageID
-			switch callbackData {
+			switch callbackData[0] {
 			case backendCallbackData:
 				if err := t.handleBackendCallbackData(chatID, messageID); err != nil {
 					log.Printf("bot.TgBot.handleBackendCallbackData: %s", err.Error())
@@ -79,10 +91,25 @@ func (t *TgBot) Run() error {
 					log.Printf("bot.TgBot.handleFrontendCallbackData: %s", err.Error())
 					continue
 				}
+			case getAnswerCallbackData:
+				log.Printf("ANSWER CALLBACK, question id: %s", callbackData[1])
 			}
 		}
 	}
 	return nil
+}
+
+func (t *TgBot) extractCallbackData(callbackData string) (result []string, err error) {
+	splitedCallbackData := strings.Split(callbackData, " ")
+	switch len(splitedCallbackData) {
+	case 1:
+		return splitedCallbackData, nil
+	case 2:
+		return splitedCallbackData, nil
+	default:
+		err = fmt.Errorf("Wrong len of callback data")
+		return
+	}
 }
 
 func (t *TgBot) hideKeyboard(chatID int64, messageID int) (err error) {

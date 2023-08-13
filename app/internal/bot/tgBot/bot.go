@@ -58,6 +58,7 @@ func (t *TgBot) Run() error {
 					update.Message.Chat.ID,
 					models.GetUUID{ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}); err != nil {
 					log.Printf("bot.TgBot.handleGetUUIDCommand: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			case askMeCommend:
@@ -65,6 +66,7 @@ func (t *TgBot) Run() error {
 					update.Message.Chat.ID,
 					models.AskMeParams{ChatID: update.Message.Chat.ID}); err != nil {
 					log.Printf("bot.TgBot.handleAskMeCommand: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			}
@@ -83,17 +85,19 @@ func (t *TgBot) Run() error {
 			case backendCallbackData:
 				if err := t.handleBackendCallbackData(chatID, messageID); err != nil {
 					log.Printf("bot.TgBot.handleBackendCallbackData: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			case frontednCallbackData:
 				if err := t.handleFrontendCallbackData(chatID, messageID); err != nil {
 					log.Printf("bot.TgBot.handleFrontendCallbackData: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			case getAnswerCallbackData:
-				log.Printf("ANSWER CALLBACK, question id: %s", callbackData[1])
 				if err := t.handleGetAnswerCallbackData(chatID, callbackData[1]); err != nil {
 					log.Printf("bot.TgBot.handleGetAnswerCallbackData: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			}

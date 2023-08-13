@@ -41,5 +41,6 @@ const (
 	getAnswerCallbackData = "Get_an_answer"
 
 	// errors
-	errUserActivation = "Ошибка активации аккаута"
+	errUserActivation      = "Ошибка активации аккаута"
+	errInternalServerError = "Внутренняя ошибка сервера"
 )

@@ -25,11 +25,12 @@ const (
 	notQuestionsMessage = "Для вашего напровления пока не добавлено ни одного вопроса. Обратитесь к @kirillkorunov."
 
 	// Buttons
-	getUUIDButton   = "/get_uuid"
-	askMeButton     = "/ask_me"
-	backenddButton  = "I ❤️  backend"
-	frontendButton  = "I ❤️  frontend"
-	getAnswerButton = "Get an answer"
+	getUUIDButton     = "/get_uuid"
+	askMeButton       = "/ask_me"
+	addQuestionButton = "/add_question"
+	backenddButton    = "I ❤️  backend"
+	frontendButton    = "I ❤️  frontend"
+	getAnswerButton   = "Get an answer"
 
 	// Commands name
 	startCommand   = "start"

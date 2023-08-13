@@ -97,10 +97,21 @@ func (t *TgBot) handleStartCommand(chatID int64, params models.UserActivation, t
 	}
 
 	msg := tgbotapi.NewMessage(chatID, wellcomeMessage)
-	msg.ReplyMarkup = t.createMainMenuKeyboard()
+	msg.ReplyMarkup = t.createDirectionsKeyboard()
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
+
+	return
+}
+
+func (t *TgBot) createDirectionsKeyboard() (keyboard tgbotapi.InlineKeyboardMarkup) {
+	keyboard = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData("I ❤️  backend", "backend"),
+			tgbotapi.NewInlineKeyboardButtonData("I ❤️  frontend", "frontend"),
+		),
+	)
 
 	return
 }

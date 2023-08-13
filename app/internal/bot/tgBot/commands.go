@@ -56,6 +56,13 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 	if err != nil {
 		return
 	}
+	if len(result.Question) == 0 {
+		msg := tgbotapi.NewMessage(params.ChatID, notQuestionsMessage)
+		if _, err = t.BotAPI.Send(msg); err != nil {
+			return
+		}
+		return
+	}
 
 	msg := tgbotapi.NewMessage(params.ChatID, result.Question)
 	msg.ParseMode = "MarkdownV2"

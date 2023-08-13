@@ -11,4 +11,5 @@ type Usecase interface {
 	SetUpBackendDirection(ctx context.Context, chatID int64) (err error)
 	SetUpFrontendDirection(ctx context.Context, chatID int64) (err error)
 	GetRandomQuestion(ctx context.Context, params models.AskMeParams) (result models.AskMeResult, err error)
+	GetAnswer(ctx context.Context, questionID int) (result string, err error)
 }

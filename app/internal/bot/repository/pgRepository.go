@@ -75,3 +75,11 @@ func (r *BotPGRepo) GetRandomQuestion(ctx context.Context, params models.AskMePa
 
 	return
 }
+
+func (r *BotPGRepo) GetAnswer(ctx context.Context, questionID int) (result string, err error) {
+	if err = r.db.GetContext(ctx, &result, queryGetAnswer, questionID); err != nil {
+		return
+	}
+
+	return
+}

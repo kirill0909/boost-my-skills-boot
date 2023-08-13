@@ -71,7 +71,6 @@ func (t *TgBot) Run() error {
 		}
 
 		if update.CallbackQuery != nil {
-			// callbackData := update.CallbackQuery.Data
 			callbackData, err := t.extractCallbackData(update.CallbackQuery.Data)
 			if err != nil {
 				log.Println(err)
@@ -93,6 +92,10 @@ func (t *TgBot) Run() error {
 				}
 			case getAnswerCallbackData:
 				log.Printf("ANSWER CALLBACK, question id: %s", callbackData[1])
+				if err := t.handleGetAnswerCallbackData(chatID, callbackData[1]); err != nil {
+					log.Printf("bot.TgBot.handleGetAnswerCallbackData: %s", err.Error())
+					continue
+				}
 			}
 		}
 	}

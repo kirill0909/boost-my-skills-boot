@@ -30,6 +30,10 @@ const (
  INNER JOIN users.user u ON u.direction_id = q.direction_id
  WHERE u.tg_chat_id = $1
  ORDER BY RANDOM()
- LIMIT 1
+ LIMIT 1 
+	`
+
+	queryGetAnswer = `
+	SELECT answer FROM users.questions WHERE id = $1
 	`
 )

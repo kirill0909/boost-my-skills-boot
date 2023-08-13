@@ -65,15 +65,56 @@ func (t *TgBot) Run() error {
 
 		if update.CallbackQuery != nil {
 			callbackData := update.CallbackQuery.Data
+			chatID := update.CallbackQuery.From.ID
+			messageID := update.CallbackQuery.Message.MessageID
 			switch callbackData {
 			case backendCallbackData:
-				log.Println("--------BACK")
+				if err := t.handleBackendCallbackData(chatID, messageID); err != nil {
+					log.Printf("bot.TgBot.handleBackendCallbackData: %s", err.Error())
+					continue
+				}
 			case frontednCallbackData:
 				log.Println("-----------FRONT")
 			}
 		}
 	}
 	return nil
+}
+
+func (t *TgBot) handleBackendCallbackData(chatID int64, messageID int) (err error) {
+	ctx := context.Background()
+
+	if err = t.tgUC.SetUpBackendDirection(ctx, chatID); err != nil {
+		return
+	}
+
+	if err = t.hideKeyboard(chatID, messageID); err != nil {
+		return
+	}
+
+	msg := tgbotapi.NewMessage(chatID, readyMessage)
+	msg.ReplyMarkup = t.createMainMenuKeyboard()
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
+	}
+
+	return
+}
+
+func (t *TgBot) hideKeyboard(chatID int64, messageID int) (err error) {
+	edit := tgbotapi.NewEditMessageReplyMarkup(
+		chatID,
+		messageID,
+		tgbotapi.InlineKeyboardMarkup{
+			InlineKeyboard: [][]tgbotapi.InlineKeyboardButton{},
+		},
+	)
+
+	if _, err = t.BotAPI.Send(edit); err != nil {
+		return
+	}
+
+	return
 }
 
 func (t *TgBot) handleGetUUIDButton(chatID int64, params models.GetUUID) (err error) {

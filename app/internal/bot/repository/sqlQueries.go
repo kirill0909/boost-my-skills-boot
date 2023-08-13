@@ -17,4 +17,7 @@ const (
 	queryUserActivation = `
   UPDATE users.user SET name = $1, tg_chat_id = $2, active = true WHERE tg_uuid = $3
   `
+	querySetUpBackendDirection = `
+  UPDATE users.user SET direction_id = 1 WHERE tg_chat_id = $1
+  `
 )

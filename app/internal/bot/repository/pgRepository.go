@@ -39,3 +39,11 @@ func (r *BotPGRepo) UserActivation(ctx context.Context, params models.UserActiva
 
 	return
 }
+
+func (r *BotPGRepo) SetUpBackendDirection(ctx context.Context, chatID int64) (err error) {
+	if _, err = r.db.ExecContext(ctx, querySetUpBackendDirection, chatID); err != nil {
+		return
+	}
+
+	return
+}

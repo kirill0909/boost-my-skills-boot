@@ -8,4 +8,5 @@ import (
 type Usecase interface {
 	GetUUID(ctx context.Context, params models.GetUUID) (result string, err error)
 	UserActivation(ctx context.Context, params models.UserActivation) (err error)
+	SetUpBackendDirection(ctx context.Context, chatID int64) (err error)
 }

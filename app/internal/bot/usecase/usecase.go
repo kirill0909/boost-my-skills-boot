@@ -45,3 +45,7 @@ func (u *BotUC) createTgLink(param string) string {
 func (u *BotUC) UserActivation(ctx context.Context, params models.UserActivation) (err error) {
 	return u.pgRepo.UserActivation(ctx, params)
 }
+
+func (u *BotUC) SetUpBackendDirection(ctx context.Context, chatID int64) (err error) {
+	return u.pgRepo.SetUpBackendDirection(ctx, chatID)
+}

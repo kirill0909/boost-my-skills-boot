@@ -54,10 +54,10 @@ func (t *TgBot) Run() error {
 					continue
 				}
 			case getUUIDCommand:
-				if err := t.handleGetUUIDButton(
+				if err := t.handleGetUUIDCommand(
 					update.Message.Chat.ID,
 					models.GetUUID{ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}); err != nil {
-					log.Printf("bot.TgBot.handleGetUUIDButton: %s", err.Error())
+					log.Printf("bot.TgBot.handleGetUUIDCommand: %s", err.Error())
 					continue
 				}
 			}
@@ -140,7 +140,7 @@ func (t *TgBot) hideKeyboard(chatID int64, messageID int) (err error) {
 	return
 }
 
-func (t *TgBot) handleGetUUIDButton(chatID int64, params models.GetUUID) (err error) {
+func (t *TgBot) handleGetUUIDCommand(chatID int64, params models.GetUUID) (err error) {
 	ctx := context.Background()
 
 	result, err := t.tgUC.GetUUID(ctx, params)
@@ -203,6 +203,7 @@ func (t *TgBot) createMainMenuKeyboard() (keyboard tgbotapi.ReplyKeyboardMarkup)
 	keyboard = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton(getUUIDButton),
+			tgbotapi.NewKeyboardButton(askMeButton),
 		),
 	)
 

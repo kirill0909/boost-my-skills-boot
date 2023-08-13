@@ -25,6 +25,7 @@ const (
 
 	// Buttons
 	getUUIDButton  = "/get_uuid"
+	askMeButton    = "/ask_me"
 	backenddButton = "I ❤️  backend"
 	frontendButton = "I ❤️  frontend"
 

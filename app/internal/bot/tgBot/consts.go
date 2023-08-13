@@ -32,6 +32,7 @@ const (
 	// Commands name
 	startCommand   = "start"
 	getUUIDCommand = "get_uuid"
+	askMeCommend   = "ask_me"
 
 	// Callback data
 	backendCallbackData  = "backend"

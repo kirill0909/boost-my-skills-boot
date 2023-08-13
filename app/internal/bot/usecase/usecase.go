@@ -49,3 +49,7 @@ func (u *BotUC) UserActivation(ctx context.Context, params models.UserActivation
 func (u *BotUC) SetUpBackendDirection(ctx context.Context, chatID int64) (err error) {
 	return u.pgRepo.SetUpBackendDirection(ctx, chatID)
 }
+
+func (u *BotUC) SetUpFrontendDirection(ctx context.Context, chatID int64) (err error) {
+	return u.pgRepo.SetUpFrontendDirection(ctx, chatID)
+}

@@ -10,4 +10,5 @@ type PgRepository interface {
 	IsAdmin(ctx context.Context, params models.GetUUID) (result bool, err error)
 	UserActivation(ctx context.Context, params models.UserActivation) (err error)
 	SetUpBackendDirection(ctx context.Context, chatID int64) (err error)
+	SetUpFrontendDirection(ctx context.Context, chatID int64) (err error)
 }

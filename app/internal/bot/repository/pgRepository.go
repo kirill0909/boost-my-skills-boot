@@ -47,3 +47,11 @@ func (r *BotPGRepo) SetUpBackendDirection(ctx context.Context, chatID int64) (er
 
 	return
 }
+
+func (r *BotPGRepo) SetUpFrontendDirection(ctx context.Context, chatID int64) (err error) {
+	if _, err = r.db.ExecContext(ctx, querySetUpFrontedDirection, chatID); err != nil {
+		return
+	}
+
+	return
+}

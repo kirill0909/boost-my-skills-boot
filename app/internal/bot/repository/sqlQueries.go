@@ -20,4 +20,7 @@ const (
 	querySetUpBackendDirection = `
   UPDATE users.user SET direction_id = 1 WHERE tg_chat_id = $1
   `
+	querySetUpFrontedDirection = `
+  UPDATE users.user SET direction_id = 2 WHERE tg_chat_id = $1
+  `
 )

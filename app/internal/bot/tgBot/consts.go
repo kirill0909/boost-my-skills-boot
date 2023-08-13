@@ -23,11 +23,17 @@ const (
 	`
 
 	// Buttons
-	getUUIDButton = "/get_uuid"
+	getUUIDButton  = "/get_uuid"
+	backenddButton = "I ❤️  backend"
+	frontendButton = "I ❤️  frontend"
 
 	// Commands name
 	startCommand   = "start"
 	getUUIDCommand = "get_uuid"
+
+	// Callback data
+	backendCallbackData  = "backend"
+	frontednCallbackData = "frontend"
 
 	// errors
 	errUserActivation = "Ошибка активации аккаута"

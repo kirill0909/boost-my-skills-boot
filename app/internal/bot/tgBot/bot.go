@@ -62,6 +62,16 @@ func (t *TgBot) Run() error {
 				}
 			}
 		}
+
+		if update.CallbackQuery != nil {
+			callbackData := update.CallbackQuery.Data
+			switch callbackData {
+			case backendCallbackData:
+				log.Println("--------BACK")
+			case frontednCallbackData:
+				log.Println("-----------FRONT")
+			}
+		}
 	}
 	return nil
 }
@@ -108,8 +118,8 @@ func (t *TgBot) handleStartCommand(chatID int64, params models.UserActivation, t
 func (t *TgBot) createDirectionsKeyboard() (keyboard tgbotapi.InlineKeyboardMarkup) {
 	keyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData("I ❤️  backend", "backend"),
-			tgbotapi.NewInlineKeyboardButtonData("I ❤️  frontend", "frontend"),
+			tgbotapi.NewInlineKeyboardButtonData(backenddButton, backendCallbackData),
+			tgbotapi.NewInlineKeyboardButtonData(frontendButton, frontednCallbackData),
 		),
 	)
 

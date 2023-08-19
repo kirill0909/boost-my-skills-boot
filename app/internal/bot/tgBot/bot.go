@@ -86,7 +86,7 @@ func (t *TgBot) Run() error {
 
 			state, ok := t.userStates[update.Message.Chat.ID]
 			if !ok || state == idle {
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Для добавления вопроса нажмите на кнопку add_question")
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, addQuestionMessage)
 				if _, err := t.BotAPI.Send(msg); err != nil {
 					log.Println(err)
 				}

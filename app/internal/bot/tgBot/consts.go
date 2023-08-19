@@ -21,8 +21,12 @@ const (
 	Внизу под этим сообщением нужно выбрать, вопросы из какой нищи програмирования вы хотите получать.
 	Frontend или Backend. После этого бот будет готов к тому что бы мучить вас вопросами.
 	`
-	readyMessage        = "Отлично! Как будете готовы жмите \"ask me\" и бот будет присылать вам вопросы"
-	notQuestionsMessage = "Для вашего напровления пока не добавлено ни одного вопроса. Обратитесь к @kirillkorunov."
+	readyMessage                 = "Отлично! Как будете готовы жмите \"ask me\" и бот будет присылать вам вопросы"
+	notQuestionsMessage          = "Для вашего напровления пока не добавлено ни одного вопроса. Обратитесь к @kirillkorunov."
+	addQuestionMessage           = "Для добавления вопроса нажмите на кнопку add_question"
+	handleAddQuestionMessage     = "Ввeдите вопрос"
+	handleEnteredQuestionMessage = "Отлично! Теперь ввeдите ответ"
+	handleEnteredAnswerMessage   = "Ваш вопрос и ответ успешно сохранен"
 
 	// Buttons
 	getUUIDButton     = "/get_uuid"

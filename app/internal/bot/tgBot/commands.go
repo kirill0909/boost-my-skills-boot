@@ -65,7 +65,6 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 	}
 
 	msg := tgbotapi.NewMessage(params.ChatID, result.Question)
-	msg.ParseMode = "MarkdownV2"
 	msg.ReplyMarkup = t.createAnswerKeyboard(fmt.Sprintf("%d", result.QuestionID))
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return

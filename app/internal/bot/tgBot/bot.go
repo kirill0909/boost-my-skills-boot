@@ -14,9 +14,10 @@ import (
 )
 
 type TgBot struct {
-	BotAPI *tgbotapi.BotAPI
-	cfg    *config.Config
-	tgUC   bot.Usecase
+	BotAPI     *tgbotapi.BotAPI
+	cfg        *config.Config
+	tgUC       bot.Usecase
+	userStates map[int64]int
 }
 
 func NewTgBot(
@@ -25,9 +26,10 @@ func NewTgBot(
 	botAPI *tgbotapi.BotAPI,
 ) *TgBot {
 	return &TgBot{
-		cfg:    cfg,
-		BotAPI: botAPI,
-		tgUC:   usecase,
+		cfg:        cfg,
+		BotAPI:     botAPI,
+		tgUC:       usecase,
+		userStates: make(map[int64]int),
 	}
 }
 
@@ -41,8 +43,8 @@ func (t *TgBot) Run() error {
 
 	for update := range updates {
 		if update.Message != nil {
-			switch update.Message.Command() {
 
+			switch update.Message.Command() {
 			case startCommand:
 				if err := t.handleStartCommand(
 					update.Message.Chat.ID,
@@ -53,6 +55,7 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errUserActivation)
 					continue
 				}
+				continue
 			case getUUIDCommand:
 				if err := t.handleGetUUIDCommand(
 					update.Message.Chat.ID,
@@ -61,6 +64,7 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
+				continue
 			case askMeCommend:
 				if err := t.handleAskMeCommand(
 					update.Message.Chat.ID,
@@ -69,7 +73,43 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
+				continue
+			case addQuestion:
+				if err := t.handleAddQuestionCommand(
+					update.Message.Chat.ID); err != nil {
+					log.Printf("bot.TgBot.handleAddQuestionCommand: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
+				continue
 			}
+
+			state, ok := t.userStates[update.Message.Chat.ID]
+			if !ok || state == idle {
+				msg := tgbotapi.NewMessage(update.Message.Chat.ID, "Для добавления вопроса нажмите на кнопку add_question")
+				if _, err := t.BotAPI.Send(msg); err != nil {
+					log.Println(err)
+				}
+				continue
+			}
+
+			switch state {
+			case awaitingQuestion:
+				if err := t.handleEnteredQuestion(update.Message.Chat.ID); err != nil {
+					log.Printf("bot.TgBot.handleEnteredQuestion: %s", err.Error())
+					t.userStates[update.Message.Chat.ID] = idle
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
+			case awaitingAnswer:
+				if err := t.handleEnteredAnswer(update.Message.Chat.ID); err != nil {
+					log.Printf("bot.TgBot.handleEnteredAnswer: %s", err.Error())
+					t.userStates[update.Message.Chat.ID] = idle
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
+			}
+
 		}
 
 		if update.CallbackQuery != nil {

@@ -83,3 +83,36 @@ func (t *TgBot) createAnswerKeyboard(questionID string) (keyboard tgbotapi.Inlin
 
 	return
 }
+
+func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
+	t.userStates[chatID] = awaitingQuestion
+
+	msg := tgbotapi.NewMessage(chatID, "Ввeдите вопрос")
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
+	}
+
+	return
+}
+
+func (t *TgBot) handleEnteredQuestion(chatID int64) (err error) {
+	t.userStates[chatID] = awaitingAnswer
+
+	msg := tgbotapi.NewMessage(chatID, "Отлично! Теперь ввeдите ответ")
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
+	}
+
+	return
+}
+
+func (t *TgBot) handleEnteredAnswer(chatID int64) (err error) {
+	t.userStates[chatID] = idle
+
+	msg := tgbotapi.NewMessage(chatID, "Ваш вопрос и ответ успешно сохранен")
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
+	}
+
+	return
+}

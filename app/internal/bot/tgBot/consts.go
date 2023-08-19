@@ -36,6 +36,7 @@ const (
 	startCommand   = "start"
 	getUUIDCommand = "get_uuid"
 	askMeCommend   = "ask_me"
+	addQuestion    = "add_question"
 
 	// Callback data
 	backendCallbackData   = "backend"
@@ -45,4 +46,9 @@ const (
 	// errors
 	errUserActivation      = "Ошибка активации аккаута"
 	errInternalServerError = "Внутренняя ошибка сервера"
+
+	// stat machine
+	idle             = 1
+	awaitingQuestion = 2
+	awaitingAnswer   = 3
 )

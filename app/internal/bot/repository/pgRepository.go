@@ -91,3 +91,11 @@ func (r *BotPGRepo) SaveQuestion(ctx context.Context, params models.SaveQuestion
 
 	return
 }
+
+func (r *BotPGRepo) SaveAnswer(ctx context.Context, params models.SaveAnswerParams) (err error) {
+	if _, err = r.db.ExecContext(ctx, querySaveAnswer, params.Answer, params.QuestionID); err != nil {
+		return
+	}
+
+	return
+}

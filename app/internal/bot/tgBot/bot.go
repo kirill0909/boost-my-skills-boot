@@ -102,7 +102,7 @@ func (t *TgBot) Run() error {
 					continue
 				}
 			case awaitingAnswer:
-				if err := t.handleEnteredAnswer(update.Message.Chat.ID); err != nil {
+				if err := t.handleEnteredAnswer(update.Message.Chat.ID, update.Message.Text); err != nil {
 					log.Printf("bot.TgBot.handleEnteredAnswer: %s", err.Error())
 					t.userStates[update.Message.Chat.ID] = models.AddQuestionParams{State: idle}
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)

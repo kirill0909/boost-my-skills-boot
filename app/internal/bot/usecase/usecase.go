@@ -65,3 +65,7 @@ func (u *BotUC) GetAnswer(ctx context.Context, questionID int) (result string, e
 func (u *BotUC) SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (result int, err error) {
 	return u.pgRepo.SaveQuestion(ctx, params)
 }
+
+func (u *BotUC) SaveAnswer(ctx context.Context, params models.SaveAnswerParams) (err error) {
+	return u.pgRepo.SaveAnswer(ctx, params)
+}

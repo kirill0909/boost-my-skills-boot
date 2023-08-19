@@ -43,4 +43,8 @@ const (
  (SELECT direction_id FROM users.user WHERE tg_chat_id = $1),
  $2, '') RETURNING id
 	`
+
+	querySaveAnswer = `
+	UPDATE users.questions SET answer = $1 WHERE id = $2
+	`
 )

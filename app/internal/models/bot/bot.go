@@ -32,3 +32,8 @@ type SaveQuestionParams struct {
 	ChatID   int64
 	Question string
 }
+
+type SaveAnswerParams struct {
+	Answer     string
+	QuestionID int
+}

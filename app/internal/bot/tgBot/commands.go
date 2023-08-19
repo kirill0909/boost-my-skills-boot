@@ -85,7 +85,7 @@ func (t *TgBot) createAnswerKeyboard(questionID string) (keyboard tgbotapi.Inlin
 }
 
 func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
-	t.userStates[chatID] = awaitingQuestion
+	t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion}
 
 	msg := tgbotapi.NewMessage(chatID, handleAddQuestionMessage)
 	if _, err = t.BotAPI.Send(msg); err != nil {
@@ -95,19 +95,27 @@ func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
 	return
 }
 
-func (t *TgBot) handleEnteredQuestion(chatID int64) (err error) {
-	t.userStates[chatID] = awaitingAnswer
+func (t *TgBot) handleEnteredQuestion(chatID int64, text string) (err error) {
+	ctx := context.Background()
 
 	msg := tgbotapi.NewMessage(chatID, handleEnteredQuestionMessage)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
 
+	// save question in db and return id
+	questionID, err := t.tgUC.SaveQuestion(ctx, models.SaveQuestionParams{ChatID: chatID, Question: text})
+	if err != nil {
+		return
+	}
+
+	t.userStates[chatID] = models.AddQuestionParams{State: awaitingAnswer, QuestionID: questionID}
+
 	return
 }
 
 func (t *TgBot) handleEnteredAnswer(chatID int64) (err error) {
-	t.userStates[chatID] = idle
+	t.userStates[chatID] = models.AddQuestionParams{State: idle}
 
 	msg := tgbotapi.NewMessage(chatID, handleEnteredAnswerMessage)
 	if _, err = t.BotAPI.Send(msg); err != nil {

@@ -64,6 +64,14 @@ func (t *TgBot) handleGetAnswerCallbackData(chatID int64, questionID string, mes
 		return
 	}
 
+	if len(answer) == 0 {
+		msg := tgbotapi.NewMessage(chatID, unableToGetAnswer)
+		if _, err = t.BotAPI.Send(msg); err != nil {
+			return
+		}
+		return
+	}
+
 	msg := tgbotapi.NewMessage(chatID, answer)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return

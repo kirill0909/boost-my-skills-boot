@@ -27,6 +27,8 @@ const (
 	handleAddQuestionMessage     = "Ввeдите вопрос"
 	handleEnteredQuestionMessage = "Отлично! Теперь ввeдите ответ"
 	handleEnteredAnswerMessage   = "Ваш вопрос и ответ успешно сохранен"
+	unableToGetAnswer            = `Невозможно получить ответ для этого вопроса. 
+	Обратитесь к @kirillkorunov для добовления или изменеия ответа к интересующему вас вопросу. Либо довьте вопрос/ответ заново)`
 
 	// Buttons
 	getUUIDButton     = "/get_uuid"

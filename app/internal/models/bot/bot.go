@@ -22,3 +22,13 @@ type AskMeResult struct {
 	QuestionID int
 	Code       null.String
 }
+
+type AddQuestionParams struct {
+	State      int
+	QuestionID int
+}
+
+type SaveQuestionParams struct {
+	ChatID   int64
+	Question string
+}

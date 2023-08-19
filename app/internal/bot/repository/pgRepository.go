@@ -83,3 +83,11 @@ func (r *BotPGRepo) GetAnswer(ctx context.Context, questionID int) (result strin
 
 	return
 }
+
+func (r *BotPGRepo) SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (result int, err error) {
+	if err = r.db.GetContext(ctx, &result, querySaveQuestion, params.ChatID, params.Question); err != nil {
+		return
+	}
+
+	return
+}

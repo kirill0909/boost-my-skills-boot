@@ -36,4 +36,11 @@ const (
 	queryGetAnswer = `
 	SELECT answer FROM users.questions WHERE id = $1
 	`
+
+	querySaveQuestion = `
+	INSERT INTO users.questions (direction_id, question, answer)
+ VALUES (
+ (SELECT direction_id FROM users.user WHERE tg_chat_id = $1),
+ $2, '') RETURNING id
+	`
 )

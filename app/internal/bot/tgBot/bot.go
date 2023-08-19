@@ -17,7 +17,7 @@ type TgBot struct {
 	BotAPI     *tgbotapi.BotAPI
 	cfg        *config.Config
 	tgUC       bot.Usecase
-	userStates map[int64]int
+	userStates map[int64]models.AddQuestionParams
 }
 
 func NewTgBot(
@@ -29,7 +29,7 @@ func NewTgBot(
 		cfg:        cfg,
 		BotAPI:     botAPI,
 		tgUC:       usecase,
-		userStates: make(map[int64]int),
+		userStates: make(map[int64]models.AddQuestionParams),
 	}
 }
 
@@ -84,8 +84,8 @@ func (t *TgBot) Run() error {
 				continue
 			}
 
-			state, ok := t.userStates[update.Message.Chat.ID]
-			if !ok || state == idle {
+			questionParams, ok := t.userStates[update.Message.Chat.ID]
+			if !ok || questionParams.State == idle {
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, addQuestionMessage)
 				if _, err := t.BotAPI.Send(msg); err != nil {
 					log.Println(err)
@@ -93,18 +93,18 @@ func (t *TgBot) Run() error {
 				continue
 			}
 
-			switch state {
+			switch questionParams.State {
 			case awaitingQuestion:
-				if err := t.handleEnteredQuestion(update.Message.Chat.ID); err != nil {
+				if err := t.handleEnteredQuestion(update.Message.Chat.ID, update.Message.Text); err != nil {
 					log.Printf("bot.TgBot.handleEnteredQuestion: %s", err.Error())
-					t.userStates[update.Message.Chat.ID] = idle
+					t.userStates[update.Message.Chat.ID] = models.AddQuestionParams{State: idle}
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			case awaitingAnswer:
 				if err := t.handleEnteredAnswer(update.Message.Chat.ID); err != nil {
 					log.Printf("bot.TgBot.handleEnteredAnswer: %s", err.Error())
-					t.userStates[update.Message.Chat.ID] = idle
+					t.userStates[update.Message.Chat.ID] = models.AddQuestionParams{State: idle}
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}

@@ -61,3 +61,7 @@ func (u *BotUC) GetRandomQuestion(ctx context.Context, params models.AskMeParams
 func (u *BotUC) GetAnswer(ctx context.Context, questionID int) (result string, err error) {
 	return u.pgRepo.GetAnswer(ctx, questionID)
 }
+
+func (u *BotUC) SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (result int, err error) {
+	return u.pgRepo.SaveQuestion(ctx, params)
+}

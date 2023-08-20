@@ -4,6 +4,7 @@ import (
 	"boost-my-skills-bot/internal/bot"
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -33,7 +34,18 @@ func (r *BotPGRepo) IsAdmin(ctx context.Context, params models.GetUUID) (result 
 }
 
 func (r *BotPGRepo) UserActivation(ctx context.Context, params models.UserActivation) (err error) {
-	if _, err = r.db.ExecContext(ctx, queryUserActivation, params.TgName, params.ChatID, params.UUID); err != nil {
+	result, err := r.db.ExecContext(ctx, queryUserActivation, params.TgName, params.ChatID, params.UUID)
+	if err != nil {
+		return
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return
+	}
+
+	if affected != 1 {
+		err = fmt.Errorf("Wrong number of rows affected %d != 1", affected)
 		return
 	}
 

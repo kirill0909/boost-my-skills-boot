@@ -52,6 +52,10 @@ func (t *TgBot) Run() error {
 					update.Message.Text,
 				); err != nil {
 					log.Printf("bot.TgBot.handleStartCommand: %s", err.Error())
+					if strings.Contains(err.Error(), "Wrong number of rows affected") {
+						t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errUUIDAlreadyExists)
+						continue
+					}
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errUserActivation)
 					continue
 				}

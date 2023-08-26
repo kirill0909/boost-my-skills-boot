@@ -2,6 +2,7 @@ package tgbot
 
 import (
 	"context"
+	"log"
 	"strconv"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -77,5 +78,11 @@ func (t *TgBot) handleGetAnswerCallbackData(chatID int64, questionID string, mes
 		return
 	}
 
+	return
+}
+
+func (t *TgBot) handleSubdirectionsCallback(chatID int64, subdirectionsID string) (err error) {
+
+	log.Printf("Subdirections: %s", subdirectionsID)
 	return
 }

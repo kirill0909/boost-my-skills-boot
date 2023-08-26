@@ -111,3 +111,26 @@ func (r *BotPGRepo) SaveAnswer(ctx context.Context, params models.SaveAnswerPara
 
 	return
 }
+
+func (r *BotPGRepo) GetSubdirections(ctx context.Context, params models.GetSubdirectionsParams) (result []string, err error) {
+	rows, err := r.db.QueryContext(ctx, queryGetSubdirectons, params.ChatID)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	var res string
+	for rows.Next() {
+		if err = rows.Scan(&res); err != nil {
+			return
+		}
+
+		result = append(result, res)
+	}
+
+	if err = rows.Err(); err != nil {
+		return
+	}
+
+	return
+}

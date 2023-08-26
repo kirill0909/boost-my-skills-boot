@@ -144,6 +144,20 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
+			case GoCallbackData:
+				log.Printf("Subdirections: %s", GoCallbackData)
+			case ComputerSinceCallbackData:
+				log.Printf("Subdirections: %s", ComputerSinceCallbackData)
+			case NetworkCallbackData:
+				log.Printf("Subdirections: %s", NetworkCallbackData)
+			case DBCallbackData:
+				log.Printf("Subdirections: %s", DBCallbackData)
+			case AlgorithmsCallbackData:
+				log.Printf("Subdirections: %s", AlgorithmsCallbackData)
+			case ArchitectureCallbackData:
+				log.Printf("Subdirections: %s", ArchitectureCallbackData)
+			case GeneralCallbackData:
+				log.Printf("Subdirections: %s", GeneralCallbackData)
 			}
 		}
 	}

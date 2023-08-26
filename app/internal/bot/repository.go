@@ -15,4 +15,5 @@ type PgRepository interface {
 	GetAnswer(ctx context.Context, questionID int) (result string, err error)
 	SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (result int, err error)
 	SaveAnswer(ctx context.Context, params models.SaveAnswerParams) (err error)
+	GetSubdirections(ctx context.Context, params models.GetSubdirectionsParams) (result []string, err error)
 }

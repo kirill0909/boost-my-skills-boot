@@ -37,3 +37,7 @@ type SaveAnswerParams struct {
 	Answer     string
 	QuestionID int
 }
+
+type GetSubdirectionsParams struct {
+	ChatID int64
+}

@@ -25,20 +25,26 @@ const (
   `
 
 	queryGetRandomQuestion = `
-	SELECT q.id, q.question, q.code
- FROM users.questions q
- INNER JOIN users.user u ON u.direction_id = q.direction_id
+	SELECT i.id, i.question, i.code
+ FROM users.info i
+ INNER JOIN users.user u ON u.direction_id = i.direction_id
  WHERE u.tg_chat_id = $1
  ORDER BY RANDOM()
  LIMIT 1 
 	`
 
+	queryGetSubdirectons = `
+	SELECT s.subdirection FROM users.subdirections s
+ INNER JOIN users.user u ON u.direction_id = s.direction_id
+ WHERE u.tg_chat_id = $1
+	`
+
 	queryGetAnswer = `
-	SELECT answer FROM users.questions WHERE id = $1
+	SELECT answer FROM users.info WHERE id = $1
 	`
 
 	querySaveQuestion = `
-	INSERT INTO users.questions (direction_id, question, answer)
+	INSERT INTO users.info (direction_id, question, answer)
  VALUES (
  (SELECT direction_id FROM users.user WHERE tg_chat_id = $1),
  $2, '') RETURNING id

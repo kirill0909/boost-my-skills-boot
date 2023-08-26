@@ -69,3 +69,7 @@ func (u *BotUC) SaveQuestion(ctx context.Context, params models.SaveQuestionPara
 func (u *BotUC) SaveAnswer(ctx context.Context, params models.SaveAnswerParams) (err error) {
 	return u.pgRepo.SaveAnswer(ctx, params)
 }
+
+func (u *BotUC) GetSubdirections(ctx context.Context, params models.GetSubdirectionsParams) (result []string, err error) {
+	return u.pgRepo.GetSubdirections(ctx, params)
+}

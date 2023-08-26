@@ -46,9 +46,16 @@ const (
 	addQuestion    = "add_question"
 
 	// Callback data
-	backendCallbackData   = "backend"
-	frontednCallbackData  = "frontend"
-	getAnswerCallbackData = "Get_an_answer"
+	backendCallbackData       = "backend"
+	frontednCallbackData      = "frontend"
+	getAnswerCallbackData     = "Get_an_answer"
+	GoCallbackData            = "0"
+	ComputerSinceCallbackData = "1"
+	NetworkCallbackData       = "2"
+	DBCallbackData            = "3"
+	AlgorithmsCallbackData    = "4"
+	ArchitectureCallbackData  = "5"
+	GeneralCallbackData       = "6"
 
 	// errors
 	errUserActivation      = "Ошибка активации аккаута"

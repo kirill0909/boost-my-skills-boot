@@ -27,7 +27,7 @@ const (
 	queryGetRandomQuestion = `
 	SELECT
   i.id,
-  i.question,
+  i.question
   FROM users.info i
   INNER JOIN users.user u ON u.direction_id = i.direction_id
   INNER JOIN users.subdirections s ON s.id = i.subdirection_id

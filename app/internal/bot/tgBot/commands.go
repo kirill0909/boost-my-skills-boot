@@ -70,19 +70,19 @@ func (t *TgBot) createSubdirectionsKeyboard(subdirections []string) (keyboard tg
 
 	keyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[0], "1"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[1], "2"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[0], "1AskMe"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[1], "2AskMe"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[2], "3"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[3], "4"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[2], "3AskMe"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[3], "4AskMe"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[4], "5"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[5], "6"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[4], "5AskMe"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[5], "6AskMe"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[6], "7"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[6], "7AskMe"),
 		),
 	)
 

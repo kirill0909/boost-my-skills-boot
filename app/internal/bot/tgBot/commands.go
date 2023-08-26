@@ -133,7 +133,7 @@ func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
 
 	msg := tgbotapi.NewMessage(chatID, "")
 	if len(subdirections) == 0 {
-		msg.Text = "No subdirections were found for your direction. To add subdirections refer to @kirillkorunov"
+		msg.Text = noOneSubdirectionsFoundMessage
 		if _, err = t.BotAPI.Send(msg); err != nil {
 			return
 		}
@@ -142,7 +142,7 @@ func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
 		return
 	}
 
-	msg.Text = "In which direction do you want to add a question?"
+	msg.Text = directionQuestionMessage
 	msg.ReplyMarkup = t.createSubdirectionsKeyboardAddQuestion(subdirections)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
@@ -150,14 +150,3 @@ func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
 
 	return
 }
-
-// func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
-// 	t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion}
-//
-// 	msg := tgbotapi.NewMessage(chatID, handleAddQuestionMessage)
-// 	if _, err = t.BotAPI.Send(msg); err != nil {
-// 		return
-// 	}
-//
-// 	return
-// }

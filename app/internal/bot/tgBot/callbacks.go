@@ -3,7 +3,6 @@ package tgbot
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 
 	models "boost-my-skills-bot/internal/models/bot"
@@ -117,7 +116,12 @@ func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, subdirection stri
 }
 
 func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirection string) (err error) {
-	log.Println(subdirection)
+	t.userStates[chatID] = models.AddQuestionParams{State: awaitingAnswer}
+
+	msg := tgbotapi.NewMessage(chatID, "Alright, enter your question")
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
+	}
 
 	return
 }

@@ -56,6 +56,14 @@ const (
 	AlgorithmsCallbackDataAskMe    = "5AskMe"
 	ArchitectureCallbackDataAskMe  = "6AskMe"
 	GeneralCallbackDataAskMe       = "7AskMe"
+	// Add question callback
+	GoCallbackDataAddQuestion            = "1AddQuestion"
+	ComputerSinceCallbackDataAddQuestion = "2AddQuestion"
+	NetworkCallbackDataAddQuestion       = "3AddQuestion"
+	DBCallbackDataAddQuestion            = "4AddQuestion"
+	AlgorithmsCallbackDataAddQuestion    = "5AddQuestion"
+	ArchitectureCallbackDataAddQuestion  = "6AddQuestion"
+	GeneralCallbackDataAddQuestion       = "7AddQuestion"
 
 	// errors
 	errUserActivation      = "Ошибка активации аккаута"
@@ -63,7 +71,8 @@ const (
 	errInternalServerError = "Внутренняя ошибка сервера"
 
 	// stat machine
-	idle             = 1
-	awaitingQuestion = 2
-	awaitingAnswer   = 3
+	idle              = 1
+	awaitingQuestion  = 2
+	awaitingAnswer    = 3
+	awaitingDirection = 4
 )

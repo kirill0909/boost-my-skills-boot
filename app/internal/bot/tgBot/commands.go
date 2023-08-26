@@ -58,7 +58,7 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 	}
 
 	msg := tgbotapi.NewMessage(params.ChatID, "Choose subdirections")
-	msg.ReplyMarkup = t.createSubdirectionsKeyboard(subdirections)
+	msg.ReplyMarkup = t.createSubdirectionsKeyboardAskMe(subdirections)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
@@ -66,7 +66,7 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 	return
 }
 
-func (t *TgBot) createSubdirectionsKeyboard(subdirections []string) (keyboard tgbotapi.InlineKeyboardMarkup) {
+func (t *TgBot) createSubdirectionsKeyboardAskMe(subdirections []string) (keyboard tgbotapi.InlineKeyboardMarkup) {
 
 	keyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
@@ -89,6 +89,29 @@ func (t *TgBot) createSubdirectionsKeyboard(subdirections []string) (keyboard tg
 	return
 }
 
+func (t *TgBot) createSubdirectionsKeyboardAddQuestion(subdirections []string) (keyboard tgbotapi.InlineKeyboardMarkup) {
+
+	keyboard = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[0], "1AddQuestion"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[1], "2AddQuestion"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[2], "3AddQuestion"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[3], "4AddQuestion"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[4], "5AddQuestion"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[5], "6AddQuestion"),
+		),
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[6], "7AddQuestion"),
+		),
+	)
+
+	return
+}
+
 func (t *TgBot) createAnswerKeyboard(questionID string) (keyboard tgbotapi.InlineKeyboardMarkup) {
 	keyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
@@ -100,12 +123,30 @@ func (t *TgBot) createAnswerKeyboard(questionID string) (keyboard tgbotapi.Inlin
 }
 
 func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
-	t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion}
+	ctx := context.Background()
 
-	msg := tgbotapi.NewMessage(chatID, handleAddQuestionMessage)
+	t.userStates[chatID] = models.AddQuestionParams{State: awaitingDirection}
+	subdirections, err := t.tgUC.GetSubdirections(ctx, models.GetSubdirectionsParams{ChatID: chatID})
+	if err != nil {
+		return
+	}
+
+	msg := tgbotapi.NewMessage(chatID, "In which direction do you want to add a question?")
+	msg.ReplyMarkup = t.createSubdirectionsKeyboardAddQuestion(subdirections)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
 
 	return
 }
+
+// func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
+// 	t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion}
+//
+// 	msg := tgbotapi.NewMessage(chatID, handleAddQuestionMessage)
+// 	if _, err = t.BotAPI.Send(msg); err != nil {
+// 		return
+// 	}
+//
+// 	return
+// }

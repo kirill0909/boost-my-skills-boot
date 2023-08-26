@@ -3,6 +3,7 @@ package tgbot
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 
 	models "boost-my-skills-bot/internal/models/bot"
@@ -83,7 +84,7 @@ func (t *TgBot) handleGetAnswerCallbackData(chatID int64, questionID string, mes
 	return
 }
 
-func (t *TgBot) handleSubdirectionsCallback(chatID int64, subdirection string) (err error) {
+func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, subdirection string) (err error) {
 	ctx := context.Background()
 
 	subdirectionsID, err := strconv.Atoi(subdirection)
@@ -111,6 +112,12 @@ func (t *TgBot) handleSubdirectionsCallback(chatID int64, subdirection string) (
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
+
+	return
+}
+
+func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirection string) (err error) {
+	log.Println(subdirection)
 
 	return
 }

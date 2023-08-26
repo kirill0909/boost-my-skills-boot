@@ -68,15 +68,16 @@ func (r *BotPGRepo) SetUpFrontendDirection(ctx context.Context, chatID int64) (e
 	return
 }
 
-func (r *BotPGRepo) GetRandomQuestion(ctx context.Context, params models.AskMeParams) (result models.AskMeResult, err error) {
-	rows, err := r.db.QueryContext(ctx, queryGetRandomQuestion, params.ChatID)
+func (r *BotPGRepo) GetRandomQuestion(ctx context.Context, params models.SubdirectionsCallbackParams) (
+	result models.SubdirectionsCallbackResult, err error) {
+	rows, err := r.db.QueryContext(ctx, queryGetRandomQuestion, params.ChatID, params.SubdirectionID)
 	if err != nil {
 		return
 	}
 	defer rows.Close()
 
 	for rows.Next() {
-		if err = rows.Scan(&result.QuestionID, &result.Question, &result.Code); err != nil {
+		if err = rows.Scan(&result.QuestionID, &result.Question); err != nil {
 			return
 		}
 	}

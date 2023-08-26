@@ -54,7 +54,8 @@ func (u *BotUC) SetUpFrontendDirection(ctx context.Context, chatID int64) (err e
 	return u.pgRepo.SetUpFrontendDirection(ctx, chatID)
 }
 
-func (u *BotUC) GetRandomQuestion(ctx context.Context, params models.AskMeParams) (result models.AskMeResult, err error) {
+func (u *BotUC) GetRandomQuestion(ctx context.Context, params models.SubdirectionsCallbackParams) (
+	result models.SubdirectionsCallbackResult, err error) {
 	return u.pgRepo.GetRandomQuestion(ctx, params)
 }
 

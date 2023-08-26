@@ -2,8 +2,10 @@ package tgbot
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"strconv"
+
+	models "boost-my-skills-bot/internal/models/bot"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -81,8 +83,34 @@ func (t *TgBot) handleGetAnswerCallbackData(chatID int64, questionID string, mes
 	return
 }
 
-func (t *TgBot) handleSubdirectionsCallback(chatID int64, subdirectionsID string) (err error) {
+func (t *TgBot) handleSubdirectionsCallback(chatID int64, subdirection string) (err error) {
+	ctx := context.Background()
 
-	log.Printf("Subdirections: %s", subdirectionsID)
+	subdirectionsID, err := strconv.Atoi(subdirection)
+	if err != nil {
+		return
+	}
+
+	result, err := t.tgUC.GetRandomQuestion(ctx, models.SubdirectionsCallbackParams{
+		ChatID:         chatID,
+		SubdirectionID: subdirectionsID})
+	if err != nil {
+		return
+	}
+
+	if len(result.Question) == 0 {
+		msg := tgbotapi.NewMessage(chatID, notQuestionsMessage)
+		if _, err = t.BotAPI.Send(msg); err != nil {
+			return
+		}
+		return
+	}
+
+	msg := tgbotapi.NewMessage(chatID, result.Question)
+	msg.ReplyMarkup = t.createAnswerKeyboard(fmt.Sprintf("%d", result.QuestionID))
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
+	}
+
 	return
 }

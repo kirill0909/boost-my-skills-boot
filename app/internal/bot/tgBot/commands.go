@@ -3,7 +3,6 @@ package tgbot
 import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
-	"log"
 
 	"fmt"
 	"strings"
@@ -57,31 +56,12 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 	if err != nil {
 		return
 	}
-	log.Println(subdirections[0])
 
 	msg := tgbotapi.NewMessage(params.ChatID, "Choose subdirections")
 	msg.ReplyMarkup = t.createSubdirectionsKeyboard(subdirections)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
-
-	// result, err := t.tgUC.GetRandomQuestion(ctx, params)
-	// if err != nil {
-	// 	return
-	// }
-	// if len(result.Question) == 0 {
-	// 	msg := tgbotapi.NewMessage(params.ChatID, notQuestionsMessage)
-	// 	if _, err = t.BotAPI.Send(msg); err != nil {
-	// 		return
-	// 	}
-	// 	return
-	// }
-	//
-	// msg := tgbotapi.NewMessage(params.ChatID, result.Question)
-	// msg.ReplyMarkup = t.createAnswerKeyboard(fmt.Sprintf("%d", result.QuestionID))
-	// if _, err = t.BotAPI.Send(msg); err != nil {
-	// 	return
-	// }
 
 	return
 }
@@ -90,19 +70,19 @@ func (t *TgBot) createSubdirectionsKeyboard(subdirections []string) (keyboard tg
 
 	keyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[0], "0"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[1], "1"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[0], "1"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[1], "2"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[2], "2"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[3], "3"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[2], "3"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[3], "4"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[4], "4"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[5], "5"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[4], "5"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[5], "6"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[6], "6"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[6], "7"),
 		),
 	)
 

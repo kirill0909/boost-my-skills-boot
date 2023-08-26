@@ -1,7 +1,5 @@
 package bot
 
-import "github.com/guregu/null"
-
 type GetUUID struct {
 	ChatID int64
 	TgName string
@@ -15,12 +13,6 @@ type UserActivation struct {
 
 type AskMeParams struct {
 	ChatID int64
-}
-
-type AskMeResult struct {
-	Question   string
-	QuestionID int
-	Code       null.String
 }
 
 type AddQuestionParams struct {
@@ -40,4 +32,14 @@ type SaveAnswerParams struct {
 
 type GetSubdirectionsParams struct {
 	ChatID int64
+}
+
+type SubdirectionsCallbackParams struct {
+	ChatID         int64
+	SubdirectionID int
+}
+
+type SubdirectionsCallbackResult struct {
+	Question   string
+	QuestionID int
 }

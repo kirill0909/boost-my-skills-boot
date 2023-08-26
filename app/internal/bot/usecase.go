@@ -10,7 +10,8 @@ type Usecase interface {
 	UserActivation(ctx context.Context, params models.UserActivation) (err error)
 	SetUpBackendDirection(ctx context.Context, chatID int64) (err error)
 	SetUpFrontendDirection(ctx context.Context, chatID int64) (err error)
-	GetRandomQuestion(ctx context.Context, params models.AskMeParams) (result models.AskMeResult, err error)
+	GetRandomQuestion(ctx context.Context, params models.SubdirectionsCallbackParams) (
+		result models.SubdirectionsCallbackResult, err error)
 	GetAnswer(ctx context.Context, questionID int) (result string, err error)
 	SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (result int, err error)
 	SaveAnswer(ctx context.Context, params models.SaveAnswerParams) (err error)

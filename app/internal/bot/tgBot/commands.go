@@ -70,19 +70,19 @@ func (t *TgBot) createSubdirectionsKeyboardAskMe(subdirections []string) (keyboa
 
 	keyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[0], "1AskMe"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[1], "2AskMe"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[0], GoCallbackDataAskMe),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[1], ComputerSinceCallbackDataAskMe),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[2], "3AskMe"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[3], "4AskMe"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[2], NetworkCallbackDataAskMe),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[3], DBCallbackDataAskMe),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[4], "5AskMe"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[5], "6AskMe"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[4], AlgorithmsCallbackDataAskMe),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[5], ArchitectureCallbackDataAskMe),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[6], "7AskMe"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[6], GeneralCallbackDataAskMe),
 		),
 	)
 
@@ -93,19 +93,19 @@ func (t *TgBot) createSubdirectionsKeyboardAddQuestion(subdirections []string) (
 
 	keyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[0], "1AddQuestion"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[1], "2AddQuestion"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[0], GoCallbackDataAddQuestion),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[1], ComputerSinceCallbackDataAddQuestion),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[2], "3AddQuestion"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[3], "4AddQuestion"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[2], NetworkCallbackDataAddQuestion),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[3], DBCallbackDataAddQuestion),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[4], "5AddQuestion"),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[5], "6AddQuestion"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[4], AlgorithmsCallbackDataAddQuestion),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[5], ArchitectureCallbackDataAddQuestion),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[6], "7AddQuestion"),
+			tgbotapi.NewInlineKeyboardButtonData(subdirections[6], GeneralCallbackDataAddQuestion),
 		),
 	)
 

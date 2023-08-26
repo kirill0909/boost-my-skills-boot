@@ -83,8 +83,13 @@ func (t *TgBot) handleGetAnswerCallbackData(chatID int64, questionID string, mes
 	return
 }
 
-func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, subdirection string) (err error) {
+func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, subdirection string, messageID int) (err error) {
 	ctx := context.Background()
+
+	// hide subdirections keyboard
+	if err = t.hideKeyboard(chatID, messageID); err != nil {
+		return
+	}
 
 	subdirectionID, err := strconv.Atoi(subdirection)
 	if err != nil {
@@ -115,9 +120,14 @@ func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, subdirection stri
 	return
 }
 
-func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirection string) (err error) {
+func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirection string, messageID int) (err error) {
 	subdirectionID, err := strconv.Atoi(subdirection)
 	if err != nil {
+		return
+	}
+
+	// hide subdirections keyboard
+	if err = t.hideKeyboard(chatID, messageID); err != nil {
 		return
 	}
 

@@ -66,16 +66,6 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 	return
 }
 
-func (t *TgBot) createAnswerKeyboard(questionID string) (keyboard tgbotapi.InlineKeyboardMarkup) {
-	keyboard = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(getAnswerButton, fmt.Sprintf("%s %s", getAnswerCallbackData, questionID)),
-		),
-	)
-
-	return
-}
-
 func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
 	ctx := context.Background()
 

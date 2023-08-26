@@ -99,7 +99,8 @@ func (t *TgBot) Run() error {
 
 			switch questionParams.State {
 			case awaitingQuestion:
-				if err := t.handleEnteredQuestion(update.Message.Chat.ID, update.Message.Text); err != nil {
+				if err := t.handleEnteredQuestion(
+					update.Message.Chat.ID, update.Message.Text, questionParams.SubdirectionID); err != nil {
 					log.Printf("bot.TgBot.handleEnteredQuestion: %s", err.Error())
 					t.userStates[update.Message.Chat.ID] = models.AddQuestionParams{State: idle}
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)

@@ -16,13 +16,15 @@ type AskMeParams struct {
 }
 
 type AddQuestionParams struct {
-	State      int
-	QuestionID int
+	State          int
+	QuestionID     int
+	SubdirectionID int
 }
 
 type SaveQuestionParams struct {
-	ChatID   int64
-	Question string
+	ChatID         int64
+	Question       string
+	SubdirectionID int
 }
 
 type SaveAnswerParams struct {

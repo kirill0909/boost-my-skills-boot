@@ -86,14 +86,14 @@ func (t *TgBot) handleGetAnswerCallbackData(chatID int64, questionID string, mes
 func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, subdirection string) (err error) {
 	ctx := context.Background()
 
-	subdirectionsID, err := strconv.Atoi(subdirection)
+	subdirectionID, err := strconv.Atoi(subdirection)
 	if err != nil {
 		return
 	}
 
 	result, err := t.tgUC.GetRandomQuestion(ctx, models.SubdirectionsCallbackParams{
 		ChatID:         chatID,
-		SubdirectionID: subdirectionsID})
+		SubdirectionID: subdirectionID})
 	if err != nil {
 		return
 	}
@@ -116,7 +116,12 @@ func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, subdirection stri
 }
 
 func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirection string) (err error) {
-	t.userStates[chatID] = models.AddQuestionParams{State: awaitingAnswer}
+	subdirectionID, err := strconv.Atoi(subdirection)
+	if err != nil {
+		return
+	}
+
+	t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: subdirectionID}
 
 	msg := tgbotapi.NewMessage(chatID, "Alright, enter your question")
 	if _, err = t.BotAPI.Send(msg); err != nil {

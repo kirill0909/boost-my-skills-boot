@@ -7,16 +7,17 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func (t *TgBot) handleEnteredQuestion(chatID int64, text string) (err error) {
+func (t *TgBot) handleEnteredQuestion(chatID int64, text string, subdirectionID int) (err error) {
 	ctx := context.Background()
 
-	msg := tgbotapi.NewMessage(chatID, handleEnteredQuestionMessage)
-	if _, err = t.BotAPI.Send(msg); err != nil {
+	questionID, err := t.tgUC.SaveQuestion(ctx, models.SaveQuestionParams{
+		ChatID: chatID, Question: text, SubdirectionID: subdirectionID})
+	if err != nil {
 		return
 	}
 
-	questionID, err := t.tgUC.SaveQuestion(ctx, models.SaveQuestionParams{ChatID: chatID, Question: text})
-	if err != nil {
+	msg := tgbotapi.NewMessage(chatID, handleEnteredQuestionMessage)
+	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
 

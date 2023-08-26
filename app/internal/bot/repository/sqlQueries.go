@@ -47,13 +47,15 @@ const (
 	`
 
 	querySaveQuestion = `
-	INSERT INTO users.info (direction_id, question, answer)
+	INSERT INTO users.info (direction_id, subdirection_id, question, answer)
  VALUES (
  (SELECT direction_id FROM users.user WHERE tg_chat_id = $1),
- $2, '') RETURNING id
+ $2,
+ $3, 
+ '') RETURNING id
 	`
 
 	querySaveAnswer = `
-	UPDATE users.questions SET answer = $1 WHERE id = $2
+	UPDATE users.info SET answer = $1 WHERE id = $2
 	`
 )

@@ -77,7 +77,8 @@ func (r *BotPGRepo) GetRandomQuestion(ctx context.Context, params models.Subdire
 	defer rows.Close()
 
 	for rows.Next() {
-		if err = rows.Scan(&result.QuestionID, &result.Question); err != nil {
+		if err = rows.Scan(
+			&result.QuestionID, &result.Question); err != nil {
 			return
 		}
 	}

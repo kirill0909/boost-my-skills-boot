@@ -23,7 +23,7 @@ const (
 	и получать их в случайном порядке нажав на кнопку ask_me. Удачи)
 	`
 	readyMessage                 = "Отлично! Как будете готовы жмите \"ask me\" и бот будет присылать вам вопросы"
-	notQuestionsMessage          = "Для вашего напровления пока не добавлено ни одного вопроса. Обратитесь к @kirillkorunov."
+	notQuestionsMessage          = "Для этого пока не добавлено ни одного вопроса. Обратитесь к @kirillkorunov."
 	addQuestionMessage           = "Для добавления вопроса нажмите на кнопку add_question"
 	handleAddQuestionMessage     = "Ввeдите вопрос"
 	handleEnteredQuestionMessage = "Отлично! Теперь ввeдите ответ"

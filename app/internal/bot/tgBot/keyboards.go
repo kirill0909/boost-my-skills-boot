@@ -7,23 +7,18 @@ import (
 
 func (t *TgBot) createSubdirectionsKeyboardAddQuestion(subdirections []string) (keyboard tgbotapi.InlineKeyboardMarkup) {
 
-	keyboard = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[0], GoCallbackDataAddQuestion),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[1], ComputerSinceCallbackDataAddQuestion),
-		),
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[2], NetworkCallbackDataAddQuestion),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[3], DBCallbackDataAddQuestion),
-		),
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[4], AlgorithmsCallbackDataAddQuestion),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[5], ArchitectureCallbackDataAddQuestion),
-		),
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[6], GeneralCallbackDataAddQuestion),
-		),
-	)
+	var rows []tgbotapi.InlineKeyboardButton
+
+	for i := 0; i < len(subdirections); i++ {
+		buttons := tgbotapi.NewInlineKeyboardButtonData(subdirections[i], callbackDataAddQuestion[i])
+		rows = append(rows, buttons)
+
+		if (i+1)%2 == 0 || i == len(subdirections)-1 {
+			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(rows...))
+			rows = rows[:0]
+		}
+
+	}
 
 	return
 }

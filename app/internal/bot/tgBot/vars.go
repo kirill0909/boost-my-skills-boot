@@ -53,22 +53,10 @@ var (
 	frontednCallbackData  = "frontend"
 	getAnswerCallbackData = "Get_an_answer"
 	// Ask me callback
-	// GoCallbackDataAskMe            = "1AskMe"
-	// ComputerSinceCallbackDataAskMe = "2AskMe"
-	// NetworkCallbackDataAskMe       = "3AskMe"
-	// DBCallbackDataAskMe            = "4AskMe"
-	// AlgorithmsCallbackDataAskMe    = "5AskMe"
-	// ArchitectureCallbackDataAskMe  = "6AskMe"
-	// GeneralCallbackDataAskMe       = "7AskMe"
 	callbackDataAskMe = []string{"1AskMe", "2AskMe", "3AskMe", "4AskMe", "5AskMe", "6AskMe", "7AskMe"}
 	// Add question callback
-	GoCallbackDataAddQuestion            = "1AddQuestion"
-	ComputerSinceCallbackDataAddQuestion = "2AddQuestion"
-	NetworkCallbackDataAddQuestion       = "3AddQuestion"
-	DBCallbackDataAddQuestion            = "4AddQuestion"
-	AlgorithmsCallbackDataAddQuestion    = "5AddQuestion"
-	ArchitectureCallbackDataAddQuestion  = "6AddQuestion"
-	GeneralCallbackDataAddQuestion       = "7AddQuestion"
+	callbackDataAddQuestion = []string{
+		"1AddQuestion", "2AddQuestion", "3AddQuestion", "4AddQuestion", "5AddQuestion", "6AddQuestion", "7AddQuestion"}
 
 	// errors
 	errUserActivation      = "Ошибка активации аккаута"

@@ -187,44 +187,44 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				} // Add question callbacks
-			case GoCallbackDataAddQuestion:
-				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, GoCallbackDataAddQuestion[:1], messageID); err != nil {
+			case callbackDataAddQuestion[0]:
+				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataAddQuestion[0][:1], messageID); err != nil {
 					log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
-			case ComputerSinceCallbackDataAddQuestion:
-				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, ComputerSinceCallbackDataAddQuestion[:1], messageID); err != nil {
+			case callbackDataAddQuestion[1]:
+				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataAddQuestion[1][:1], messageID); err != nil {
 					log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
-			case NetworkCallbackDataAddQuestion:
-				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, NetworkCallbackDataAddQuestion[:1], messageID); err != nil {
+			case callbackDataAddQuestion[2]:
+				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataAddQuestion[2][:1], messageID); err != nil {
 					log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
-			case DBCallbackDataAddQuestion:
-				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, DBCallbackDataAddQuestion[:1], messageID); err != nil {
+			case callbackDataAddQuestion[3]:
+				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataAddQuestion[3][:1], messageID); err != nil {
 					log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
-			case AlgorithmsCallbackDataAddQuestion:
-				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, AlgorithmsCallbackDataAddQuestion[:1], messageID); err != nil {
+			case callbackDataAddQuestion[4]:
+				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataAddQuestion[4][:1], messageID); err != nil {
 					log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
-			case ArchitectureCallbackDataAddQuestion:
-				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, ArchitectureCallbackDataAddQuestion[:1], messageID); err != nil {
+			case callbackDataAddQuestion[5]:
+				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataAddQuestion[5][:1], messageID); err != nil {
 					log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
-			case GeneralCallbackDataAddQuestion:
-				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, GeneralCallbackDataAddQuestion[:1], messageID); err != nil {
+			case callbackDataAddQuestion[6]:
+				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataAddQuestion[6][:1], messageID); err != nil {
 					log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue

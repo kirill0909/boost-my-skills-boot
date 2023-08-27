@@ -1,6 +1,6 @@
 package tgbot
 
-const (
+var (
 	// Messages
 	wellcomeMessage = `
 	Поздравляю! Вы успешно активировали свой аккаунт в BoostMySkillsBot. 
@@ -49,16 +49,18 @@ const (
 	addQuestion    = "add_question"
 
 	// Callback data
-	backendCallbackData            = "backend"
-	frontednCallbackData           = "frontend"
-	getAnswerCallbackData          = "Get_an_answer"
-	GoCallbackDataAskMe            = "1AskMe"
-	ComputerSinceCallbackDataAskMe = "2AskMe"
-	NetworkCallbackDataAskMe       = "3AskMe"
-	DBCallbackDataAskMe            = "4AskMe"
-	AlgorithmsCallbackDataAskMe    = "5AskMe"
-	ArchitectureCallbackDataAskMe  = "6AskMe"
-	GeneralCallbackDataAskMe       = "7AskMe"
+	backendCallbackData   = "backend"
+	frontednCallbackData  = "frontend"
+	getAnswerCallbackData = "Get_an_answer"
+	// Ask me callback
+	// GoCallbackDataAskMe            = "1AskMe"
+	// ComputerSinceCallbackDataAskMe = "2AskMe"
+	// NetworkCallbackDataAskMe       = "3AskMe"
+	// DBCallbackDataAskMe            = "4AskMe"
+	// AlgorithmsCallbackDataAskMe    = "5AskMe"
+	// ArchitectureCallbackDataAskMe  = "6AskMe"
+	// GeneralCallbackDataAskMe       = "7AskMe"
+	callbackDataAskMe = []string{"1AskMe", "2AskMe", "3AskMe", "4AskMe", "5AskMe", "6AskMe", "7AskMe"}
 	// Add question callback
 	GoCallbackDataAddQuestion            = "1AddQuestion"
 	ComputerSinceCallbackDataAddQuestion = "2AddQuestion"

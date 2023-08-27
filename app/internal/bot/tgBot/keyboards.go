@@ -30,23 +30,18 @@ func (t *TgBot) createSubdirectionsKeyboardAddQuestion(subdirections []string) (
 
 func (t *TgBot) createSubdirectionsKeyboardAskMe(subdirections []string) (keyboard tgbotapi.InlineKeyboardMarkup) {
 
-	keyboard = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[0], GoCallbackDataAskMe),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[1], ComputerSinceCallbackDataAskMe),
-		),
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[2], NetworkCallbackDataAskMe),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[3], DBCallbackDataAskMe),
-		),
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[4], AlgorithmsCallbackDataAskMe),
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[5], ArchitectureCallbackDataAskMe),
-		),
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(subdirections[6], GeneralCallbackDataAskMe),
-		),
-	)
+	var rows []tgbotapi.InlineKeyboardButton
+
+	for i := 0; i < len(subdirections); i++ {
+		buttons := tgbotapi.NewInlineKeyboardButtonData(subdirections[i], callbackDataAskMe[i])
+		rows = append(rows, buttons)
+
+		if (i+1)%2 == 0 || i == len(subdirections)-1 {
+			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(rows...))
+			rows = rows[:0]
+		}
+
+	}
 
 	return
 }

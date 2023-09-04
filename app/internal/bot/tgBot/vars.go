@@ -55,8 +55,14 @@ var (
 	// Ask me callback
 	callbackDataAskMe = []string{"1AskMe", "2AskMe", "3AskMe", "4AskMe", "5AskMe", "6AskMe", "7AskMe"}
 	// Add question callback
-	callbackDataAddQuestion = []string{
-		"1AddQuestion", "2AddQuestion", "3AddQuestion", "4AddQuestion", "5AddQuestion", "6AddQuestion", "7AddQuestion"}
+	callbackDataSubdirectionAddQuestion = []string{
+		"1_Go_AddQuestion", "2_Computer_Since_AddQuestion", "3_Network_AddQuestion", "4_DB_AddQuestion",
+		"5_Algorithm_AddQuestion", "6_Architecture_AddQuestion", "7_General_AddQuestion"}
+	callbackDataSubSubdirectionAddQuestion = []string{
+		"1_1_Go_Channels_AddQuestion", "1_2_Go_Map_AddQuestion",
+		"3_11_Network_gRPC_AddQuestion", "3_12_Network_HTTP_AddQuestion",
+		"4_9_DB_Isolation_AddQuestion", "4_10_DB_Transaction_AddQuestion",
+	}
 
 	// errors
 	errUserActivation      = "Ошибка активации аккаута"

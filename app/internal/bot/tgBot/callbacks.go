@@ -3,6 +3,7 @@ package tgbot
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 
 	models "boost-my-skills-bot/internal/models/bot"
@@ -157,7 +158,7 @@ func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirectio
 
 func (t *TgBot) handleSubSubdirectionsExistsCase(chatID int64, subSubdirections []string, subdirectionID int) (err error) {
 	msg := tgbotapi.NewMessage(chatID, "Choose sub sub direction")
-	msg.ReplyMarkup = t.createSubSubdirectionsKeyboardAskMe(subSubdirections)
+	msg.ReplyMarkup = t.createSubSubdirectionsKeyboardAddQuestion(subSubdirections)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
@@ -174,6 +175,14 @@ func (t *TgBot) handleDefaultSubdirectionsCase(chatID int64, subdirectionID int)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
+
+	return
+}
+
+func (t *TgBot) handleSubSubdirectionsCallbackAddQuestion(
+	chatID int64, subdirection, subSubdirection string, messageID int) (err error) {
+
+	log.Printf("\nSub: %s\nSubSub: %s", subdirection, subSubdirection)
 
 	return
 }

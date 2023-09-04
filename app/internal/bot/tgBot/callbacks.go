@@ -140,23 +140,22 @@ func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirectio
 		return
 	}
 
-	if len(subSubdirections) > 0 {
-		if err = t.handleSubSubdirectionsExists(chatID, subSubdirections, subdirectionID); err != nil {
+	n := len(subSubdirections)
+	switch {
+	case n > 0:
+		if err = t.handleSubSubdirectionsExistsCase(chatID, subSubdirections, subdirectionID); err != nil {
+			return
+		}
+	default:
+		if err = t.handleDefaultSubdirectionsCase(chatID, subdirectionID); err != nil {
 			return
 		}
 	}
 
-	// t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: subdirectionID}
-	//
-	// msg := tgbotapi.NewMessage(chatID, "Alright, enter your question")
-	// if _, err = t.BotAPI.Send(msg); err != nil {
-	// 	return
-	// }
-
 	return
 }
 
-func (t *TgBot) handleSubSubdirectionsExists(chatID int64, subSubdirections []string, subdirectionID int) (err error) {
+func (t *TgBot) handleSubSubdirectionsExistsCase(chatID int64, subSubdirections []string, subdirectionID int) (err error) {
 	msg := tgbotapi.NewMessage(chatID, "Choose sub sub direction")
 	msg.ReplyMarkup = t.createSubSubdirectionsKeyboardAskMe(subSubdirections)
 	if _, err = t.BotAPI.Send(msg); err != nil {
@@ -164,6 +163,17 @@ func (t *TgBot) handleSubSubdirectionsExists(chatID int64, subSubdirections []st
 	}
 	t.userStates[chatID] = models.AddQuestionParams{
 		State: awaitingSubSubdirection, SubdirectionID: subdirectionID}
+
+	return
+}
+
+func (t *TgBot) handleDefaultSubdirectionsCase(chatID int64, subdirectionID int) (err error) {
+	t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: subdirectionID}
+
+	msg := tgbotapi.NewMessage(chatID, "Alright, enter your question")
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
+	}
 
 	return
 }

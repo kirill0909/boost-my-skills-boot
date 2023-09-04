@@ -146,7 +146,8 @@ func (t *TgBot) Run() error {
 					log.Printf("bot.TgBot.handleGetAnswerCallbackData: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
-				} // Ask me callbacks
+				}
+			// Ask me callbacks
 			case callbackDataAskMe[0]:
 				if err := t.handleSubdirectionsCallbackAskMe(chatID, callbackDataAskMe[0][:1], messageID); err != nil {
 					log.Printf("bot.TgBot.handleSubdirectionsCallback: %s", err.Error())

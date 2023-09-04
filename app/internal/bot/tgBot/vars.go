@@ -59,9 +59,12 @@ var (
 		"1_Go_AddQuestion", "2_Computer_Since_AddQuestion", "3_Network_AddQuestion", "4_DB_AddQuestion",
 		"5_Algorithm_AddQuestion", "6_Architecture_AddQuestion", "7_General_AddQuestion"}
 	callbackDataSubSubdirectionAddQuestion = []string{
-		"1_1_Go_Channels_AddQuestion", "1_2_Go_Map_AddQuestion",
-		"3_11_Network_gRPC_AddQuestion", "3_12_Network_HTTP_AddQuestion",
-		"4_9_DB_Isolation_AddQuestion", "4_10_DB_Transaction_AddQuestion",
+		"1_1_Go_Channels_AddQuestion", "1_2_Go_Interface_AddQuestion", "1_3_Go_Sheduler_AddQuestion",
+		"1_4_Go_String_AddQuestion", "1_5_Go_sync_AddQuestion", "1_6_Go_Slice_AddQuestion",
+		"1_7_Go_Array_AddQuestion", "1_8_Go_Context_AddQuestion", "1_9_Go_GC_AddQuestion",
+		"1_10_Go_Goroutines_AddQuestion", "1_11_Go_ErrorGroup_AddQuestion", "1_12_Go_Map_AddQuestion",
+		"1_13_Go_OS_AddQuestion", "1_14_Go_buildIn_AddQuestion", "1_15_Go_keywords_AddQuestion",
+		"1_16_Go_pointers_AddQuestion", "1_17_Go_net/http_AddQuestion", "1_18_Go_General_AddQuestion",
 	}
 
 	// errors

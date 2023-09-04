@@ -64,8 +64,9 @@ var (
 	errInternalServerError = "Внутренняя ошибка сервера"
 
 	// stat machine
-	idle                 = 1
-	awaitingQuestion     = 2
-	awaitingAnswer       = 3
-	awaitingSubDirection = 4
+	idle                    = 1
+	awaitingQuestion        = 2
+	awaitingAnswer          = 3
+	awaitingSubdirection    = 4
+	awaitingSubSubdirection = 4
 )

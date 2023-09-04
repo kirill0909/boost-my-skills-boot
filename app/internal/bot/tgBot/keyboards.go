@@ -35,7 +35,23 @@ func (t *TgBot) createSubdirectionsKeyboardAskMe(subdirections []string) (keyboa
 			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(rows...))
 			rows = rows[:0]
 		}
+	}
 
+	return
+}
+
+func (t *TgBot) createSubSubdirectionsKeyboardAskMe(subdirections []string) (keyboard tgbotapi.InlineKeyboardMarkup) {
+
+	var rows []tgbotapi.InlineKeyboardButton
+
+	for i := 0; i < len(subdirections); i++ {
+		buttons := tgbotapi.NewInlineKeyboardButtonData(subdirections[i], callbackDataAskMe[i])
+		rows = append(rows, buttons)
+
+		if (i+1)%2 == 0 || i == len(subdirections)-1 {
+			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(rows...))
+			rows = rows[:0]
+		}
 	}
 
 	return

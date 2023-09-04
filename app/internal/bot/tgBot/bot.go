@@ -89,7 +89,9 @@ func (t *TgBot) Run() error {
 			}
 
 			questionParams, ok := t.userStates[update.Message.Chat.ID]
-			if !ok || questionParams.State == idle || questionParams.State == awaitingSubDirection {
+			if !ok || questionParams.State == idle ||
+				questionParams.State == awaitingSubdirection ||
+				questionParams.State == awaitingSubSubdirection {
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, addQuestionMessage)
 				if _, err := t.BotAPI.Send(msg); err != nil {
 					log.Println(err)

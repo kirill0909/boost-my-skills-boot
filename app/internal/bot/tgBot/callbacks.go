@@ -3,6 +3,7 @@ package tgbot
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 
 	models "boost-my-skills-bot/internal/models/bot"
@@ -121,6 +122,7 @@ func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, subdirection stri
 }
 
 func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirection string, messageID int) (err error) {
+	ctx := context.Background()
 	subdirectionID, err := strconv.Atoi(subdirection)
 	if err != nil {
 		return
@@ -131,12 +133,56 @@ func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirectio
 		return
 	}
 
+	subSubdirections, err := t.tgUC.GetSubSubdirections(ctx, models.GetSubSubdirectionsParams{
+		ChatID:         chatID,
+		SubdirectionID: subdirectionID,
+	})
+	if err != nil {
+		return
+	}
+
+	n := len(subSubdirections)
+	switch {
+	case n > 0:
+		if err = t.handleSubSubdirectionsExistsCase(chatID, subSubdirections, subdirectionID); err != nil {
+			return
+		}
+	default:
+		if err = t.handleDefaultSubdirectionsCase(chatID, subdirectionID); err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (t *TgBot) handleSubSubdirectionsExistsCase(chatID int64, subSubdirections []string, subdirectionID int) (err error) {
+	msg := tgbotapi.NewMessage(chatID, "Choose sub sub direction")
+	msg.ReplyMarkup = t.createSubSubdirectionsKeyboardAddQuestion(subSubdirections)
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
+	}
+	t.userStates[chatID] = models.AddQuestionParams{
+		State: awaitingSubSubdirection, SubdirectionID: subdirectionID}
+
+	return
+}
+
+func (t *TgBot) handleDefaultSubdirectionsCase(chatID int64, subdirectionID int) (err error) {
 	t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: subdirectionID}
 
 	msg := tgbotapi.NewMessage(chatID, "Alright, enter your question")
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
+
+	return
+}
+
+func (t *TgBot) handleSubSubdirectionsCallbackAddQuestion(
+	chatID int64, subdirection, subSubdirection string, messageID int) (err error) {
+
+	log.Printf("\nSub: %s\nSubSub: %s", subdirection, subSubdirection)
 
 	return
 }

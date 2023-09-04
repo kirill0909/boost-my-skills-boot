@@ -37,9 +37,21 @@ const (
 	`
 
 	queryGetSubdirectons = `
-	SELECT s.subdirection FROM users.subdirections s
- INNER JOIN users.user u ON u.direction_id = s.direction_id
- WHERE u.tg_chat_id = $1
+	SELECT 
+	usd.sub_direction 
+	FROM users.sub_directions usd
+ INNER JOIN users.user uu ON uu.direction_id = usd.direction_id
+ WHERE uu.tg_chat_id = $1
+	`
+	queryGetSubSubdirectons = `
+	SELECT
+  ussd.sub_sub_direction
+  FROM users.sub_sub_directions ussd
+  INNER JOIN users.sub_directions usd ON usd.id = ussd.direction_id
+  INNER JOIN users.user uu ON uu.direction_id = ussd.direction_id
+  WHERE
+  sub_direction_id = $1
+  AND uu.tg_chat_id = $2
 	`
 
 	queryGetAnswer = `

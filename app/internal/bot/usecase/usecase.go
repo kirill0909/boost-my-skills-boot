@@ -74,3 +74,7 @@ func (u *BotUC) SaveAnswer(ctx context.Context, params models.SaveAnswerParams) 
 func (u *BotUC) GetSubdirections(ctx context.Context, params models.GetSubdirectionsParams) (result []string, err error) {
 	return u.pgRepo.GetSubdirections(ctx, params)
 }
+
+func (u *BotUC) GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error) {
+	return u.pgRepo.GetSubSubdirections(ctx, params)
+}

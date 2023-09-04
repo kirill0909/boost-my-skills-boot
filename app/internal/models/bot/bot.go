@@ -16,9 +16,10 @@ type AskMeParams struct {
 }
 
 type AddQuestionParams struct {
-	State          int
-	QuestionID     int
-	SubdirectionID int
+	State             int
+	QuestionID        int
+	SubdirectionID    int
+	SubSubdirectionID int
 }
 
 type SaveQuestionParams struct {
@@ -34,6 +35,11 @@ type SaveAnswerParams struct {
 
 type GetSubdirectionsParams struct {
 	ChatID int64
+}
+
+type GetSubSubdirectionsParams struct {
+	ChatID         int64
+	SubdirectionID int
 }
 
 type SubdirectionsCallbackParams struct {

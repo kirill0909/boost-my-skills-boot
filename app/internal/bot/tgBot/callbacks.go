@@ -3,6 +3,7 @@ package tgbot
 import (
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 
 	models "boost-my-skills-bot/internal/models/bot"
@@ -121,6 +122,7 @@ func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, subdirection stri
 }
 
 func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirection string, messageID int) (err error) {
+	ctx := context.Background()
 	subdirectionID, err := strconv.Atoi(subdirection)
 	if err != nil {
 		return
@@ -131,12 +133,22 @@ func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirectio
 		return
 	}
 
-	t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: subdirectionID}
-
-	msg := tgbotapi.NewMessage(chatID, "Alright, enter your question")
-	if _, err = t.BotAPI.Send(msg); err != nil {
+	subSubdirections, err := t.tgUC.GetSubSubdirections(ctx, models.GetSubSubdirectionsParams{
+		ChatID:         chatID,
+		SubdirectionID: subdirectionID,
+	})
+	if err != nil {
 		return
 	}
+
+	log.Printf("===%v", subSubdirections)
+
+	// t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: subdirectionID}
+	//
+	// msg := tgbotapi.NewMessage(chatID, "Alright, enter your question")
+	// if _, err = t.BotAPI.Send(msg); err != nil {
+	// 	return
+	// }
 
 	return
 }

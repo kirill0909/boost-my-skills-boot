@@ -69,7 +69,7 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
 	ctx := context.Background()
 
-	t.userStates[chatID] = models.AddQuestionParams{State: awaitingDirection}
+	t.userStates[chatID] = models.AddQuestionParams{State: awaitingSubDirection}
 	subdirections, err := t.tgUC.GetSubdirections(ctx, models.GetSubdirectionsParams{ChatID: chatID})
 	if err != nil {
 		return

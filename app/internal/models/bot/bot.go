@@ -36,6 +36,11 @@ type GetSubdirectionsParams struct {
 	ChatID int64
 }
 
+type GetSubSubdirectionsParams struct {
+	ChatID         int64
+	SubdirectionID int
+}
+
 type SubdirectionsCallbackParams struct {
 	ChatID         int64
 	SubdirectionID int

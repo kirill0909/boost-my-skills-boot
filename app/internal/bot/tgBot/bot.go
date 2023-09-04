@@ -89,7 +89,7 @@ func (t *TgBot) Run() error {
 			}
 
 			questionParams, ok := t.userStates[update.Message.Chat.ID]
-			if !ok || questionParams.State == idle || questionParams.State == awaitingDirection {
+			if !ok || questionParams.State == idle || questionParams.State == awaitingSubDirection {
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, addQuestionMessage)
 				if _, err := t.BotAPI.Send(msg); err != nil {
 					log.Println(err)
@@ -186,7 +186,8 @@ func (t *TgBot) Run() error {
 					log.Printf("bot.TgBot.handleSubdirectionsCallback: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
-				} // Add question callbacks
+				}
+				// Add question callbacks
 			case callbackDataAddQuestion[0]:
 				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataAddQuestion[0][:1], messageID); err != nil {
 					log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())

@@ -3,6 +3,7 @@ package tgbot
 import (
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
 	"log"
 	"regexp"
 	"strconv"
@@ -166,6 +167,7 @@ func (t *TgBot) extractSubDirectionID(callbackData string) (result int, err erro
 
 	result, err = strconv.Atoi(subdirection)
 	if err != nil {
+		err = errors.Wrap(err, "TgBot.extractSubDirectionID")
 		return
 	}
 
@@ -215,7 +217,7 @@ func (t *TgBot) extractDirectionsIDs(callbackData string) (result []int, err err
 	for _, value := range directionsIDs {
 		id, err := strconv.Atoi(value)
 		if err != nil {
-			return []int{}, err
+			return []int{}, errors.Wrap(err, "tgBot.extractDirectionsIDs")
 		}
 
 		result = append(result, id)

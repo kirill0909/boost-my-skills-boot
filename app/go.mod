@@ -5,9 +5,9 @@ go 1.20
 require (
 	github.com/go-playground/validator/v10 v10.15.0
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
-	github.com/guregu/null v4.0.0+incompatible
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.16.0
 )
 

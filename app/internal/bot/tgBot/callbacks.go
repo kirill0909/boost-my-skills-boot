@@ -87,6 +87,18 @@ func (t *TgBot) handleGetAnswerCallbackData(chatID int64, questionID string, mes
 	return
 }
 
+func (t *TgBot) handleCallbackDataSubSubdirectionAskMe(chatID int64, callbackData string, messageID int) (err error) {
+
+	ids, err := t.extractDirectionsIDs(callbackData)
+	if err != nil {
+		return
+	}
+
+	log.Printf("Sub: %d, SubSub: %d", ids[0], ids[1])
+
+	return
+}
+
 func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, callbackData string, messageID int) (err error) {
 	ctx := context.Background()
 

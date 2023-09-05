@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"regexp"
 	"strconv"
 
 	models "boost-my-skills-bot/internal/models/bot"
@@ -179,10 +180,31 @@ func (t *TgBot) handleDefaultSubdirectionsCase(chatID int64, subdirectionID int)
 	return
 }
 
-func (t *TgBot) handleSubSubdirectionsCallbackAddQuestion(
-	chatID int64, subdirection, subSubdirection string, messageID int) (err error) {
+func (t *TgBot) handleSubSubdirectionsCallbackAddQuestion(chatID int64, callbackData string, messageID int) (err error) {
 
-	log.Printf("\nSub: %s\nSubSub: %s", subdirection, subSubdirection)
+	ids, err := t.extractDirectionsIDs(callbackData)
+	if err != nil {
+		return
+	}
+
+	log.Printf("Sub: %d SubSub: %d", ids[0], ids[1])
+
+	return
+}
+
+func (t *TgBot) extractDirectionsIDs(callbackData string) (result []int, err error) {
+	layout := "\\d+"
+	re := regexp.MustCompile(layout)
+	directionsIDs := re.FindAllString(callbackData, 2)
+
+	for _, value := range directionsIDs {
+		id, err := strconv.Atoi(value)
+		if err != nil {
+			return []int{}, err
+		}
+
+		result = append(result, id)
+	}
 
 	return
 }

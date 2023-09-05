@@ -102,7 +102,8 @@ func (t *TgBot) Run() error {
 			switch questionParams.State {
 			case awaitingQuestion:
 				if err := t.handleEnteredQuestion(
-					update.Message.Chat.ID, update.Message.Text, questionParams.SubdirectionID); err != nil {
+					update.Message.Chat.ID, update.Message.Text,
+					questionParams.SubdirectionID, questionParams.SubSubdirectionID); err != nil {
 					log.Printf("bot.TgBot.handleEnteredQuestion: %s", err.Error())
 					t.userStates[update.Message.Chat.ID] = models.AddQuestionParams{State: idle}
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
@@ -375,13 +376,12 @@ func (t *TgBot) Run() error {
 
 func (t *TgBot) extractCallbackData(callbackData string) (result []string, err error) {
 	splitedCallbackData := strings.Split(callbackData, " ")
-	switch len(splitedCallbackData) {
-	case 1:
-		return splitedCallbackData, nil
-	case 2:
+	n := len(splitedCallbackData)
+	switch {
+	case n == 1 || n == 2:
 		return splitedCallbackData, nil
 	default:
-		err = fmt.Errorf("Wrong len of callback data")
+		err = fmt.Errorf("Wrong lenngth(%d) of callback data", n)
 		return
 	}
 }

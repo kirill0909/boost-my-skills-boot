@@ -110,7 +110,14 @@ func (r *BotPGRepo) GetAnswer(ctx context.Context, questionID int) (result strin
 }
 
 func (r *BotPGRepo) SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (result int, err error) {
-	if err = r.db.GetContext(ctx, &result, querySaveQuestion, params.ChatID, params.SubdirectionID, params.Question); err != nil {
+	if err = r.db.GetContext(
+		ctx,
+		&result,
+		querySaveQuestion,
+		params.ChatID,
+		params.SubdirectionID,
+		params.SubSubdirectionID,
+		params.Question); err != nil {
 		err = errors.Wrap(err, "BotPGRepo.SaveQuestion.querySaveQuestion")
 		return
 	}

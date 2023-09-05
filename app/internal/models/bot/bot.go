@@ -23,9 +23,10 @@ type AddQuestionParams struct {
 }
 
 type SaveQuestionParams struct {
-	ChatID         int64
-	Question       string
-	SubdirectionID int
+	ChatID            int64
+	Question          string
+	SubdirectionID    int
+	SubSubdirectionID int
 }
 
 type SaveAnswerParams struct {

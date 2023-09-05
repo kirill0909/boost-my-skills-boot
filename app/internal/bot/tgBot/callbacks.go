@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/pkg/errors"
-	"log"
 	"regexp"
 	"strconv"
 
@@ -151,7 +150,7 @@ func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirectio
 			return
 		}
 	default:
-		if err = t.handleDefaultSubdirectionsCase(chatID, subdirectionID); err != nil {
+		if err = t.handleQuestionCase(chatID, subdirectionID); err != nil {
 			return
 		}
 	}
@@ -186,8 +185,16 @@ func (t *TgBot) handleSubSubdirectionsExistsCase(chatID int64, subSubdirections 
 	return
 }
 
-func (t *TgBot) handleDefaultSubdirectionsCase(chatID int64, subdirectionID int) (err error) {
-	t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: subdirectionID}
+func (t *TgBot) handleQuestionCase(chatID int64, ids ...int) (err error) {
+	n := len(ids)
+	switch {
+	case n == 1:
+		t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: ids[0]}
+	case n == 2:
+		t.userStates[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: ids[0], SubSubdirectionID: ids[1]}
+	default:
+		return fmt.Errorf("TgBot.handleEnteredQuestion. Wrong length(%d) of directions ids", n)
+	}
 
 	msg := tgbotapi.NewMessage(chatID, "Alright, enter your question")
 	if _, err = t.BotAPI.Send(msg); err != nil {
@@ -199,12 +206,18 @@ func (t *TgBot) handleDefaultSubdirectionsCase(chatID int64, subdirectionID int)
 
 func (t *TgBot) handleSubSubdirectionsCallbackAddQuestion(chatID int64, callbackData string, messageID int) (err error) {
 
+	if err = t.hideKeyboard(chatID, messageID); err != nil {
+		return
+	}
+
 	ids, err := t.extractDirectionsIDs(callbackData)
 	if err != nil {
 		return
 	}
 
-	log.Printf("Sub: %d SubSub: %d", ids[0], ids[1])
+	if err = t.handleQuestionCase(chatID, ids[0], ids[1]); err != nil {
+		return
+	}
 
 	return
 }

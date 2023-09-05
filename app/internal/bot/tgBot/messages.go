@@ -3,15 +3,26 @@ package tgbot
 import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
-
+	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func (t *TgBot) handleEnteredQuestion(chatID int64, text string, subdirectionID int) (err error) {
+func (t *TgBot) handleEnteredQuestion(chatID int64, text string, ids ...int) (err error) {
 	ctx := context.Background()
 
-	questionID, err := t.tgUC.SaveQuestion(ctx, models.SaveQuestionParams{
-		ChatID: chatID, Question: text, SubdirectionID: subdirectionID})
+	questionParams := models.SaveQuestionParams{ChatID: chatID, Question: text}
+	n := len(ids)
+	switch {
+	case n == 1:
+		questionParams.SubdirectionID = ids[0]
+	case n == 2:
+		questionParams.SubdirectionID = ids[0]
+		questionParams.SubSubdirectionID = ids[1]
+	default:
+		return fmt.Errorf("TgBot.handleEnteredQuestion. Wrong length(%d) of directions ids", n)
+	}
+
+	questionID, err := t.tgUC.SaveQuestion(ctx, questionParams)
 	if err != nil {
 		return
 	}

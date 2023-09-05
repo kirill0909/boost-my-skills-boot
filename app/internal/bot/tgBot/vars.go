@@ -52,12 +52,23 @@ var (
 	backendCallbackData   = "backend"
 	frontednCallbackData  = "frontend"
 	getAnswerCallbackData = "Get_an_answer"
-	// Ask me callback
-	callbackDataAskMe = []string{"1AskMe", "2AskMe", "3AskMe", "4AskMe", "5AskMe", "6AskMe", "7AskMe"}
-	// Add question callback
+	// Ask me sub callback
+	callbackDataAskMe = []string{
+		"1_Go_AskMe", "2_ComputerSince_AskMe", "3_Network_AskMe", "4_DB_AskMe",
+		"5_Algorithms_AskMe", "6_Architecture_AskMe", "7_General_AskMe"}
+	// Ask me sub sub callback
+	callbackDataSubSubdirectionAskMe = []string{
+		"1_1_Go_Channels_AddQuestion", "1_2_Go_Interface_AddQuestion", "1_3_Go_Sheduler_AddQuestion",
+		"1_4_Go_Sync_AddQuestion", "1_5_Go_Slice_AddQuestion", "1_6_Go_Context_AddQuestion",
+		"1_7_Go_GC_AddQuestion", "1_8_Go_Goroutines_AddQuestion", "1_9_Go_Map_AddQuestion",
+		"1_10_Go_OS_AddQuestion", "1_11_Go_BuildIn_AddQuestion", "1_12_Go_Pointers_AddQuestion",
+		"1_13_Go_net/http_AddQuestion", "1_14_Go_General_AddQuestion",
+	}
+	// Add sub question callback
 	callbackDataSubdirectionAddQuestion = []string{
 		"1_Go_AddQuestion", "2_Computer_Since_AddQuestion", "3_Network_AddQuestion", "4_DB_AddQuestion",
 		"5_Algorithm_AddQuestion", "6_Architecture_AddQuestion", "7_General_AddQuestion"}
+	// Add sub sub quersis callback
 	callbackDataSubSubdirectionAddQuestion = []string{
 		"1_1_Go_Channels_AddQuestion", "1_2_Go_Interface_AddQuestion", "1_3_Go_Sheduler_AddQuestion",
 		"1_4_Go_Sync_AddQuestion", "1_5_Go_Slice_AddQuestion", "1_6_Go_Context_AddQuestion",

@@ -63,7 +63,7 @@ func (t *TgBot) createSubSubdirectionsKeyboardAskMe(subdirections []string) (key
 	var rows []tgbotapi.InlineKeyboardButton
 
 	for i := 0; i < len(subdirections); i++ {
-		buttons := tgbotapi.NewInlineKeyboardButtonData(subdirections[i], callbackDataAskMe[i])
+		buttons := tgbotapi.NewInlineKeyboardButtonData(subdirections[i], callbackDataSubSubdirectionAskMe[i])
 		rows = append(rows, buttons)
 
 		if (i+1)%2 == 0 || i == len(subdirections)-1 {

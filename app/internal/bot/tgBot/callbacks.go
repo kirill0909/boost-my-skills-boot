@@ -3,9 +3,11 @@ package tgbot
 import (
 	"context"
 	"fmt"
-	"github.com/pkg/errors"
+	"log"
 	"regexp"
 	"strconv"
+
+	"github.com/pkg/errors"
 
 	models "boost-my-skills-bot/internal/models/bot"
 
@@ -85,36 +87,62 @@ func (t *TgBot) handleGetAnswerCallbackData(chatID int64, questionID string, mes
 	return
 }
 
-func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, subdirection string, messageID int) (err error) {
+func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, callbackData string, messageID int) (err error) {
 	ctx := context.Background()
+
+	subdirectionID, err := t.extractSubDirectionID(callbackData)
+	if err != nil {
+		return
+	}
 
 	// hide subdirections keyboard
 	if err = t.hideKeyboard(chatID, messageID); err != nil {
 		return
 	}
 
-	subdirectionID, err := strconv.Atoi(subdirection)
+	subSubdirections, err := t.tgUC.GetSubSubdirections(
+		ctx, models.GetSubSubdirectionsParams{ChatID: chatID, SubdirectionID: subdirectionID})
 	if err != nil {
 		return
 	}
 
-	result, err := t.tgUC.GetRandomQuestion(ctx, models.SubdirectionsCallbackParams{
-		ChatID:         chatID,
-		SubdirectionID: subdirectionID})
-	if err != nil {
-		return
-	}
-
-	if len(result.Question) == 0 {
-		msg := tgbotapi.NewMessage(chatID, notQuestionsMessage)
-		if _, err = t.BotAPI.Send(msg); err != nil {
+	n := len(subSubdirections)
+	switch {
+	case n > 0:
+		if err = t.handleSubSubdirectionsExistsCaseAskMe(chatID, subSubdirections, subdirectionID); err != nil {
 			return
 		}
-		return
+	default:
+		log.Println("Default")
 	}
 
-	msg := tgbotapi.NewMessage(chatID, result.Question)
-	msg.ReplyMarkup = t.createAnswerKeyboard(fmt.Sprintf("%d", result.QuestionID))
+	// result, err := t.tgUC.GetRandomQuestion(ctx, models.SubdirectionsCallbackParams{
+	// 	ChatID:         chatID,
+	// 	SubdirectionID: subdirectionID})
+	// if err != nil {
+	// 	return
+	// }
+	//
+	// if len(result.Question) == 0 {
+	// 	msg := tgbotapi.NewMessage(chatID, notQuestionsMessage)
+	// 	if _, err = t.BotAPI.Send(msg); err != nil {
+	// 		return
+	// 	}
+	// 	return
+	// }
+	//
+	// msg := tgbotapi.NewMessage(chatID, result.Question)
+	// msg.ReplyMarkup = t.createAnswerKeyboard(fmt.Sprintf("%d", result.QuestionID))
+	// if _, err = t.BotAPI.Send(msg); err != nil {
+	// 	return
+	// }
+
+	return
+}
+
+func (t *TgBot) handleSubSubdirectionsExistsCaseAskMe(chatID int64, subSubdirections []string, subdirectionID int) (err error) {
+	msg := tgbotapi.NewMessage(chatID, "Choose sub sub direction")
+	msg.ReplyMarkup = t.createSubSubdirectionsKeyboardAskMe(subSubdirections)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
@@ -146,11 +174,11 @@ func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirectio
 	n := len(subSubdirections)
 	switch {
 	case n > 0:
-		if err = t.handleSubSubdirectionsExistsCase(chatID, subSubdirections, subdirectionID); err != nil {
+		if err = t.handleSubSubdirectionsExistsCaseAddQuestion(chatID, subSubdirections, subdirectionID); err != nil {
 			return
 		}
 	default:
-		if err = t.handleQuestionCase(chatID, subdirectionID); err != nil {
+		if err = t.handleAddQuestionCase(chatID, subdirectionID); err != nil {
 			return
 		}
 	}
@@ -173,7 +201,7 @@ func (t *TgBot) extractSubDirectionID(callbackData string) (result int, err erro
 	return
 }
 
-func (t *TgBot) handleSubSubdirectionsExistsCase(chatID int64, subSubdirections []string, subdirectionID int) (err error) {
+func (t *TgBot) handleSubSubdirectionsExistsCaseAddQuestion(chatID int64, subSubdirections []string, subdirectionID int) (err error) {
 	msg := tgbotapi.NewMessage(chatID, "Choose sub sub direction")
 	msg.ReplyMarkup = t.createSubSubdirectionsKeyboardAddQuestion(subSubdirections)
 	if _, err = t.BotAPI.Send(msg); err != nil {
@@ -185,7 +213,7 @@ func (t *TgBot) handleSubSubdirectionsExistsCase(chatID int64, subSubdirections 
 	return
 }
 
-func (t *TgBot) handleQuestionCase(chatID int64, ids ...int) (err error) {
+func (t *TgBot) handleAddQuestionCase(chatID int64, ids ...int) (err error) {
 	n := len(ids)
 	switch {
 	case n == 1:
@@ -215,7 +243,7 @@ func (t *TgBot) handleSubSubdirectionsCallbackAddQuestion(chatID int64, callback
 		return
 	}
 
-	if err = t.handleQuestionCase(chatID, ids[0], ids[1]); err != nil {
+	if err = t.handleAddQuestionCase(chatID, ids[0], ids[1]); err != nil {
 		return
 	}
 

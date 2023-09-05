@@ -124,7 +124,8 @@ func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, subdirection stri
 
 func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirection string, messageID int) (err error) {
 	ctx := context.Background()
-	subdirectionID, err := strconv.Atoi(subdirection)
+
+	subdirectionID, err := t.extractSubDirectionID(subdirection)
 	if err != nil {
 		return
 	}
@@ -152,6 +153,20 @@ func (t *TgBot) handleSubdirectionsCallbackAddQuestion(chatID int64, subdirectio
 		if err = t.handleDefaultSubdirectionsCase(chatID, subdirectionID); err != nil {
 			return
 		}
+	}
+
+	return
+}
+
+func (t *TgBot) extractSubDirectionID(callbackData string) (result int, err error) {
+	layout := "^\\d+"
+	re := regexp.MustCompile(layout)
+
+	subdirection := re.FindString(callbackData)
+
+	result, err = strconv.Atoi(subdirection)
+	if err != nil {
+		return
 	}
 
 	return

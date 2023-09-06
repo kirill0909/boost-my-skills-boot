@@ -55,7 +55,9 @@ var (
 	// Ask me sub callback
 	callbackDataAskMe = []string{
 		"1_Go_AskMe", "2_ComputerSince_AskMe", "3_Network_AskMe", "4_DB_AskMe",
-		"5_Algorithms_AskMe", "6_Architecture_AskMe", "7_General_AskMe"}
+		"5_Algorithms_AskMe", "6_Architecture_AskMe", "7_Unix_AskMe", "8_Rust_AskMe",
+		"9_DevOps_AskMe", "10_General_AskMe",
+	}
 	// Ask me sub sub callback
 	callbackDataSubSubdirectionAskMe = []string{
 		"1_1_Go_Channels_AskMe", "1_2_Go_Interface_AskMe", "1_3_Go_Sheduler_AskMe",

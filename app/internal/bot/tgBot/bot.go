@@ -191,6 +191,30 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
+			case callbackDataAskMe[7]:
+				if err := t.handleSubdirectionsCallbackAskMe(chatID, callbackDataAskMe[7], messageID); err != nil {
+					log.Printf("bot.TgBot.handleSubdirectionsCallback: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
+			case callbackDataAskMe[8]:
+				if err := t.handleSubdirectionsCallbackAskMe(chatID, callbackDataAskMe[8], messageID); err != nil {
+					log.Printf("bot.TgBot.handleSubdirectionsCallback: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
+			case callbackDataAskMe[9]:
+				if err := t.handleSubdirectionsCallbackAskMe(chatID, callbackDataAskMe[9], messageID); err != nil {
+					log.Printf("bot.TgBot.handleSubdirectionsCallback: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
+			case callbackDataAskMe[10]:
+				if err := t.handleSubdirectionsCallbackAskMe(chatID, callbackDataAskMe[10], messageID); err != nil {
+					log.Printf("bot.TgBot.handleSubdirectionsCallback: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
 				// Ask me sub sub direction
 			case callbackDataSubSubdirectionAskMe[0]:
 				if err := t.handleSubSubdirectonsCallbackAskMe(chatID, callbackDataSubSubdirectionAskMe[0], messageID); err != nil {

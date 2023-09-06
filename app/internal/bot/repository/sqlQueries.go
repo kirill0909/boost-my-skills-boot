@@ -26,12 +26,12 @@ const (
 
 	queryGetRandomQuestion = `
 	SELECT
-  i.id,
-  i.question
-  FROM users.info i
-  INNER JOIN users.user u ON u.direction_id = i.direction_id
-  INNER JOIN users.subdirections s ON s.id = i.subdirection_id
-  WHERE u.tg_chat_id = $1 AND s.id = $2
+  ui.id,
+  ui.question
+  FROM users.info ui
+  INNER JOIN users.user uu ON uu.direction_id = ui.direction_id
+  INNER JOIN users.sub_directions usd ON usd.id = ui.sub_direction_id
+  WHERE uu.tg_chat_id = $1 AND usd.id = $2
   ORDER BY RANDOM()
   LIMIT 1
 	`

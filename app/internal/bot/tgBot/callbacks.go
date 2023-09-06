@@ -121,38 +121,45 @@ func (t *TgBot) handleSubdirectionsCallbackAskMe(chatID int64, callbackData stri
 	n := len(subSubdirections)
 	switch {
 	case n > 0:
-		if err = t.handleSubSubdirectionsExistsCaseAskMe(chatID, subSubdirections, subdirectionID); err != nil {
+		if err = t.handleSubSubdirectionsExistsAskMeCase(chatID, subSubdirections, subdirectionID); err != nil {
 			return
 		}
 	default:
-		log.Println("Default")
+		if err = t.handleAskMeDefaultCase(ctx, chatID, subdirectionID); err != nil {
+			return
+		}
 	}
-
-	// result, err := t.tgUC.GetRandomQuestion(ctx, models.SubdirectionsCallbackParams{
-	// 	ChatID:         chatID,
-	// 	SubdirectionID: subdirectionID})
-	// if err != nil {
-	// 	return
-	// }
-	//
-	// if len(result.Question) == 0 {
-	// 	msg := tgbotapi.NewMessage(chatID, notQuestionsMessage)
-	// 	if _, err = t.BotAPI.Send(msg); err != nil {
-	// 		return
-	// 	}
-	// 	return
-	// }
-	//
-	// msg := tgbotapi.NewMessage(chatID, result.Question)
-	// msg.ReplyMarkup = t.createAnswerKeyboard(fmt.Sprintf("%d", result.QuestionID))
-	// if _, err = t.BotAPI.Send(msg); err != nil {
-	// 	return
-	// }
 
 	return
 }
 
-func (t *TgBot) handleSubSubdirectionsExistsCaseAskMe(chatID int64, subSubdirections []string, subdirectionID int) (err error) {
+func (t *TgBot) handleAskMeDefaultCase(ctx context.Context, chatID int64, subdirectionID int) (err error) {
+
+	result, err := t.tgUC.GetRandomQuestion(ctx, models.SubdirectionsCallbackParams{
+		ChatID:         chatID,
+		SubdirectionID: subdirectionID})
+	if err != nil {
+		return
+	}
+
+	if len(result.Question) == 0 {
+		msg := tgbotapi.NewMessage(chatID, notQuestionsMessage)
+		if _, err = t.BotAPI.Send(msg); err != nil {
+			return
+		}
+		return
+	}
+
+	msg := tgbotapi.NewMessage(chatID, result.Question)
+	msg.ReplyMarkup = t.createAnswerKeyboard(fmt.Sprintf("%d", result.QuestionID))
+	if _, err = t.BotAPI.Send(msg); err != nil {
+		return
+	}
+
+	return
+}
+
+func (t *TgBot) handleSubSubdirectionsExistsAskMeCase(chatID int64, subSubdirections []string, subdirectionID int) (err error) {
 	msg := tgbotapi.NewMessage(chatID, "Choose sub sub direction")
 	msg.ReplyMarkup = t.createSubSubdirectionsKeyboardAskMe(subSubdirections)
 	if _, err = t.BotAPI.Send(msg); err != nil {

@@ -276,13 +276,7 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
-			case callbackDataSubSubdirectionAskMe[14]:
-				if err := t.handleCallbackDataSubSubdirectionAskMe(chatID, callbackDataSubSubdirectionAskMe[14], messageID); err != nil {
-					log.Printf("bot.TgBot.handleSubdirectionsCallback: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
-					continue
-				}
-				// Add SUB directions question callbacks
+				// Add question SUB directions
 			case callbackDataSubdirectionAddQuestion[0]:
 				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataSubdirectionAddQuestion[0], messageID); err != nil {
 					log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())

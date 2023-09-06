@@ -26,14 +26,18 @@ const (
 
 	queryGetRandomQuestion = `
 	SELECT
-  ui.id,
-  ui.question
-  FROM users.info ui
-  INNER JOIN users.user uu ON uu.direction_id = ui.direction_id
-  INNER JOIN users.sub_directions usd ON usd.id = ui.sub_direction_id
-  WHERE uu.tg_chat_id = $1 AND usd.id = $2
-  ORDER BY RANDOM()
-  LIMIT 1
+   ui.id,
+   ui.question
+   FROM users.info ui
+   INNER JOIN users.user uu ON uu.direction_id = ui.direction_id
+   INNER JOIN users.sub_directions usd ON usd.id = ui.sub_direction_id
+   LEFT JOIN users.sub_sub_directions ussd ON ussd.sub_direction_id =  ui.sub_sub_direction_id
+   WHERE
+   uu.tg_chat_id = $1::INTEGER
+   AND usd.id = $2::INTEGER
+   AND ($3::INTEGER = 0 OR ussd.id = $3)
+   ORDER BY RANDOM()
+   LIMIT 1
 	`
 
 	queryGetSubdirectons = `

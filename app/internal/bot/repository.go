@@ -11,7 +11,7 @@ type PgRepository interface {
 	UserActivation(ctx context.Context, params models.UserActivation) (err error)
 	SetUpBackendDirection(ctx context.Context, chatID int64) (err error)
 	SetUpFrontendDirection(ctx context.Context, chatID int64) (err error)
-	GetRandomQuestion(ctx context.Context, params models.SubdirectionsCallbackParams) (
+	GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (
 		result models.SubdirectionsCallbackResult, err error)
 	GetAnswer(ctx context.Context, questionID int) (result string, err error)
 	SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (result int, err error)

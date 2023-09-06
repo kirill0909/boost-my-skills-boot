@@ -43,9 +43,10 @@ type GetSubSubdirectionsParams struct {
 	SubdirectionID int
 }
 
-type SubdirectionsCallbackParams struct {
-	ChatID         int64
-	SubdirectionID int
+type AksMeCallbackParams struct {
+	ChatID            int64
+	SubdirectionID    int
+	SubSubdirectionID int
 }
 
 type SubdirectionsCallbackResult struct {

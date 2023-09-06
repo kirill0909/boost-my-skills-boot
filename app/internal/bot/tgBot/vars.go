@@ -69,7 +69,9 @@ var (
 	// Add sub question callback
 	callbackDataSubdirectionAddQuestion = []string{
 		"1_Go_AddQuestion", "2_Computer_Since_AddQuestion", "3_Network_AddQuestion", "4_DB_AddQuestion",
-		"5_Algorithm_AddQuestion", "6_Architecture_AddQuestion", "7_General_AddQuestion"}
+		"5_Algorithm_AddQuestion", "6_Architecture_AddQuestion", "7_Unix_AddQuestion", "8_Rust_AddQuestion",
+		"9_DevOps_AddQuestion", "10_General_AddQuestion",
+	}
 	// Add sub sub quersis callback
 	callbackDataSubSubdirectionAddQuestion = []string{
 		"1_1_Go_Channels_AddQuestion", "1_2_Go_Interface_AddQuestion", "1_3_Go_Sheduler_AddQuestion",

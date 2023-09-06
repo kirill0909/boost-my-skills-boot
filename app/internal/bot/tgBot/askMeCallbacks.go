@@ -9,8 +9,13 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func (t *TgBot) handleCallbackDataSubSubdirectionAskMe(chatID int64, callbackData string, messageID int) (err error) {
+func (t *TgBot) handleSubSubdirectonsCallbackAskMe(chatID int64, callbackData string, messageID int) (err error) {
 	ctx := context.Background()
+
+	// hide sub sub directions keyboard
+	if err = t.hideKeyboard(chatID, messageID); err != nil {
+		return
+	}
 
 	ids, err := t.extractDirectionsIDs(callbackData)
 	if err != nil {

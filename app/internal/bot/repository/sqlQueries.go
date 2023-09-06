@@ -35,7 +35,7 @@ const (
    WHERE
    uu.tg_chat_id = $1::INTEGER
    AND usd.id = $2::INTEGER
-   AND ($3::INTEGER = 0 OR ussd.id = $3)
+   AND ($3::INTEGER = 0 OR ui.sub_sub_direction_id = $3)
    ORDER BY RANDOM()
    LIMIT 1
 	`

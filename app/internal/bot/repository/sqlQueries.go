@@ -77,4 +77,29 @@ const (
 	querySaveAnswer = `
 	UPDATE users.info SET answer = $1 WHERE id = $2
 	`
+	queryGetDirectionsInfo = `
+	SELECT
+ ud.id AS direction_id,
+ ud.direction AS direction_name
+ FROM users.directions ud
+ ORDER BY ud.id
+	`
+	queryGetSubdirectionsInfo = `
+	SELECT
+	usd.direction_id AS direction_id,
+  usd.id AS sub_direction_id,
+  usd.sub_direction AS sub_direction_name
+  FROM users.sub_directions usd
+  ORDER BY usd.id
+	`
+
+	queryGetSubSubdirectionsInfo = `
+	 SELECT
+	ussd.direction_id AS direction_id,
+	ussd.sub_direction_id AS sub_direction_id,
+  ussd.id AS sub_sub_direction_id,
+  ussd.sub_sub_direction AS sub_sub_direction_name
+  FROM users.sub_sub_directions ussd
+  ORDER BY ussd.id
+	`
 )

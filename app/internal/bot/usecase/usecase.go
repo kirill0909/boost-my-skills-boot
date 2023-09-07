@@ -6,6 +6,7 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
+	"log"
 	"sync"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -79,4 +80,27 @@ func (u *BotUC) GetSubdirections(ctx context.Context, params models.GetSubdirect
 
 func (u *BotUC) GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error) {
 	return u.pgRepo.GetSubSubdirections(ctx, params)
+}
+
+func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {
+	/* directionsInfo */ _, err = u.pgRepo.GetDirectionsInfo(ctx)
+	if err != nil {
+		return
+	}
+
+	// subdirectionsInfo, err := u.pgRepo.GetSubdirectionsInfo(ctx)
+	// if err != nil {
+	// 	return
+	// }
+
+	subSubdirectionsInfo, err := u.pgRepo.GetSubSubdirectionsInfo(ctx)
+	if err != nil {
+		return
+	}
+
+	// log.Printf("Directions: %+v", directionsInfo)
+	// log.Printf("Subdirections: %+v", subdirectionsInfo)
+	log.Printf("SubSubdirections: %+v", subSubdirectionsInfo)
+
+	return
 }

@@ -18,4 +18,9 @@ type PgRepository interface {
 	SaveAnswer(ctx context.Context, params models.SaveAnswerParams) (err error)
 	GetSubdirections(ctx context.Context, params models.GetSubdirectionsParams) (result []string, err error)
 	GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error)
+
+	// worker
+	GetDirectionsInfo(ctx context.Context) (result []models.DirectionInfo, err error)
+	GetSubdirectionsInfo(ctx context.Context) (result []models.SubdirectionInfo, err error)
+	GetSubSubdirectionsInfo(ctx context.Context) (result []models.SubSubdirectionInfo, err error)
 }

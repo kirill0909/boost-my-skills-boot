@@ -185,3 +185,93 @@ func (r *BotPGRepo) GetSubSubdirections(ctx context.Context, params models.GetSu
 
 	return
 }
+
+func (r *BotPGRepo) GetDirectionsInfo(ctx context.Context) (result []models.DirectionInfo, err error) {
+	rows, err := r.db.QueryContext(ctx, queryGetDirectionsInfo)
+	if err != nil {
+		err = errors.Wrap(err, "BotPGRepo.GetDirectionsInfo.queryGetDirectionsInfo")
+	}
+	defer rows.Close()
+
+	var res models.DirectionInfo
+
+	for rows.Next() {
+		if err = rows.Scan(
+			&res.DirectionID,
+			&res.DirectionName,
+		); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetDirectionsInfo.Scan")
+			return
+		}
+
+		result = append(result, res)
+	}
+
+	if err = rows.Err(); err != nil {
+		err = errors.Wrap(err, "BotPGRepo.GetDirectionsInfo.Err")
+		return
+	}
+
+	return
+}
+
+func (r *BotPGRepo) GetSubdirectionsInfo(ctx context.Context) (result []models.SubdirectionInfo, err error) {
+	rows, err := r.db.QueryContext(ctx, queryGetSubdirectionsInfo)
+	if err != nil {
+		err = errors.Wrap(err, "BotPGRepo.GetSubdirectionsInfo.queryGetSubdirectionsInfo")
+	}
+	defer rows.Close()
+
+	var res models.SubdirectionInfo
+
+	for rows.Next() {
+		if err = rows.Scan(
+			&res.DirectionID,
+			&res.SubdirectionID,
+			&res.SubdirectionName,
+		); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetSubdirectionsInfo.Scan")
+			return
+		}
+
+		result = append(result, res)
+	}
+
+	if err = rows.Err(); err != nil {
+		err = errors.Wrap(err, "BotPGRepo.GetSubdirectionsInfo.Err")
+		return
+	}
+
+	return
+}
+
+func (r *BotPGRepo) GetSubSubdirectionsInfo(ctx context.Context) (result []models.SubSubdirectionInfo, err error) {
+	rows, err := r.db.QueryContext(ctx, queryGetSubSubdirectionsInfo)
+	if err != nil {
+		err = errors.Wrap(err, "BotPGRepo.GetSubSubdirectionsInfo.queryGetSubSubdirectionsInfo")
+	}
+	defer rows.Close()
+
+	var res models.SubSubdirectionInfo
+
+	for rows.Next() {
+		if err = rows.Scan(
+			&res.DirectionID,
+			&res.SubdirectionID,
+			&res.SubSubdirectionID,
+			&res.SubSubdirectionName,
+		); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetSubSubdirectionsInfo.Scan")
+			return
+		}
+
+		result = append(result, res)
+	}
+
+	if err = rows.Err(); err != nil {
+		err = errors.Wrap(err, "BotPGRepo.GetSubSubdirectionsInfo.Err")
+		return
+	}
+
+	return
+}

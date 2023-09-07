@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"boost-my-skills-bot/internal/bot/repository"
 	"boost-my-skills-bot/internal/bot/usecase"
@@ -50,7 +51,7 @@ func main() {
 
 	}(psqlDB)
 
-	tgbot, err := mapHandler(cfg, psqlDB)
+	tgbot, err := mapHandler(ctx, cfg, psqlDB)
 	if err != nil {
 		log.Printf("Error map handler: %s", err.Error())
 		return
@@ -67,7 +68,7 @@ func main() {
 
 }
 
-func mapHandler(cfg *config.Config, db *sqlx.DB) (tgBot *tgbot.TgBot, err error) {
+func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tgbot.TgBot, err error) {
 
 	botAPI, err := tgbotapi.NewBotAPI(cfg.TgBot.ApiKey)
 	if err != nil {
@@ -84,6 +85,20 @@ func mapHandler(cfg *config.Config, db *sqlx.DB) (tgBot *tgbot.TgBot, err error)
 
 	// bot
 	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI)
+
+	// map worker
+	go func() {
+		ticker := time.NewTicker(time.Duration(time.Second * 2))
+		for {
+			select {
+			case <-ticker.C:
+				if err = botUC.SyncDirectionsInfo(ctx); err != nil {
+					log.Println(err)
+				}
+
+			}
+		}
+	}()
 
 	return tgBot, nil
 }

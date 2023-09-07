@@ -54,17 +54,20 @@ type SubdirectionsCallbackResult struct {
 	QuestionID int
 }
 
-type DirectionsInfo struct {
-	SubdirectionData
-	SubSubdirectionData
+type DirectionInfo struct {
+	DirectionID   int    `db:"direction_id"`
+	DirectionName string `db:"direction_name"`
 }
 
-type SubdirectionData struct {
-	SubdirectionID   int
-	SubdirectionName string
+type SubdirectionInfo struct {
+	DirectionID      int    `db:"direction_id"`
+	SubdirectionID   int    `db:"sub_direction_id"`
+	SubdirectionName string `db:"sub_direction_name"`
 }
 
-type SubSubdirectionData struct {
-	SubSubdirectionID   int
-	SubSubdirectionName string
+type SubSubdirectionInfo struct {
+	DirectionID         int    `db:"direction_id"`
+	SubdirectionID      int    `db:"sub_direction_id"`
+	SubSubdirectionID   int    `db:"sub_sub_direction_id"`
+	SubSubdirectionName string `db:"sub_sub_direction_name"`
 }

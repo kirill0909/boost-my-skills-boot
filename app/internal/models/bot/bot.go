@@ -53,3 +53,18 @@ type SubdirectionsCallbackResult struct {
 	Question   string
 	QuestionID int
 }
+
+type DirectionsInfo struct {
+	SubdirectionData
+	SubSubdirectionData
+}
+
+type SubdirectionData struct {
+	SubdirectionID   int
+	SubdirectionName string
+}
+
+type SubSubdirectionData struct {
+	SubSubdirectionID   int
+	SubSubdirectionName string
+}

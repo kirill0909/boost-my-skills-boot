@@ -4,6 +4,7 @@ import (
 	"boost-my-skills-bot/config"
 	"context"
 	"log"
+	"sync"
 
 	"boost-my-skills-bot/pkg/storage/postgres"
 	"os"
@@ -73,11 +74,13 @@ func mapHandler(cfg *config.Config, db *sqlx.DB) (tgBot *tgbot.TgBot, err error)
 		return
 	}
 
+	directionMap := sync.Map{}
+
 	// repository
 	botRepo := repository.NewBotPGRepo(db)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI)
+	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, &directionMap)
 
 	// bot
 	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI)

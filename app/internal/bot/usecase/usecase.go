@@ -6,18 +6,20 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
+	"sync"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type BotUC struct {
-	cfg    *config.Config
-	pgRepo bot.PgRepository
-	BotAPI *tgbotapi.BotAPI
+	cfg          *config.Config
+	pgRepo       bot.PgRepository
+	BotAPI       *tgbotapi.BotAPI
+	directionMap *sync.Map
 }
 
-func NewBotUC(cfg *config.Config, pgRepo bot.PgRepository, botAPI *tgbotapi.BotAPI) bot.Usecase {
-	return &BotUC{cfg: cfg, pgRepo: pgRepo, BotAPI: botAPI}
+func NewBotUC(cfg *config.Config, pgRepo bot.PgRepository, botAPI *tgbotapi.BotAPI, directionMap *sync.Map) bot.Usecase {
+	return &BotUC{cfg: cfg, pgRepo: pgRepo, BotAPI: botAPI, directionMap: directionMap}
 }
 
 func (u *BotUC) GetUUID(ctx context.Context, params models.GetUUID) (result string, err error) {

@@ -77,16 +77,16 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 	}
 
 	stateDirections := sync.Map{}
-	userStates := make(map[int64]models.AddQuestionParams)
+	stateUser := make(map[int64]models.AddQuestionParams)
 
 	// repository
 	botRepo := repository.NewBotPGRepo(db)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, &stateDirections, userStates)
+	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, &stateDirections, stateUser)
 
 	// bot
-	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, userStates)
+	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, stateUser)
 
 	// map worker
 	go func() {

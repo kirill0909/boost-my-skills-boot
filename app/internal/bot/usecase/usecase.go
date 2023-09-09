@@ -17,7 +17,7 @@ type BotUC struct {
 	pgRepo          bot.PgRepository
 	BotAPI          *tgbotapi.BotAPI
 	stateDirections *sync.Map
-	userStates      map[int64]models.AddQuestionParams
+	stateUser       map[int64]models.AddQuestionParams
 }
 
 func NewBotUC(
@@ -25,14 +25,14 @@ func NewBotUC(
 	pgRepo bot.PgRepository,
 	botAPI *tgbotapi.BotAPI,
 	stateDirections *sync.Map,
-	userStates map[int64]models.AddQuestionParams,
+	stateUser map[int64]models.AddQuestionParams,
 ) bot.Usecase {
 	return &BotUC{
 		cfg:             cfg,
 		pgRepo:          pgRepo,
 		BotAPI:          botAPI,
 		stateDirections: stateDirections,
-		userStates:      userStates,
+		stateUser:       stateUser,
 	}
 }
 

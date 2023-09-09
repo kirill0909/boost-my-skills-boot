@@ -58,9 +58,9 @@ func (r *BotPGRepo) UserActivation(ctx context.Context, params models.UserActiva
 	return
 }
 
-func (r *BotPGRepo) SetUpBackendDirection(ctx context.Context, chatID int64) (err error) {
-	if _, err = r.db.ExecContext(ctx, querySetUpBackendDirection, chatID); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.SetUpBackendDirection.querySetUpBackendDirection")
+func (r *BotPGRepo) SetUpDirection(ctx context.Context, params models.SetUpDirection) (err error) {
+	if _, err = r.db.ExecContext(ctx, querySetUpDirection, params.DirectionID, params.ChatID); err != nil {
+		err = errors.Wrap(err, "BotPGRepo.SetUpDirection.querySetUpDirection")
 		return
 	}
 

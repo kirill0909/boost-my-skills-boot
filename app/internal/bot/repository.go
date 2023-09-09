@@ -9,7 +9,6 @@ type PgRepository interface {
 	GetUUID(ctx context.Context) (result string, err error)
 	IsAdmin(ctx context.Context, params models.GetUUID) (result bool, err error)
 	UserActivation(ctx context.Context, params models.UserActivation) (err error)
-	SetUpBackendDirection(ctx context.Context, chatID int64) (err error)
 	SetUpFrontendDirection(ctx context.Context, chatID int64) (err error)
 	GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (
 		result models.SubdirectionsCallbackResult, err error)
@@ -20,6 +19,7 @@ type PgRepository interface {
 	GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error)
 
 	GetDirectionIDByChatID(ctx context.Context, param int64) (result int, err error)
+	SetUpDirection(ctx context.Context, params models.SetUpDirection) (err error)
 
 	// worker
 	GetDirectionsInfo(ctx context.Context) (result []models.DirectionInfo, err error)

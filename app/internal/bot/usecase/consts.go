@@ -13,4 +13,10 @@ const (
 	// mesages
 	noOneSubdirectionsFoundMessage = "No subdirections were found for your direction. To add subdirections refer to @kirillkorunov"
 	directionQuestionMessage       = "In which direction do you want to add a question?"
+	readyMessage                   = "Отлично! Как будете готовы жмите \"ask me\" и бот будет присылать вам вопросы"
+
+	// main buttons
+	getUUIDButton = "/get_uuid"
+	askMeButton   = "/ask_me"
+	addInfoButton = "/add_info"
 )

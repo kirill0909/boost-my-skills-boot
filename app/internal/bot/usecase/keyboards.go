@@ -22,3 +22,35 @@ func (t *BotUC) createSubdirectionsKeyboardAddInfo(subdirections []models.Subdir
 
 	return
 }
+
+func (t *BotUC) hideKeyboard(chatID int64, messageID int) (err error) {
+	edit := tgbotapi.NewEditMessageReplyMarkup(
+		chatID,
+		messageID,
+		tgbotapi.InlineKeyboardMarkup{
+			InlineKeyboard: [][]tgbotapi.InlineKeyboardButton{},
+		},
+	)
+
+	if _, err = t.BotAPI.Send(edit); err != nil {
+		return
+	}
+
+	return
+}
+
+func (t *BotUC) createMainMenuKeyboard() (keyboard tgbotapi.ReplyKeyboardMarkup) {
+
+	keyboard = tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton(getUUIDButton),
+			tgbotapi.NewKeyboardButton(askMeButton),
+			tgbotapi.NewKeyboardButton(addInfoButton),
+		),
+	)
+
+	keyboard.OneTimeKeyboard = false // Hide keyboard after one use
+	keyboard.ResizeKeyboard = true   // Resizes keyboard depending on the user's device
+
+	return
+}

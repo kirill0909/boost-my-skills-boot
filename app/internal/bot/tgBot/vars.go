@@ -22,7 +22,7 @@ var (
 	Frontend или Backend. После этого вы можете добавить свои вопросы нажав на кнопку add_question
 	и получать их в случайном порядке нажав на кнопку ask_me. Удачи)
 	`
-	readyMessage                 = "Отлично! Как будете готовы жмите \"ask me\" и бот будет присылать вам вопросы"
+	// readyMessage                 = "Отлично! Как будете готовы жмите \"ask me\" и бот будет присылать вам вопросы"
 	notQuestionsMessage          = "Для этого пока не добавлено ни одного вопроса. Обратитесь к @kirillkorunov."
 	addQuestionMessage           = "Для добавления вопроса нажмите на кнопку add_question"
 	handleAddQuestionMessage     = "Ввeдите вопрос"
@@ -49,9 +49,9 @@ var (
 	addQuestion    = "add_info"
 
 	// Callback data
-	backendCallbackData   = "backend"
-	frontednCallbackData  = "frontend"
-	getAnswerCallbackData = "Get_an_answer"
+	directionCallbackType    = 1
+	subdirectionCallbackData = ""
+	getAnswerCallbackData    = "Get_an_answer"
 	// Ask me sub callback
 	callbackDataAskMe = []string{
 		"1_Go_AskMe", "2_ComputerSince_AskMe", "3_Network_AskMe", "4_DB_AskMe",
@@ -92,4 +92,9 @@ var (
 	awaitingAnswer          = 3
 	awaitingSubdirection    = 4
 	awaitingSubSubdirection = 4
+
+	// callback type
+	backendCallbackType   = 1
+	frontendCallbackType  = 2
+	getAnswerCallbackType = 3
 )

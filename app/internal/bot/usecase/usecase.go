@@ -7,8 +7,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/pkg/errors"
 )
 
 type BotUC struct {
@@ -61,8 +64,32 @@ func (u *BotUC) UserActivation(ctx context.Context, params models.UserActivation
 	return u.pgRepo.UserActivation(ctx, params)
 }
 
-func (u *BotUC) SetUpBackendDirection(ctx context.Context, chatID int64) (err error) {
-	return u.pgRepo.SetUpBackendDirection(ctx, chatID)
+func (u *BotUC) SetUpDirection(ctx context.Context, params models.SetUpDirection) (err error) {
+	splitedCallbackData := strings.Split(params.CallbackData, " ")
+	penultimateElement := splitedCallbackData[len(splitedCallbackData)-2]
+
+	directionID, err := strconv.Atoi(penultimateElement)
+	if err != nil {
+		err = errors.Wrapf(err, "BotUC.SetUpDirection.Atoi(%s)", penultimateElement)
+		return
+	}
+	params.DirectionID = directionID
+
+	if err = u.pgRepo.SetUpDirection(ctx, params); err != nil {
+		return
+	}
+
+	if err = u.hideKeyboard(params.ChatID, params.MessageID); err != nil {
+		return
+	}
+
+	msg := tgbotapi.NewMessage(params.ChatID, readyMessage)
+	msg.ReplyMarkup = u.createMainMenuKeyboard()
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return
+	}
+
+	return
 }
 
 func (u *BotUC) SetUpFrontendDirection(ctx context.Context, chatID int64) (err error) {

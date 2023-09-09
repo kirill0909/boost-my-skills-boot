@@ -41,7 +41,7 @@ func (t *TgBot) handleStartCommand(chatID int64, params models.UserActivation, t
 	}
 
 	msg := tgbotapi.NewMessage(chatID, wellcomeMessage)
-	msg.ReplyMarkup = t.createDirectionsKeyboard()
+	msg.ReplyMarkup = t.createDirectionsKeyboard(t.stateDirections.DirectionInfo)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}

@@ -142,6 +142,8 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
+			case t.cfg.CallbackType.Subdirection:
+				log.Println(update.CallbackQuery.Data)
 			}
 
 			/*

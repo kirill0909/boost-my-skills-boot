@@ -90,14 +90,11 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 	// map worker
 	go func() {
 		ticker := time.NewTicker(time.Duration(time.Second * 2))
-		for {
-			select {
-			case <-ticker.C:
-				if err = botUC.SyncDirectionsInfo(ctx); err != nil {
-					log.Println(err)
-				}
-
+		for ; true; <-ticker.C {
+			if err = botUC.SyncDirectionsInfo(ctx); err != nil {
+				log.Println(err)
 			}
+			log.Println("Done")
 		}
 	}()
 

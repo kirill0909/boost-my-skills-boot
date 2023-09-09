@@ -299,12 +299,13 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				// Add question SUB directions
-			case callbackDataSubdirectionAddQuestion[0]:
-				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataSubdirectionAddQuestion[0], messageID); err != nil {
-					log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
-					continue
-				}
+			case t.stateDirections.SubdirectionInfo[0].SubdirectionName /* callbackDataSubdirectionAddQuestion[0] */ :
+				// if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataSubdirectionAddQuestion[0], messageID); err != nil {
+				// 	log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())
+				// 	t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+				// 	continue
+				// }
+				log.Printf("You are choose: %s", t.stateDirections.SubdirectionInfo[0].SubdirectionName)
 			case callbackDataSubdirectionAddQuestion[1]:
 				if err := t.handleSubdirectionsCallbackAddQuestion(chatID, callbackDataSubdirectionAddQuestion[1], messageID); err != nil {
 					log.Printf("bot.TgBot.handleSubdirectionsCallbackAddQuestion: %s", err.Error())

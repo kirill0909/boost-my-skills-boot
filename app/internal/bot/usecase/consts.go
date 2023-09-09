@@ -12,4 +12,5 @@ const (
 
 	// mesages
 	noOneSubdirectionsFoundMessage = "No subdirections were found for your direction. To add subdirections refer to @kirillkorunov"
+	directionQuestionMessage       = "In which direction do you want to add a question?"
 )

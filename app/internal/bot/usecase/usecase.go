@@ -119,7 +119,11 @@ func (u *BotUC) AddInfo(ctx context.Context, chatID int64) (err error) {
 		return
 	}
 
-	log.Println(subdirections)
+	msg.Text = directionQuestionMessage
+	msg.ReplyMarkup = u.createSubdirectionsKeyboardAddInfo(subdirections)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return
+	}
 
 	return
 }

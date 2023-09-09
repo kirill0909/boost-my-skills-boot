@@ -73,22 +73,5 @@ func (t *TgBot) handleAddInfoCommand(chatID int64) (err error) {
 		return
 	}
 
-	// msg := tgbotapi.NewMessage(chatID, "")
-	// if len(subdirections) == 0 {
-	// 	msg.Text = noOneSubdirectionsFoundMessage
-	// 	if _, err = t.BotAPI.Send(msg); err != nil {
-	// 		return
-	// 	}
-	// 	t.stateUser[chatID] = models.AddQuestionParams{State: idle}
-	//
-	// 	return
-	// }
-	//
-	// msg.Text = directionQuestionMessage
-	// msg.ReplyMarkup = t.createSubdirectionsKeyboardAddQuestion(subdirections)
-	// if _, err = t.BotAPI.Send(msg); err != nil {
-	// 	return
-	// }
-
 	return
 }

@@ -75,13 +75,13 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 		return
 	}
 
-	directionMap := sync.Map{}
+	stateDirections := sync.Map{}
 
 	// repository
 	botRepo := repository.NewBotPGRepo(db)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, &directionMap)
+	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, &stateDirections)
 
 	// bot
 	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI)

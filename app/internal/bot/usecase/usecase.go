@@ -13,14 +13,14 @@ import (
 )
 
 type BotUC struct {
-	cfg          *config.Config
-	pgRepo       bot.PgRepository
-	BotAPI       *tgbotapi.BotAPI
-	directionMap *sync.Map
+	cfg             *config.Config
+	pgRepo          bot.PgRepository
+	BotAPI          *tgbotapi.BotAPI
+	stateDirections *sync.Map
 }
 
-func NewBotUC(cfg *config.Config, pgRepo bot.PgRepository, botAPI *tgbotapi.BotAPI, directionMap *sync.Map) bot.Usecase {
-	return &BotUC{cfg: cfg, pgRepo: pgRepo, BotAPI: botAPI, directionMap: directionMap}
+func NewBotUC(cfg *config.Config, pgRepo bot.PgRepository, botAPI *tgbotapi.BotAPI, stateDirections *sync.Map) bot.Usecase {
+	return &BotUC{cfg: cfg, pgRepo: pgRepo, BotAPI: botAPI, stateDirections: stateDirections}
 }
 
 func (u *BotUC) GetUUID(ctx context.Context, params models.GetUUID) (result string, err error) {
@@ -111,7 +111,7 @@ func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {
 				}
 			}
 		}
-		u.directionMap.Store(dirValue.DirectionID, subdirectionsData)
+		u.stateDirections.Store(dirValue.DirectionID, subdirectionsData)
 	}
 
 	log.Println(subdirectionsData)

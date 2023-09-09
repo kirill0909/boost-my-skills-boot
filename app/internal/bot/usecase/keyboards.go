@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/pkg/errors"
 )
 
 func (t *BotUC) createSubdirectionsKeyboardAddInfo(subdirections []models.SubdirectionInfo) (keyboard tgbotapi.InlineKeyboardMarkup) {
@@ -57,6 +58,7 @@ func (t *BotUC) hideKeyboard(chatID int64, messageID int) (err error) {
 	)
 
 	if _, err = t.BotAPI.Send(edit); err != nil {
+		err = errors.Wrap(err, "BotUC.hideKeyboard.Send")
 		return
 	}
 

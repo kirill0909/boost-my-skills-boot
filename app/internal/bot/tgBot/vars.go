@@ -22,7 +22,6 @@ var (
 	Frontend или Backend. После этого вы можете добавить свои вопросы нажав на кнопку add_question
 	и получать их в случайном порядке нажав на кнопку ask_me. Удачи)
 	`
-	// readyMessage                 = "Отлично! Как будете готовы жмите \"ask me\" и бот будет присылать вам вопросы"
 	notQuestionsMessage          = "Для этого пока не добавлено ни одного вопроса. Обратитесь к @kirillkorunov."
 	addQuestionMessage           = "Для добавления вопроса нажмите на кнопку add_question"
 	handleAddQuestionMessage     = "Ввeдите вопрос"
@@ -30,8 +29,6 @@ var (
 	handleEnteredAnswerMessage   = "Ваш вопрос и ответ успешно сохранен"
 	unableToGetAnswer            = `Невозможно получить ответ для этого вопроса. 
 	Обратитесь к @kirillkorunov для добовления или изменеия ответа к интересующему вас вопросу. Либо довьте вопрос/ответ заново)`
-	// noOneSubdirectionsFoundMessage = "No subdirections were found for your direction. To add subdirections refer to @kirillkorunov"
-	// directionQuestionMessage  = "In which direction do you want to add a question?"
 	chooseSubdirectionMessage = "Choose subdirections"
 
 	// Buttons

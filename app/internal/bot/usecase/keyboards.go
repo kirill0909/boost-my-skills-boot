@@ -34,7 +34,7 @@ func (t *BotUC) createSubSubdirectionsKeyboardAddInfo(subSubdirections []models.
 	for i := 0; i < len(subSubdirections); i++ {
 		buttons := tgbotapi.NewInlineKeyboardButtonData(
 			subSubdirections[i].SubSubdirectionName,
-			fmt.Sprintf("%d %d", subSubdirections[i].SubSubdirectionID, t.cfg.CallbackType.SubdirectionAddInfo))
+			fmt.Sprintf("%d %d", subSubdirections[i].SubSubdirectionID, t.cfg.CallbackType.SubSubdirectionAddInfo))
 		rows = append(rows, buttons)
 
 		if (i+1)%2 == 0 || i == len(subSubdirections)-1 {

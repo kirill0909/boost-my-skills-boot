@@ -25,9 +25,21 @@ type AddInfoParams struct {
 	QuestionID        int
 	SubdirectionID    int
 	SubSubdirectionID int
-	MessageID         int
+}
+
+type AddInfoSubdirectionParams struct {
+	ChatID         int64
+	MessageID      int
+	CallbackData   string
+	SubdirectionID int
+}
+
+type AddInfoSubSubdirectionParams struct {
 	ChatID            int64
+	MessageID         int
 	CallbackData      string
+	SubdirectionID    int
+	SubSubdirectionID int
 }
 
 type SaveQuestionParams struct {
@@ -68,13 +80,6 @@ type SetUpDirection struct {
 	CallbackData string
 	DirectionID  int
 }
-
-// type AddInfoSubdirectionParams struct {
-// 	ChatID         int64
-// 	MessageID      int
-// 	CallbackData   string
-// 	SubdirectionID int
-// }
 
 type DirectionInfo struct {
 	DirectionID   int    `db:"direction_id"`

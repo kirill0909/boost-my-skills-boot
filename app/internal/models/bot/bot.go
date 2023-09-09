@@ -1,7 +1,6 @@
 package bot
 
 import (
-	// "log"
 	"sync"
 )
 

@@ -89,9 +89,4 @@ var (
 	awaitingAnswer          = 3
 	awaitingSubdirection    = 4
 	awaitingSubSubdirection = 4
-
-	// callback type
-	// backendCallbackType   = 1
-	// frontendCallbackType  = 2
-	getAnswerCallbackType = 3
 )

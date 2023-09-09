@@ -94,7 +94,6 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 			if err = botUC.SyncDirectionsInfo(ctx); err != nil {
 				log.Println(err)
 			}
-			log.Println("Done")
 		}
 	}()
 

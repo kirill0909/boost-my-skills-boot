@@ -41,7 +41,7 @@ func (t *TgBot) handleStartCommand(chatID int64, params models.UserActivation, t
 	}
 
 	msg := tgbotapi.NewMessage(chatID, wellcomeMessage)
-	msg.ReplyMarkup = t.createDirectionsKeyboard()
+	msg.ReplyMarkup = t.createDirectionsKeyboard(t.stateDirections.DirectionInfo)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
@@ -66,29 +66,10 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 	return
 }
 
-func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
+func (t *TgBot) handleAddInfoCommand(chatID int64) (err error) {
 	ctx := context.Background()
 
-	t.userStates[chatID] = models.AddQuestionParams{State: awaitingSubdirection}
-	subdirections, err := t.tgUC.GetSubdirections(ctx, models.GetSubdirectionsParams{ChatID: chatID})
-	if err != nil {
-		return
-	}
-
-	msg := tgbotapi.NewMessage(chatID, "")
-	if len(subdirections) == 0 {
-		msg.Text = noOneSubdirectionsFoundMessage
-		if _, err = t.BotAPI.Send(msg); err != nil {
-			return
-		}
-		t.userStates[chatID] = models.AddQuestionParams{State: idle}
-
-		return
-	}
-
-	msg.Text = directionQuestionMessage
-	msg.ReplyMarkup = t.createSubdirectionsKeyboardAddQuestion(subdirections)
-	if _, err = t.BotAPI.Send(msg); err != nil {
+	if err = t.tgUC.HandleAddInfoCommand(ctx, chatID); err != nil {
 		return
 	}
 

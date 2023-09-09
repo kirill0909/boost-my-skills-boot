@@ -6,18 +6,35 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
+	"strconv"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/pkg/errors"
 )
 
 type BotUC struct {
-	cfg    *config.Config
-	pgRepo bot.PgRepository
-	BotAPI *tgbotapi.BotAPI
+	cfg             *config.Config
+	pgRepo          bot.PgRepository
+	BotAPI          *tgbotapi.BotAPI
+	stateUsers      map[int64]models.AddInfoParams
+	stateDirections *models.DirectionsData
 }
 
-func NewBotUC(cfg *config.Config, pgRepo bot.PgRepository, botAPI *tgbotapi.BotAPI) bot.Usecase {
-	return &BotUC{cfg: cfg, pgRepo: pgRepo, BotAPI: botAPI}
+func NewBotUC(
+	cfg *config.Config,
+	pgRepo bot.PgRepository,
+	botAPI *tgbotapi.BotAPI,
+	stateUsers map[int64]models.AddInfoParams,
+	stateDirections *models.DirectionsData,
+) bot.Usecase {
+	return &BotUC{
+		cfg:             cfg,
+		pgRepo:          pgRepo,
+		BotAPI:          botAPI,
+		stateUsers:      stateUsers,
+		stateDirections: stateDirections,
+	}
 }
 
 func (u *BotUC) GetUUID(ctx context.Context, params models.GetUUID) (result string, err error) {
@@ -46,12 +63,32 @@ func (u *BotUC) UserActivation(ctx context.Context, params models.UserActivation
 	return u.pgRepo.UserActivation(ctx, params)
 }
 
-func (u *BotUC) SetUpBackendDirection(ctx context.Context, chatID int64) (err error) {
-	return u.pgRepo.SetUpBackendDirection(ctx, chatID)
-}
+func (u *BotUC) SetUpDirection(ctx context.Context, params models.SetUpDirection) (err error) {
+	splitedCallbackData := strings.Split(params.CallbackData, " ")
+	penultimateElement := splitedCallbackData[len(splitedCallbackData)-2]
 
-func (u *BotUC) SetUpFrontendDirection(ctx context.Context, chatID int64) (err error) {
-	return u.pgRepo.SetUpFrontendDirection(ctx, chatID)
+	directionID, err := strconv.Atoi(penultimateElement)
+	if err != nil {
+		err = errors.Wrapf(err, "BotUC.SetUpDirection.Atoi(%s)", penultimateElement)
+		return
+	}
+	params.DirectionID = directionID
+
+	if err = u.pgRepo.SetUpDirection(ctx, params); err != nil {
+		return
+	}
+
+	if err = u.hideKeyboard(params.ChatID, params.MessageID); err != nil {
+		return
+	}
+
+	msg := tgbotapi.NewMessage(params.ChatID, readyMessage)
+	msg.ReplyMarkup = u.createMainMenuKeyboard()
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return
+	}
+
+	return
 }
 
 func (u *BotUC) GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (
@@ -77,4 +114,151 @@ func (u *BotUC) GetSubdirections(ctx context.Context, params models.GetSubdirect
 
 func (u *BotUC) GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error) {
 	return u.pgRepo.GetSubSubdirections(ctx, params)
+}
+
+func (u *BotUC) HandleAddInfoCommand(ctx context.Context, chatID int64) (err error) {
+
+	u.stateUsers[chatID] = models.AddInfoParams{State: awaitingSubdirection}
+	directionID, err := u.pgRepo.GetDirectionIDByChatID(ctx, chatID)
+	if err != nil {
+		return
+	}
+
+	subdirections := u.stateDirections.GetSubdirectionsByDirectionID(directionID)
+	if len(subdirections) == 0 {
+		err = fmt.Errorf("subdirections not found")
+		return errors.Wrap(err, "BotUC.HandleAddInfoCommand.len(subdirections)")
+	}
+
+	msg := tgbotapi.NewMessage(chatID, "")
+	if len(subdirections) == 0 {
+		msg.Text = noOneSubdirectionsFoundMessage
+		if _, err = u.BotAPI.Send(msg); err != nil {
+			return
+		}
+		u.stateUsers[chatID] = models.AddInfoParams{State: idle}
+
+		return
+	}
+
+	msg.Text = subdirectionQuestionMessage
+	msg.ReplyMarkup = u.createSubdirectionsKeyboardAddInfo(subdirections)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return
+	}
+
+	return
+}
+
+func (u *BotUC) HandleAddInfoSubdirectionCallbackData(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
+	if err = u.hideKeyboard(params.ChatID, params.MessageID); err != nil {
+		return
+	}
+
+	splitedCallbackData := strings.Split(params.CallbackData, " ")
+	subdirectionIDCallbackData := splitedCallbackData[len(splitedCallbackData)-2]
+
+	subdirectionID, err := strconv.Atoi(subdirectionIDCallbackData)
+	if err != nil {
+		err = errors.Wrapf(err, "BotUC.HandleAddInfoSubdirectionCallbackData.Atoi(%s)", subdirectionIDCallbackData)
+		return
+	}
+	params.SubdirectionID = subdirectionID
+	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingSubSubdirection, SubdirectionID: subdirectionID}
+
+	subSubdirections := u.stateDirections.GetSubSubdirectionsBySubdirectionID(params.SubdirectionID)
+
+	n := len(subSubdirections)
+	switch {
+	case n > 0:
+		if err = u.handleAddInfoSubdirectionsCase(ctx, params); err != nil {
+			return
+		}
+	default:
+		if err = u.hanleAddInfoSubdirectionsDefaultCase(ctx, params); err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (u *BotUC) handleAddInfoSubdirectionsCase(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
+	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingSubSubdirection, SubdirectionID: params.SubdirectionID}
+
+	subSubdirections := u.stateDirections.GetSubSubdirectionsBySubdirectionID(params.SubdirectionID)
+	if len(subSubdirections) == 0 {
+		err = fmt.Errorf("sub subdirections not found")
+		return errors.Wrap(err, "handleAddInfoSubdirectionsCase.len(subSubdirections)")
+	}
+
+	msg := tgbotapi.NewMessage(params.ChatID, subSubdirectionQuestionMessage)
+	msg.ReplyMarkup = u.createSubSubdirectionsKeyboardAddInfo(subSubdirections)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return errors.Wrap(err, "BotUC.handleAddInfoSubdirectionsCase.Send")
+	}
+
+	return
+}
+
+func (u *BotUC) hanleAddInfoSubdirectionsDefaultCase(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
+	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingQuestion, SubdirectionID: params.SubdirectionID}
+
+	msg := tgbotapi.NewMessage(params.ChatID, enterQuestionMessage)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		err = errors.Wrap(err, "BotUC.hanleAddInfoSubdirectionsDefaultCase.Send")
+		return
+	}
+
+	return
+}
+
+func (u *BotUC) HandleAddInfoSubSubdirectionCallbackData(ctx context.Context, params models.AddInfoSubSubdirectionParams) (err error) {
+	if err = u.hideKeyboard(params.ChatID, params.MessageID); err != nil {
+		return
+	}
+
+	splitedCallbackData := strings.Split(params.CallbackData, " ")
+	subSubdirectionIDCallbackData := splitedCallbackData[len(splitedCallbackData)-2]
+
+	subSubdirectionID, err := strconv.Atoi(subSubdirectionIDCallbackData)
+	if err != nil {
+		err = errors.Wrapf(err, "BotUC.HandleAddInfoSubSubdirectionCallbackData.Atoi(%s)", subSubdirectionIDCallbackData)
+		return
+	}
+
+	u.stateUsers[params.ChatID] = models.AddInfoParams{
+		State:             awaitingQuestion,
+		SubdirectionID:    params.SubdirectionID,
+		SubSubdirectionID: subSubdirectionID,
+	}
+
+	msg := tgbotapi.NewMessage(params.ChatID, enterQuestionMessage)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		err = errors.Wrap(err, "BotUC.HandleAddInfoSubSubdirectionCallbackData.Send")
+		return
+	}
+
+	return
+}
+
+func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {
+	directionsInfo, err := u.pgRepo.GetDirectionsInfo(ctx)
+	if err != nil {
+		return
+	}
+
+	subdirectionsInfo, err := u.pgRepo.GetSubdirectionsInfo(ctx)
+	if err != nil {
+		return
+	}
+
+	subSubdirectionsInfo, err := u.pgRepo.GetSubSubdirectionsInfo(ctx)
+	if err != nil {
+		return
+	}
+
+	u.stateDirections.Store(directionsInfo, subdirectionsInfo, subSubdirectionsInfo)
+
+	return
 }

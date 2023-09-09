@@ -5,10 +5,12 @@ import (
 	"context"
 	"log"
 
+	models "boost-my-skills-bot/internal/models/bot"
 	"boost-my-skills-bot/pkg/storage/postgres"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"boost-my-skills-bot/internal/bot/repository"
 	"boost-my-skills-bot/internal/bot/usecase"
@@ -49,7 +51,7 @@ func main() {
 
 	}(psqlDB)
 
-	tgbot, err := mapHandler(cfg, psqlDB)
+	tgbot, err := mapHandler(ctx, cfg, psqlDB)
 	if err != nil {
 		log.Printf("Error map handler: %s", err.Error())
 		return
@@ -66,21 +68,34 @@ func main() {
 
 }
 
-func mapHandler(cfg *config.Config, db *sqlx.DB) (tgBot *tgbot.TgBot, err error) {
+func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tgbot.TgBot, err error) {
 
 	botAPI, err := tgbotapi.NewBotAPI(cfg.TgBot.ApiKey)
 	if err != nil {
 		return
 	}
 
+	stateUsers := make(map[int64]models.AddInfoParams)
+	stateDirections := models.DirectionsData{}
+
 	// repository
 	botRepo := repository.NewBotPGRepo(db)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI)
+	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, stateUsers, &stateDirections)
 
 	// bot
-	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI)
+	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, stateUsers, &stateDirections)
+
+	// map worker
+	go func() {
+		ticker := time.NewTicker(time.Duration(time.Second * 2))
+		for ; true; <-ticker.C {
+			if err = botUC.SyncDirectionsInfo(ctx); err != nil {
+				log.Println(err)
+			}
+		}
+	}()
 
 	return tgBot, nil
 }

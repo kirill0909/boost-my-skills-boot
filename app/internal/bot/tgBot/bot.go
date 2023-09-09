@@ -24,12 +24,13 @@ func NewTgBot(
 	cfg *config.Config,
 	usecase bot.Usecase,
 	botAPI *tgbotapi.BotAPI,
+	userStates map[int64]models.AddQuestionParams,
 ) *TgBot {
 	return &TgBot{
 		cfg:        cfg,
 		BotAPI:     botAPI,
 		tgUC:       usecase,
-		userStates: make(map[int64]models.AddQuestionParams),
+		userStates: userStates,
 	}
 }
 

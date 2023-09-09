@@ -6,6 +6,7 @@ import (
 	"log"
 	"sync"
 
+	models "boost-my-skills-bot/internal/models/bot"
 	"boost-my-skills-bot/pkg/storage/postgres"
 	"os"
 	"os/signal"
@@ -76,15 +77,16 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 	}
 
 	stateDirections := sync.Map{}
+	userStates := make(map[int64]models.AddQuestionParams)
 
 	// repository
 	botRepo := repository.NewBotPGRepo(db)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, &stateDirections)
+	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, &stateDirections, userStates)
 
 	// bot
-	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI)
+	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, userStates)
 
 	// map worker
 	go func() {

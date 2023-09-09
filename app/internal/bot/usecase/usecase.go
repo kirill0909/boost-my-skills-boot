@@ -17,10 +17,23 @@ type BotUC struct {
 	pgRepo          bot.PgRepository
 	BotAPI          *tgbotapi.BotAPI
 	stateDirections *sync.Map
+	userStates      map[int64]models.AddQuestionParams
 }
 
-func NewBotUC(cfg *config.Config, pgRepo bot.PgRepository, botAPI *tgbotapi.BotAPI, stateDirections *sync.Map) bot.Usecase {
-	return &BotUC{cfg: cfg, pgRepo: pgRepo, BotAPI: botAPI, stateDirections: stateDirections}
+func NewBotUC(
+	cfg *config.Config,
+	pgRepo bot.PgRepository,
+	botAPI *tgbotapi.BotAPI,
+	stateDirections *sync.Map,
+	userStates map[int64]models.AddQuestionParams,
+) bot.Usecase {
+	return &BotUC{
+		cfg:             cfg,
+		pgRepo:          pgRepo,
+		BotAPI:          botAPI,
+		stateDirections: stateDirections,
+		userStates:      userStates,
+	}
 }
 
 func (u *BotUC) GetUUID(ctx context.Context, params models.GetUUID) (result string, err error) {

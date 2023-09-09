@@ -109,7 +109,7 @@ func (t *TgBot) createDirectionsKeyboard(directions []models.DirectionInfo) (key
 	for i := 0; i < len(directions); i++ {
 		buttons := tgbotapi.NewInlineKeyboardButtonData(
 			directions[i].DirectionName,
-			fmt.Sprintf("%s %d %d", directions[i].DirectionName, directions[i].DirectionID, directionCallbackType))
+			fmt.Sprintf("%s %d %d", directions[i].DirectionName, directions[i].DirectionID, t.cfg.CallbackType.Direction))
 		rows = append(rows, buttons)
 
 		if (i+1)%2 == 0 || i == len(directions)-1 {

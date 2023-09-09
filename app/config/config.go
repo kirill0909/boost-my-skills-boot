@@ -9,8 +9,9 @@ import (
 )
 
 type Config struct {
-	Postgres Postgres
-	TgBot    TgBot
+	Postgres     Postgres
+	TgBot        TgBot
+	CallbackType CallbackType
 }
 
 type Postgres struct {
@@ -25,6 +26,10 @@ type Postgres struct {
 type TgBot struct {
 	ApiKey string `validate:"required"`
 	Prefix string `validate:"required"`
+}
+
+type CallbackType struct {
+	Direction int
 }
 
 func LoadConfig() (*viper.Viper, error) {

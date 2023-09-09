@@ -10,7 +10,8 @@ func (t *BotUC) createSubdirectionsKeyboardAddInfo(subdirections []models.Subdir
 	var rows []tgbotapi.InlineKeyboardButton
 
 	for i := 0; i < len(subdirections); i++ {
-		buttons := tgbotapi.NewInlineKeyboardButtonData(subdirections[i].SubdirectionName, subdirections[i].SubdirectionName)
+		buttons := tgbotapi.NewInlineKeyboardButtonData(
+			subdirections[i].SubdirectionName, subdirections[i].SubdirectionName)
 		rows = append(rows, buttons)
 
 		if (i+1)%2 == 0 || i == len(subdirections)-1 {

@@ -59,6 +59,11 @@ type DirectionInfo struct {
 	DirectionName string `db:"direction_name"`
 }
 
+type SubdirectionsData struct {
+	SubdirectionInfo    []SubdirectionInfo
+	SubSubdirectionInfo []SubSubdirectionInfo
+}
+
 type SubdirectionInfo struct {
 	DirectionID      int    `db:"direction_id"`
 	SubdirectionID   int    `db:"sub_direction_id"`

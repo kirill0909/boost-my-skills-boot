@@ -83,24 +83,38 @@ func (u *BotUC) GetSubSubdirections(ctx context.Context, params models.GetSubSub
 }
 
 func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {
-	/* directionsInfo */ _, err = u.pgRepo.GetDirectionsInfo(ctx)
+	directionsInfo, err := u.pgRepo.GetDirectionsInfo(ctx)
 	if err != nil {
 		return
 	}
 
-	// subdirectionsInfo, err := u.pgRepo.GetSubdirectionsInfo(ctx)
-	// if err != nil {
-	// 	return
-	// }
+	subdirectionsInfo, err := u.pgRepo.GetSubdirectionsInfo(ctx)
+	if err != nil {
+		return
+	}
 
 	subSubdirectionsInfo, err := u.pgRepo.GetSubSubdirectionsInfo(ctx)
 	if err != nil {
 		return
 	}
 
-	// log.Printf("Directions: %+v", directionsInfo)
-	// log.Printf("Subdirections: %+v", subdirectionsInfo)
-	log.Printf("SubSubdirections: %+v", subSubdirectionsInfo)
+	var subdirectionsData models.SubdirectionsData
+
+	for _, dirValue := range directionsInfo {
+		for _, subdirValue := range subdirectionsInfo {
+			if dirValue.DirectionID == subdirValue.DirectionID {
+				subdirectionsData.SubdirectionInfo = append(subdirectionsData.SubdirectionInfo, subdirValue)
+				for _, subSubdirValue := range subSubdirectionsInfo {
+					if subSubdirValue.SubdirectionID == subdirValue.SubdirectionID {
+						subdirectionsData.SubSubdirectionInfo = append(subdirectionsData.SubSubdirectionInfo, subSubdirValue)
+					}
+				}
+			}
+		}
+		u.directionMap.Store(dirValue.DirectionID, subdirectionsData)
+	}
+
+	log.Println(subdirectionsData)
 
 	return
 }

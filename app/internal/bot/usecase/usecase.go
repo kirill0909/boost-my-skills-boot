@@ -94,11 +94,28 @@ func (u *BotUC) GetSubSubdirections(ctx context.Context, params models.GetSubSub
 	return u.pgRepo.GetSubSubdirections(ctx, params)
 }
 
-func (u *BotUC) AddInfo(ctx context.Context, params int64) (err error) {
+func (u *BotUC) AddInfo(ctx context.Context, chatID int64) (err error) {
 
-	subdirections := u.stateDirections.GetSubdirectionsByDirectionID(1)
+	u.stateUsers[chatID] = models.AddQuestionParams{State: awaitingSubdirection}
+	directionID, err := u.pgRepo.GetDirectionIDByChatID(ctx, chatID)
+	if err != nil {
+		return
+	}
+
+	subdirections := u.stateDirections.GetSubdirectionsByDirectionID(directionID)
 	if len(subdirections) == 0 {
 		log.Println("Not found")
+		return
+	}
+
+	msg := tgbotapi.NewMessage(chatID, "")
+	if len(subdirections) == 0 {
+		msg.Text = noOneSubdirectionsFoundMessage
+		if _, err = u.BotAPI.Send(msg); err != nil {
+			return
+		}
+		u.stateUsers[chatID] = models.AddQuestionParams{State: idle}
+
 		return
 	}
 

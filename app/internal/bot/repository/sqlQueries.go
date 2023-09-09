@@ -102,4 +102,8 @@ const (
   FROM users.sub_sub_directions ussd
   ORDER BY ussd.id
 	`
+
+	queryGetDirectionByChatID = `
+	SELECT direction_id FROM users.user WHERE tg_chat_id = $1
+	`
 )

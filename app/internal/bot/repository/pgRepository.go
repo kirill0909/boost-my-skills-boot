@@ -275,3 +275,12 @@ func (r *BotPGRepo) GetSubSubdirectionsInfo(ctx context.Context) (result []model
 
 	return
 }
+
+func (r *BotPGRepo) GetDirectionIDByChatID(ctx context.Context, param int64) (result int, err error) {
+	if err = r.db.GetContext(ctx, &result, queryGetDirectionByChatID, param); err != nil {
+		err = errors.Wrap(err, "BotPGRepo.GetDirectionIDByChatID.queryGetDirectionByChatID")
+		return
+	}
+
+	return
+}

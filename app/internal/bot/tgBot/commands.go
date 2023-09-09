@@ -73,20 +73,6 @@ func (t *TgBot) handleAddInfoCommand(chatID int64) (err error) {
 		return
 	}
 
-	// subdirectionsData, ok := value.(models.DirectionsData)
-	// if !ok {
-	// 	log.Println("Unable to coast any to models.SubdirectionInfo")
-	// 	return
-	// }
-	//
-	// log.Println(subdirectionsData.SubSubdirectionInfo)
-
-	// t.stateUser[chatID] = models.AddQuestionParams{State: awaitingSubdirection}
-	// subdirections, err := t.tgUC.GetSubdirections(ctx, models.GetSubdirectionsParams{ChatID: chatID})
-	// if err != nil {
-	// 	return
-	// }
-	//
 	// msg := tgbotapi.NewMessage(chatID, "")
 	// if len(subdirections) == 0 {
 	// 	msg.Text = noOneSubdirectionsFoundMessage

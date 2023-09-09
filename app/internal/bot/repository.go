@@ -19,6 +19,8 @@ type PgRepository interface {
 	GetSubdirections(ctx context.Context, params models.GetSubdirectionsParams) (result []string, err error)
 	GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error)
 
+	GetDirectionIDByChatID(ctx context.Context, param int64) (result int, err error)
+
 	// worker
 	GetDirectionsInfo(ctx context.Context) (result []models.DirectionInfo, err error)
 	GetSubdirectionsInfo(ctx context.Context) (result []models.SubdirectionInfo, err error)

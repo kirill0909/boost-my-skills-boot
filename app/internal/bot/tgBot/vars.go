@@ -30,9 +30,9 @@ var (
 	handleEnteredAnswerMessage   = "Ваш вопрос и ответ успешно сохранен"
 	unableToGetAnswer            = `Невозможно получить ответ для этого вопроса. 
 	Обратитесь к @kirillkorunov для добовления или изменеия ответа к интересующему вас вопросу. Либо довьте вопрос/ответ заново)`
-	noOneSubdirectionsFoundMessage = "No subdirections were found for your direction. To add subdirections refer to @kirillkorunov"
-	directionQuestionMessage       = "In which direction do you want to add a question?"
-	chooseSubdirectionMessage      = "Choose subdirections"
+	// noOneSubdirectionsFoundMessage = "No subdirections were found for your direction. To add subdirections refer to @kirillkorunov"
+	directionQuestionMessage  = "In which direction do you want to add a question?"
+	chooseSubdirectionMessage = "Choose subdirections"
 
 	// Buttons
 	getUUIDButton   = "/get_uuid"

@@ -72,13 +72,13 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
 	// ctx := context.Background()
 
-	subSubdirections := t.stateDirections.GetSubSubdirectionsBySubdirectionID(2)
-	if len(subSubdirections) == 0 {
+	subdirections := t.stateDirections.GetSubdirectionsByDirectionID(1)
+	if len(subdirections) == 0 {
 		log.Println("Not found")
 		return
 	}
 
-	log.Println(subSubdirections)
+	log.Println(subdirections)
 
 	// subdirectionsData, ok := value.(models.DirectionsData)
 	// if !ok {

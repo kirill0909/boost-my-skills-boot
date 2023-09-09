@@ -89,7 +89,7 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 
 	// map worker
 	go func() {
-		ticker := time.NewTicker(time.Duration(time.Second * 5))
+		ticker := time.NewTicker(time.Duration(time.Second * 2))
 		for {
 			select {
 			case <-ticker.C:

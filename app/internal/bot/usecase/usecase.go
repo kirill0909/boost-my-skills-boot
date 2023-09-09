@@ -6,7 +6,6 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 
@@ -127,8 +126,8 @@ func (u *BotUC) HandleAddInfoCommand(ctx context.Context, chatID int64) (err err
 
 	subdirections := u.stateDirections.GetSubdirectionsByDirectionID(directionID)
 	if len(subdirections) == 0 {
-		log.Println("subdirections not found")
-		return
+		err = fmt.Errorf("subdirections not found")
+		return errors.Wrap(err, "BotUC.HandleAddInfoCommand.len(subdirections)")
 	}
 
 	msg := tgbotapi.NewMessage(chatID, "")
@@ -205,7 +204,7 @@ func (u *BotUC) handleAddInfoSubdirectionsCase(ctx context.Context, params model
 func (u *BotUC) hanleAddInfoSubdirectionsDefaultCase(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
 	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingQuestion, SubdirectionID: params.SubdirectionID}
 
-	msg := tgbotapi.NewMessage(params.ChatID, "Alright, Enter yout question")
+	msg := tgbotapi.NewMessage(params.ChatID, enterQuestionMessage)
 	if _, err = u.BotAPI.Send(msg); err != nil {
 		err = errors.Wrap(err, "BotUC.hanleAddInfoSubdirectionsDefaultCase.Send")
 		return
@@ -234,7 +233,7 @@ func (u *BotUC) HandleAddInfoSubSubdirectionCallbackData(ctx context.Context, pa
 		SubSubdirectionID: subSubdirectionID,
 	}
 
-	msg := tgbotapi.NewMessage(params.ChatID, "Alright, Enter yout question")
+	msg := tgbotapi.NewMessage(params.ChatID, enterQuestionMessage)
 	if _, err = u.BotAPI.Send(msg); err != nil {
 		err = errors.Wrap(err, "BotUC.HandleAddInfoSubSubdirectionCallbackData.Send")
 		return

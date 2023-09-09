@@ -159,12 +159,34 @@ func (u *BotUC) HandleAddInfoSubdirectionCallbackData(ctx context.Context, param
 
 	subdirectionID, err := strconv.Atoi(subdirectionIDCallbackData)
 	if err != nil {
-		err = errors.Wrapf(err, "BotUC.SetUpDirection.Atoi(%s)", subdirectionIDCallbackData)
+		err = errors.Wrapf(err, "BotUC.HandleAddInfoSubdirectionCallbackData.Atoi(%s)", subdirectionIDCallbackData)
 		return
 	}
 	params.SubdirectionID = subdirectionID
 
-	log.Printf("%+v", params)
+	subSubdirections := u.stateDirections.GetSubSubdirectionsBySubdirectionID(params.SubdirectionID)
+
+	n := len(subSubdirections)
+	switch {
+	case n > 0:
+		log.Println("More than 0")
+	default:
+		if err = u.hanleAddInfoSubdirectionsDefaultCase(ctx, params); err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (u *BotUC) hanleAddInfoSubdirectionsDefaultCase(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
+	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingQuestion, SubdirectionID: params.SubdirectionID}
+
+	msg := tgbotapi.NewMessage(params.ChatID, "Alright, Enter yout question")
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		err = errors.Wrap(err, "BotUC.hanleAddInfoSubdirectionsDefaultCase.Send")
+		return
+	}
 
 	return
 }

@@ -15,7 +15,7 @@ type BotUC struct {
 	cfg             *config.Config
 	pgRepo          bot.PgRepository
 	BotAPI          *tgbotapi.BotAPI
-	stateUsers      map[int64]models.AddQuestionParams
+	stateUsers      map[int64]models.AddInfoParams
 	stateDirections *models.DirectionsData
 }
 
@@ -23,7 +23,7 @@ func NewBotUC(
 	cfg *config.Config,
 	pgRepo bot.PgRepository,
 	botAPI *tgbotapi.BotAPI,
-	stateUsers map[int64]models.AddQuestionParams,
+	stateUsers map[int64]models.AddInfoParams,
 	stateDirections *models.DirectionsData,
 ) bot.Usecase {
 	return &BotUC{
@@ -96,7 +96,7 @@ func (u *BotUC) GetSubSubdirections(ctx context.Context, params models.GetSubSub
 
 func (u *BotUC) AddInfo(ctx context.Context, chatID int64) (err error) {
 
-	u.stateUsers[chatID] = models.AddQuestionParams{State: awaitingSubdirection}
+	u.stateUsers[chatID] = models.AddInfoParams{State: awaitingSubdirection}
 	directionID, err := u.pgRepo.GetDirectionIDByChatID(ctx, chatID)
 	if err != nil {
 		return
@@ -114,7 +114,7 @@ func (u *BotUC) AddInfo(ctx context.Context, chatID int64) (err error) {
 		if _, err = u.BotAPI.Send(msg); err != nil {
 			return
 		}
-		u.stateUsers[chatID] = models.AddQuestionParams{State: idle}
+		u.stateUsers[chatID] = models.AddInfoParams{State: idle}
 
 		return
 	}

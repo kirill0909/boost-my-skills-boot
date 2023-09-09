@@ -20,7 +20,7 @@ type AskMeParams struct {
 	ChatID int64
 }
 
-type AddQuestionParams struct {
+type AddInfoParams struct {
 	State             int
 	QuestionID        int
 	SubdirectionID    int

@@ -32,7 +32,7 @@ func (t *TgBot) handleEnteredQuestion(chatID int64, text string, ids ...int) (er
 		return
 	}
 
-	t.stateUseres[chatID] = models.AddQuestionParams{State: awaitingAnswer, QuestionID: questionID}
+	t.stateUseres[chatID] = models.AddInfoParams{State: awaitingAnswer, QuestionID: questionID}
 
 	return
 }
@@ -53,7 +53,7 @@ func (t *TgBot) handleEnteredAnswer(chatID int64, text string) (err error) {
 		return
 	}
 
-	t.stateUseres[chatID] = models.AddQuestionParams{State: idle}
+	t.stateUseres[chatID] = models.AddInfoParams{State: idle}
 
 	return
 }

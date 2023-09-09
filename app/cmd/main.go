@@ -75,7 +75,7 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 		return
 	}
 
-	stateUsers := make(map[int64]models.AddQuestionParams)
+	stateUsers := make(map[int64]models.AddInfoParams)
 	stateDirections := models.DirectionsData{}
 
 	// repository

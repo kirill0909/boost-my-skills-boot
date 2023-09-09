@@ -70,7 +70,7 @@ func (t *TgBot) handleSubSubdirectionsExistsCaseAddQuestion(chatID int64, subSub
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return
 	}
-	t.stateUser[chatID] = models.AddQuestionParams{
+	t.stateUseres[chatID] = models.AddQuestionParams{
 		State: awaitingSubSubdirection, SubdirectionID: subdirectionID}
 
 	return
@@ -80,9 +80,9 @@ func (t *TgBot) handleAddQuestionCase(chatID int64, ids ...int) (err error) {
 	n := len(ids)
 	switch {
 	case n == 1:
-		t.stateUser[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: ids[0]}
+		t.stateUseres[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: ids[0]}
 	case n == 2:
-		t.stateUser[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: ids[0], SubSubdirectionID: ids[1]}
+		t.stateUseres[chatID] = models.AddQuestionParams{State: awaitingQuestion, SubdirectionID: ids[0], SubSubdirectionID: ids[1]}
 	default:
 		return fmt.Errorf("TgBot.handleEnteredQuestion. Wrong length(%d) of directions ids", n)
 	}

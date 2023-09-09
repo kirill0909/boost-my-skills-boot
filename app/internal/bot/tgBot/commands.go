@@ -3,6 +3,9 @@ package tgbot
 import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
+	"log"
+
+	// "log"
 
 	"fmt"
 	"strings"
@@ -67,30 +70,46 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 }
 
 func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
-	ctx := context.Background()
+	// ctx := context.Background()
 
-	t.stateUser[chatID] = models.AddQuestionParams{State: awaitingSubdirection}
-	subdirections, err := t.tgUC.GetSubdirections(ctx, models.GetSubdirectionsParams{ChatID: chatID})
-	if err != nil {
+	subSubdirections := t.stateDirections.GetSubSubdirectionsBySubdirectionID(2)
+	if len(subSubdirections) == 0 {
+		log.Println("Not found")
 		return
 	}
 
-	msg := tgbotapi.NewMessage(chatID, "")
-	if len(subdirections) == 0 {
-		msg.Text = noOneSubdirectionsFoundMessage
-		if _, err = t.BotAPI.Send(msg); err != nil {
-			return
-		}
-		t.stateUser[chatID] = models.AddQuestionParams{State: idle}
+	log.Println(subSubdirections)
 
-		return
-	}
+	// subdirectionsData, ok := value.(models.DirectionsData)
+	// if !ok {
+	// 	log.Println("Unable to coast any to models.SubdirectionInfo")
+	// 	return
+	// }
+	//
+	// log.Println(subdirectionsData.SubSubdirectionInfo)
 
-	msg.Text = directionQuestionMessage
-	msg.ReplyMarkup = t.createSubdirectionsKeyboardAddQuestion(subdirections)
-	if _, err = t.BotAPI.Send(msg); err != nil {
-		return
-	}
+	// t.stateUser[chatID] = models.AddQuestionParams{State: awaitingSubdirection}
+	// subdirections, err := t.tgUC.GetSubdirections(ctx, models.GetSubdirectionsParams{ChatID: chatID})
+	// if err != nil {
+	// 	return
+	// }
+	//
+	// msg := tgbotapi.NewMessage(chatID, "")
+	// if len(subdirections) == 0 {
+	// 	msg.Text = noOneSubdirectionsFoundMessage
+	// 	if _, err = t.BotAPI.Send(msg); err != nil {
+	// 		return
+	// 	}
+	// 	t.stateUser[chatID] = models.AddQuestionParams{State: idle}
+	//
+	// 	return
+	// }
+	//
+	// msg.Text = directionQuestionMessage
+	// msg.ReplyMarkup = t.createSubdirectionsKeyboardAddQuestion(subdirections)
+	// if _, err = t.BotAPI.Send(msg); err != nil {
+	// 	return
+	// }
 
 	return
 }

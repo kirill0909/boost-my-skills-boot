@@ -4,7 +4,6 @@ import (
 	"boost-my-skills-bot/config"
 	"context"
 	"log"
-	"sync"
 
 	models "boost-my-skills-bot/internal/models/bot"
 	"boost-my-skills-bot/pkg/storage/postgres"
@@ -76,21 +75,21 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 		return
 	}
 
-	stateDirections := sync.Map{}
-	stateUser := make(map[int64]models.AddQuestionParams)
+	stateUsers := make(map[int64]models.AddQuestionParams)
+	stateDirections := models.DirectionsData{}
 
 	// repository
 	botRepo := repository.NewBotPGRepo(db)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, &stateDirections, stateUser)
+	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, stateUsers, &stateDirections)
 
 	// bot
-	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, stateUser)
+	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, stateUsers, &stateDirections)
 
 	// map worker
 	go func() {
-		ticker := time.NewTicker(time.Duration(time.Second * 2))
+		ticker := time.NewTicker(time.Duration(time.Second * 5))
 		for {
 			select {
 			case <-ticker.C:

@@ -14,23 +14,26 @@ import (
 )
 
 type TgBot struct {
-	BotAPI    *tgbotapi.BotAPI
-	cfg       *config.Config
-	tgUC      bot.Usecase
-	stateUser map[int64]models.AddQuestionParams
+	BotAPI          *tgbotapi.BotAPI
+	cfg             *config.Config
+	tgUC            bot.Usecase
+	stateUseres     map[int64]models.AddQuestionParams
+	stateDirections *models.DirectionsData
 }
 
 func NewTgBot(
 	cfg *config.Config,
 	usecase bot.Usecase,
 	botAPI *tgbotapi.BotAPI,
-	stateUser map[int64]models.AddQuestionParams,
+	stateUsers map[int64]models.AddQuestionParams,
+	stateDirections *models.DirectionsData,
 ) *TgBot {
 	return &TgBot{
-		cfg:       cfg,
-		BotAPI:    botAPI,
-		tgUC:      usecase,
-		stateUser: stateUser,
+		cfg:             cfg,
+		BotAPI:          botAPI,
+		tgUC:            usecase,
+		stateUseres:     stateUsers,
+		stateDirections: stateDirections,
 	}
 }
 
@@ -89,7 +92,7 @@ func (t *TgBot) Run() error {
 				continue
 			}
 
-			questionParams, ok := t.stateUser[update.Message.Chat.ID]
+			questionParams, ok := t.stateUseres[update.Message.Chat.ID]
 			if !ok || questionParams.State == idle ||
 				questionParams.State == awaitingSubdirection ||
 				questionParams.State == awaitingSubSubdirection {
@@ -106,14 +109,14 @@ func (t *TgBot) Run() error {
 					update.Message.Chat.ID, update.Message.Text,
 					questionParams.SubdirectionID, questionParams.SubSubdirectionID); err != nil {
 					log.Printf("bot.TgBot.handleEnteredQuestion: %s", err.Error())
-					t.stateUser[update.Message.Chat.ID] = models.AddQuestionParams{State: idle}
+					t.stateUseres[update.Message.Chat.ID] = models.AddQuestionParams{State: idle}
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			case awaitingAnswer:
 				if err := t.handleEnteredAnswer(update.Message.Chat.ID, update.Message.Text); err != nil {
 					log.Printf("bot.TgBot.handleEnteredAnswer: %s", err.Error())
-					t.stateUser[update.Message.Chat.ID] = models.AddQuestionParams{State: idle}
+					t.stateUseres[update.Message.Chat.ID] = models.AddQuestionParams{State: idle}
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}

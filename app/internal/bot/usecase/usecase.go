@@ -6,8 +6,6 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
-	"log"
-	"sync"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -16,23 +14,23 @@ type BotUC struct {
 	cfg             *config.Config
 	pgRepo          bot.PgRepository
 	BotAPI          *tgbotapi.BotAPI
-	stateDirections *sync.Map
-	stateUser       map[int64]models.AddQuestionParams
+	stateUsers      map[int64]models.AddQuestionParams
+	stateDirections *models.DirectionsData
 }
 
 func NewBotUC(
 	cfg *config.Config,
 	pgRepo bot.PgRepository,
 	botAPI *tgbotapi.BotAPI,
-	stateDirections *sync.Map,
-	stateUser map[int64]models.AddQuestionParams,
+	stateUsers map[int64]models.AddQuestionParams,
+	stateDirections *models.DirectionsData,
 ) bot.Usecase {
 	return &BotUC{
 		cfg:             cfg,
 		pgRepo:          pgRepo,
 		BotAPI:          botAPI,
+		stateUsers:      stateUsers,
 		stateDirections: stateDirections,
-		stateUser:       stateUser,
 	}
 }
 
@@ -111,23 +109,7 @@ func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {
 		return
 	}
 
-	var subdirectionsData models.SubdirectionsData
-
-	for _, dirValue := range directionsInfo {
-		for _, subdirValue := range subdirectionsInfo {
-			if dirValue.DirectionID == subdirValue.DirectionID {
-				subdirectionsData.SubdirectionInfo = append(subdirectionsData.SubdirectionInfo, subdirValue)
-				for _, subSubdirValue := range subSubdirectionsInfo {
-					if subSubdirValue.SubdirectionID == subdirValue.SubdirectionID {
-						subdirectionsData.SubSubdirectionInfo = append(subdirectionsData.SubSubdirectionInfo, subSubdirValue)
-					}
-				}
-			}
-		}
-		u.stateDirections.Store(dirValue.DirectionID, subdirectionsData)
-	}
-
-	log.Println(subdirectionsData)
+	u.stateDirections.Store(directionsInfo, subdirectionsInfo, subSubdirectionsInfo)
 
 	return
 }

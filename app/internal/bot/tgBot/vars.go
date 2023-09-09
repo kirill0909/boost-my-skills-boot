@@ -46,7 +46,7 @@ var (
 	startCommand   = "start"
 	getUUIDCommand = "get_uuid"
 	askMeCommend   = "ask_me"
-	addQuestion    = "add_info"
+	addInfo        = "add_info"
 
 	// Callback data
 	// directionCallbackType    = 1

@@ -117,7 +117,7 @@ func (u *BotUC) GetSubSubdirections(ctx context.Context, params models.GetSubSub
 	return u.pgRepo.GetSubSubdirections(ctx, params)
 }
 
-func (u *BotUC) AddInfo(ctx context.Context, chatID int64) (err error) {
+func (u *BotUC) HandleAddInfoCommand(ctx context.Context, chatID int64) (err error) {
 
 	u.stateUsers[chatID] = models.AddInfoParams{State: awaitingSubdirection}
 	directionID, err := u.pgRepo.GetDirectionIDByChatID(ctx, chatID)

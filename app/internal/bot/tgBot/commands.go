@@ -69,7 +69,7 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 func (t *TgBot) handleAddInfoCommand(chatID int64) (err error) {
 	ctx := context.Background()
 
-	if err = t.tgUC.AddInfo(ctx, chatID); err != nil {
+	if err = t.tgUC.HandleAddInfoCommand(ctx, chatID); err != nil {
 		return
 	}
 

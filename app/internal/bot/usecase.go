@@ -17,7 +17,7 @@ type Usecase interface {
 	GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error)
 
 	SetUpDirection(ctx context.Context, params models.SetUpDirection) (err error)
-	AddInfo(ctx context.Context, params int64) (err error)
+	HandleAddInfoCommand(ctx context.Context, params int64) (err error)
 
 	// worker
 	SyncDirectionsInfo(ctx context.Context) (err error)

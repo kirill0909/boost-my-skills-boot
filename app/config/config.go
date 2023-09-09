@@ -29,8 +29,8 @@ type TgBot struct {
 }
 
 type CallbackType struct {
-	Direction    int
-	Subdirection int
+	Direction           int
+	SubdirectionAddInfo int
 }
 
 func LoadConfig() (*viper.Viper, error) {

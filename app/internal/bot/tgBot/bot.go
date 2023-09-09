@@ -83,7 +83,7 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
-			case addQuestion:
+			case addInfo:
 				if err := t.handleAddInfoCommand(
 					update.Message.Chat.ID); err != nil {
 					log.Printf("bot.TgBot.handleAddInfoCommand: %s", err.Error())
@@ -142,9 +142,9 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
-			case t.cfg.CallbackType.Subdirection:
-				if err := t.handleSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
-					log.Printf("bot.TgBot.handleSubdirectionCallbackData: %s", err.Error())
+			case t.cfg.CallbackType.SubdirectionAddInfo:
+				if err := t.handleSubdirectionCallbackDataAddInfo(chatID, messageID, update.CallbackQuery.Data); err != nil {
+					log.Printf("bot.TgBot.handleSubdirectionCallbackDataAddInfo: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}

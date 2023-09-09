@@ -49,9 +49,9 @@ var (
 	addQuestion    = "add_info"
 
 	// Callback data
-	directionCallbackType    = 1
-	subdirectionCallbackData = ""
-	getAnswerCallbackData    = "Get_an_answer"
+	// directionCallbackType    = 1
+	// subdirectionCallbackData = ""
+	getAnswerCallbackData = "Get_an_answer"
 	// Ask me sub callback
 	callbackDataAskMe = []string{
 		"1_Go_AskMe", "2_ComputerSince_AskMe", "3_Network_AskMe", "4_DB_AskMe",
@@ -94,7 +94,7 @@ var (
 	awaitingSubSubdirection = 4
 
 	// callback type
-	backendCallbackType   = 1
-	frontendCallbackType  = 2
+	// backendCallbackType   = 1
+	// frontendCallbackType  = 2
 	getAnswerCallbackType = 3
 )

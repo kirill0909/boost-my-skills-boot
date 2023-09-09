@@ -136,7 +136,7 @@ func (t *TgBot) Run() error {
 			messageID := update.CallbackQuery.Message.MessageID
 
 			switch callbackType {
-			case directionCallbackType:
+			case t.cfg.CallbackType.Direction:
 				if err := t.handleDirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
 					log.Printf("bot.TgBot.handleDirectionCallbackData: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)

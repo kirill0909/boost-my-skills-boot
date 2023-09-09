@@ -20,10 +20,6 @@ const (
 	querySetUpDirection = `
   UPDATE users.user SET direction_id = $1 WHERE tg_chat_id = $2
   `
-	querySetUpFrontedDirection = `
-  UPDATE users.user SET direction_id = 2 WHERE tg_chat_id = $1
-  `
-
 	queryGetRandomQuestion = `
 	SELECT
    ui.id,

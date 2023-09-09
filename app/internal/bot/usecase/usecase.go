@@ -92,10 +92,6 @@ func (u *BotUC) SetUpDirection(ctx context.Context, params models.SetUpDirection
 	return
 }
 
-func (u *BotUC) SetUpFrontendDirection(ctx context.Context, chatID int64) (err error) {
-	return u.pgRepo.SetUpFrontendDirection(ctx, chatID)
-}
-
 func (u *BotUC) GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (
 	result models.SubdirectionsCallbackResult, err error) {
 	return u.pgRepo.GetRandomQuestion(ctx, params)

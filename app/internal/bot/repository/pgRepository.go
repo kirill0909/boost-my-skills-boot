@@ -67,15 +67,6 @@ func (r *BotPGRepo) SetUpDirection(ctx context.Context, params models.SetUpDirec
 	return
 }
 
-func (r *BotPGRepo) SetUpFrontendDirection(ctx context.Context, chatID int64) (err error) {
-	if _, err = r.db.ExecContext(ctx, querySetUpFrontedDirection, chatID); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.SetUpFrontendDirection.querySetUpFrontedDirection")
-		return
-	}
-
-	return
-}
-
 func (r *BotPGRepo) GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (
 	result models.SubdirectionsCallbackResult, err error) {
 	rows, err := r.db.QueryContext(ctx, queryGetRandomQuestion, params.ChatID, params.SubdirectionID, params.SubSubdirectionID)

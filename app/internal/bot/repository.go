@@ -9,7 +9,6 @@ type PgRepository interface {
 	GetUUID(ctx context.Context) (result string, err error)
 	IsAdmin(ctx context.Context, params models.GetUUID) (result bool, err error)
 	UserActivation(ctx context.Context, params models.UserActivation) (err error)
-	SetUpFrontendDirection(ctx context.Context, chatID int64) (err error)
 	GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (
 		result models.SubdirectionsCallbackResult, err error)
 	GetAnswer(ctx context.Context, questionID int) (result string, err error)

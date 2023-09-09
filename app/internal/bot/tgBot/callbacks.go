@@ -9,16 +9,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func (t *TgBot) handleFrontendCallbackData(chatID int64, messageID int) (err error) {
-	ctx := context.Background()
-
-	if err = t.tgUC.SetUpFrontendDirection(ctx, chatID); err != nil {
-		return
-	}
-
-	return
-}
-
 func (t *TgBot) handleDirectionCallbackData(chatID int64, messageID int, callbackData string) (err error) {
 	ctx := context.Background()
 

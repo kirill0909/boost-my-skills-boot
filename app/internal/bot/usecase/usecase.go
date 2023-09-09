@@ -151,7 +151,7 @@ func (u *BotUC) HandleAddInfoCommand(ctx context.Context, chatID int64) (err err
 	return
 }
 
-func (u *BotUC) HandleAddInfoSubdirectionCallbackData(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
+func (u *BotUC) HandleAddInfoSubdirectionCallbackData(ctx context.Context, params models.AddInfoParams) (err error) {
 	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingSubSubdirection}
 	if err = u.hideKeyboard(params.ChatID, params.MessageID); err != nil {
 		return
@@ -184,7 +184,7 @@ func (u *BotUC) HandleAddInfoSubdirectionCallbackData(ctx context.Context, param
 	return
 }
 
-func (u *BotUC) handleAddInfoSubdirectionsCase(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
+func (u *BotUC) handleAddInfoSubdirectionsCase(ctx context.Context, params models.AddInfoParams) (err error) {
 	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingSubSubdirection, SubdirectionID: params.SubdirectionID}
 
 	subSubdirections := u.stateDirections.GetSubSubdirectionsBySubdirectionID(params.SubdirectionID)
@@ -202,7 +202,7 @@ func (u *BotUC) handleAddInfoSubdirectionsCase(ctx context.Context, params model
 	return
 }
 
-func (u *BotUC) hanleAddInfoSubdirectionsDefaultCase(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
+func (u *BotUC) hanleAddInfoSubdirectionsDefaultCase(ctx context.Context, params models.AddInfoParams) (err error) {
 	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingQuestion, SubdirectionID: params.SubdirectionID}
 
 	msg := tgbotapi.NewMessage(params.ChatID, "Alright, Enter yout question")

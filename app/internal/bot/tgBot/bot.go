@@ -4,7 +4,6 @@ import (
 	"boost-my-skills-bot/config"
 	"boost-my-skills-bot/internal/bot"
 	"context"
-	// "fmt"
 	"log"
 	"strconv"
 	"strings"

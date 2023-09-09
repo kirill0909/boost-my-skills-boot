@@ -127,7 +127,7 @@ func (u *BotUC) HandleAddInfoCommand(ctx context.Context, chatID int64) (err err
 
 	subdirections := u.stateDirections.GetSubdirectionsByDirectionID(directionID)
 	if len(subdirections) == 0 {
-		log.Println("Not found")
+		log.Println("subdirections not found")
 		return
 	}
 
@@ -169,11 +169,31 @@ func (u *BotUC) HandleAddInfoSubdirectionCallbackData(ctx context.Context, param
 	n := len(subSubdirections)
 	switch {
 	case n > 0:
-		log.Println("More than 0")
+		if err = u.handleAddInfoSubdirectionsCase(ctx, params); err != nil {
+			return
+		}
 	default:
 		if err = u.hanleAddInfoSubdirectionsDefaultCase(ctx, params); err != nil {
 			return
 		}
+	}
+
+	return
+}
+
+func (u *BotUC) handleAddInfoSubdirectionsCase(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
+	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingSubSubdirection, SubdirectionID: params.SubdirectionID}
+
+	subSubdirections := u.stateDirections.GetSubSubdirectionsBySubdirectionID(params.SubdirectionID)
+	if len(subSubdirections) == 0 {
+		err = fmt.Errorf("sub subdirections not found")
+		return errors.Wrap(err, "handleAddInfoSubdirectionsCase.len(subSubdirections)")
+	}
+
+	msg := tgbotapi.NewMessage(params.ChatID, "Choose sub sub direction")
+	msg.ReplyMarkup = u.createSubSubdirectionsKeyboardAddInfo(subSubdirections)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return errors.Wrap(err, "BotUC.handleAddInfoSubdirectionsCase.Send")
 	}
 
 	return

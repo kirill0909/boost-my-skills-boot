@@ -2,6 +2,7 @@ package tgbot
 
 import (
 	"context"
+	"log"
 	"strconv"
 
 	models "boost-my-skills-bot/internal/models/bot"
@@ -18,6 +19,12 @@ func (t *TgBot) handleDirectionCallbackData(chatID int64, messageID int, callbac
 		CallbackData: callbackData}); err != nil {
 		return
 	}
+
+	return
+}
+
+func (t *TgBot) handleSubdirectionCallbackData(chatID int64, messageID int, callbackData string) (err error) {
+	log.Println(callbackData)
 
 	return
 }

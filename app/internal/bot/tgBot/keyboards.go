@@ -6,24 +6,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-// func (t *TgBot) createSubdirectionsKeyboardAddQuestion(subdirections []string) (keyboard tgbotapi.InlineKeyboardMarkup) {
-//
-// 	var rows []tgbotapi.InlineKeyboardButton
-//
-// 	for i := 0; i < len(subdirections); i++ {
-// 		buttons := tgbotapi.NewInlineKeyboardButtonData(subdirections[i], callbackDataSubdirectionAddQuestion[i])
-// 		rows = append(rows, buttons)
-//
-// 		if (i+1)%2 == 0 || i == len(subdirections)-1 {
-// 			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(rows...))
-// 			rows = rows[:0]
-// 		}
-//
-// 	}
-//
-// 	return
-// }
-
 func (t *TgBot) createSubSubdirectionsKeyboardAddQuestion(subSubdirections []string) (keyboard tgbotapi.InlineKeyboardMarkup) {
 
 	var rows []tgbotapi.InlineKeyboardButton
@@ -109,7 +91,7 @@ func (t *TgBot) createDirectionsKeyboard(directions []models.DirectionInfo) (key
 	for i := 0; i < len(directions); i++ {
 		buttons := tgbotapi.NewInlineKeyboardButtonData(
 			directions[i].DirectionName,
-			fmt.Sprintf("%s %d %d", directions[i].DirectionName, directions[i].DirectionID, t.cfg.CallbackType.Direction))
+			fmt.Sprintf("%d %d", directions[i].DirectionID, t.cfg.CallbackType.Direction))
 		rows = append(rows, buttons)
 
 		if (i+1)%2 == 0 || i == len(directions)-1 {
@@ -121,19 +103,3 @@ func (t *TgBot) createDirectionsKeyboard(directions []models.DirectionInfo) (key
 
 	return
 }
-
-// func (t *TgBot) createMainMenuKeyboard() (keyboard tgbotapi.ReplyKeyboardMarkup) {
-//
-// 	keyboard = tgbotapi.NewReplyKeyboard(
-// 		tgbotapi.NewKeyboardButtonRow(
-// 			tgbotapi.NewKeyboardButton(getUUIDButton),
-// 			tgbotapi.NewKeyboardButton(askMeButton),
-// 			tgbotapi.NewKeyboardButton(addInfoButton),
-// 		),
-// 	)
-//
-// 	keyboard.OneTimeKeyboard = false // Hide keyboard after one use
-// 	keyboard.ResizeKeyboard = true   // Resizes keyboard depending on the user's device
-//
-// 	return
-// }

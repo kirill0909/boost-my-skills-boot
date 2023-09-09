@@ -23,8 +23,17 @@ func (t *TgBot) handleDirectionCallbackData(chatID int64, messageID int, callbac
 	return
 }
 
-func (t *TgBot) handleSubdirectionCallbackDataAddInfo(chatID int64, messageID int, callbackData string) (err error) {
+func (t *TgBot) handleAddInfoSubdirectionCallbackData(chatID int64, messageID int, callbackData string) (err error) {
+	ctx := context.Background()
 	log.Println(callbackData)
+
+	if err = t.tgUC.HandleAddInfoSubdirectionCallbackData(ctx, models.AddInfoSubdirectionParams{
+		ChatID:       chatID,
+		MessageID:    messageID,
+		CallbackData: callbackData,
+	}); err != nil {
+		return
+	}
 
 	return
 }

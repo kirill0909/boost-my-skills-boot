@@ -66,6 +66,13 @@ type SetUpDirection struct {
 	DirectionID  int
 }
 
+type AddInfoSubdirectionParams struct {
+	ChatID         int64
+	MessageID      int
+	CallbackData   string
+	SubdirectionID int
+}
+
 type DirectionInfo struct {
 	DirectionID   int    `db:"direction_id"`
 	DirectionName string `db:"direction_name"`

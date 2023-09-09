@@ -151,6 +151,24 @@ func (u *BotUC) HandleAddInfoCommand(ctx context.Context, chatID int64) (err err
 	return
 }
 
+func (u *BotUC) HandleAddInfoSubdirectionCallbackData(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
+	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingSubSubdirection}
+
+	splitedCallbackData := strings.Split(params.CallbackData, " ")
+	subdirectionIDCallbackData := splitedCallbackData[len(splitedCallbackData)-2]
+
+	subdirectionID, err := strconv.Atoi(subdirectionIDCallbackData)
+	if err != nil {
+		err = errors.Wrapf(err, "BotUC.SetUpDirection.Atoi(%s)", subdirectionIDCallbackData)
+		return
+	}
+	params.SubdirectionID = subdirectionID
+
+	log.Printf("%+v", params)
+
+	return
+}
+
 func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {
 	directionsInfo, err := u.pgRepo.GetDirectionsInfo(ctx)
 	if err != nil {

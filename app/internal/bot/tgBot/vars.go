@@ -35,18 +35,18 @@ var (
 	chooseSubdirectionMessage      = "Choose subdirections"
 
 	// Buttons
-	getUUIDButton     = "/get_uuid"
-	askMeButton       = "/ask_me"
-	addQuestionButton = "/add_question"
-	backenddButton    = "I ❤️  backend"
-	frontendButton    = "I ❤️  frontend"
-	getAnswerButton   = "Get an answer"
+	getUUIDButton   = "/get_uuid"
+	askMeButton     = "/ask_me"
+	addInfoButton   = "/add_info"
+	backenddButton  = "I ❤️  backend"
+	frontendButton  = "I ❤️  frontend"
+	getAnswerButton = "Get an answer"
 
 	// Commands name
 	startCommand   = "start"
 	getUUIDCommand = "get_uuid"
 	askMeCommend   = "ask_me"
-	addQuestion    = "add_question"
+	addQuestion    = "add_info"
 
 	// Callback data
 	backendCallbackData   = "backend"

@@ -18,6 +18,8 @@ type Usecase interface {
 	GetSubdirections(ctx context.Context, params models.GetSubdirectionsParams) (result []string, err error)
 	GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error)
 
+	AddInfo(ctx context.Context, params int64) (err error)
+
 	// worker
 	SyncDirectionsInfo(ctx context.Context) (err error)
 }

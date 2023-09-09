@@ -83,9 +83,9 @@ func (t *TgBot) Run() error {
 				}
 				continue
 			case addQuestion:
-				if err := t.handleAddQuestionCommand(
+				if err := t.handleAddInfoCommand(
 					update.Message.Chat.ID); err != nil {
-					log.Printf("bot.TgBot.handleAddQuestionCommand: %s", err.Error())
+					log.Printf("bot.TgBot.handleAddInfoCommand: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}

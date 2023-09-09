@@ -118,7 +118,7 @@ func (t *TgBot) createMainMenuKeyboard() (keyboard tgbotapi.ReplyKeyboardMarkup)
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton(getUUIDButton),
 			tgbotapi.NewKeyboardButton(askMeButton),
-			tgbotapi.NewKeyboardButton(addQuestionButton),
+			tgbotapi.NewKeyboardButton(addInfoButton),
 		),
 	)
 

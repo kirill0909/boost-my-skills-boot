@@ -3,9 +3,6 @@ package tgbot
 import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
-	"log"
-
-	// "log"
 
 	"fmt"
 	"strings"
@@ -69,16 +66,12 @@ func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err
 	return
 }
 
-func (t *TgBot) handleAddQuestionCommand(chatID int64) (err error) {
-	// ctx := context.Background()
+func (t *TgBot) handleAddInfoCommand(chatID int64) (err error) {
+	ctx := context.Background()
 
-	subdirections := t.stateDirections.GetSubdirectionsByDirectionID(1)
-	if len(subdirections) == 0 {
-		log.Println("Not found")
+	if err = t.tgUC.AddInfo(ctx, chatID); err != nil {
 		return
 	}
-
-	log.Println(subdirections)
 
 	// subdirectionsData, ok := value.(models.DirectionsData)
 	// if !ok {

@@ -6,6 +6,7 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
+	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
@@ -91,6 +92,19 @@ func (u *BotUC) GetSubdirections(ctx context.Context, params models.GetSubdirect
 
 func (u *BotUC) GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error) {
 	return u.pgRepo.GetSubSubdirections(ctx, params)
+}
+
+func (u *BotUC) AddInfo(ctx context.Context, params int64) (err error) {
+
+	subdirections := u.stateDirections.GetSubdirectionsByDirectionID(1)
+	if len(subdirections) == 0 {
+		log.Println("Not found")
+		return
+	}
+
+	log.Println(subdirections)
+
+	return
 }
 
 func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {

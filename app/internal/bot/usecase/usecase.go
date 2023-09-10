@@ -65,11 +65,11 @@ func (u *BotUC) UserActivation(ctx context.Context, params models.UserActivation
 
 func (u *BotUC) SetUpDirection(ctx context.Context, params models.SetUpDirection) (err error) {
 	splitedCallbackData := strings.Split(params.CallbackData, " ")
-	penultimateElement := splitedCallbackData[len(splitedCallbackData)-2]
+	directionCallbackData := splitedCallbackData[len(splitedCallbackData)-2]
 
-	directionID, err := strconv.Atoi(penultimateElement)
+	directionID, err := strconv.Atoi(directionCallbackData)
 	if err != nil {
-		err = errors.Wrapf(err, "BotUC.SetUpDirection.Atoi(%s)", penultimateElement)
+		err = errors.Wrapf(err, "BotUC.SetUpDirection.Atoi(%s)", directionCallbackData)
 		return
 	}
 	params.DirectionID = directionID
@@ -114,23 +114,6 @@ func (u *BotUC) GetSubdirections(ctx context.Context, params models.GetSubdirect
 
 func (u *BotUC) GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error) {
 	return u.pgRepo.GetSubSubdirections(ctx, params)
-}
-
-func (u *BotUC) HandleAskMeCommand(ctx context.Context, params models.AskMeParams) (err error) {
-	directionID, err := u.pgRepo.GetDirectionIDByChatID(ctx, params.ChatID)
-	if err != nil {
-		return
-	}
-
-	subdirections := u.stateDirections.GetSubdirectionsByDirectionID(directionID)
-
-	msg := tgbotapi.NewMessage(params.ChatID, subdirectionAskMeMessage)
-	msg.ReplyMarkup = u.createSubdirectionsKeyboardAskMe(subdirections)
-	if _, err = u.BotAPI.Send(msg); err != nil {
-		return errors.Wrap(err, "BotUC.HandleAskMeCommand.Send")
-	}
-
-	return
 }
 
 func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {

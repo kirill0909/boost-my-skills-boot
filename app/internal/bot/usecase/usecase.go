@@ -282,7 +282,20 @@ func (u *BotUC) hanleAskMeSubdirectionsDefaultCase(ctx context.Context, params m
 		return
 	}
 
-	log.Println(result)
+	if len(result.Question) == 0 {
+		msg := tgbotapi.NewMessage(params.ChatID, notQuestionsMessage)
+		if _, err = u.BotAPI.Send(msg); err != nil {
+			return errors.Wrap(err, "BotUC.hanleAskMeSubdirectionsDefaultCase.len(result.Question).Send")
+		}
+
+		return
+	}
+
+	msg := tgbotapi.NewMessage(params.ChatID, result.Question)
+	msg.ReplyMarkup = u.createAnswerKeyboard(result.QuestionID)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return errors.Wrap(err, "BotUC.hanleAskMeSubdirectionsDefaultCase.Send")
+	}
 
 	return
 }

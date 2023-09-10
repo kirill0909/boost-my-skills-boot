@@ -17,9 +17,13 @@ const (
 	readyMessage                   = "Отлично! Как будете готовы жмите \"ask me\" и бот будет присылать вам вопросы"
 	enterQuestionMessage           = "Alright, Enter yout question"
 	subdirectionAskMeMessage       = "Choose sub direction for question"
+	notQuestionsMessage            = "Not a single question was found in this direction"
 
 	// main buttons
 	getUUIDButton = "/get_uuid"
 	askMeButton   = "/ask_me"
 	addInfoButton = "/add_info"
+
+	// buttons
+	getAnswerButton = "Get an answer"
 )

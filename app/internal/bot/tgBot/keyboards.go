@@ -58,15 +58,15 @@ func (t *TgBot) createSubSubdirectionsKeyboardAskMe(subdirections []string) (key
 	return
 }
 
-func (t *TgBot) createAnswerKeyboard(questionID string) (keyboard tgbotapi.InlineKeyboardMarkup) {
-	keyboard = tgbotapi.NewInlineKeyboardMarkup(
-		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(getAnswerButton, fmt.Sprintf("%s %s", getAnswerCallbackData, questionID)),
-		),
-	)
-
-	return
-}
+// func (t *TgBot) createAnswerKeyboard(questionID string) (keyboard tgbotapi.InlineKeyboardMarkup) {
+// 	keyboard = tgbotapi.NewInlineKeyboardMarkup(
+// 		tgbotapi.NewInlineKeyboardRow(
+// 			tgbotapi.NewInlineKeyboardButtonData(getAnswerButton, fmt.Sprintf("%s %s", getAnswerCallbackData, questionID)),
+// 		),
+// 	)
+//
+// 	return
+// }
 
 func (t *TgBot) hideKeyboard(chatID int64, messageID int) (err error) {
 	edit := tgbotapi.NewEditMessageReplyMarkup(

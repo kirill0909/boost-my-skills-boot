@@ -30,6 +30,7 @@ type TgBot struct {
 
 type CallbackType struct {
 	Direction              int
+	GetAnAnswer            int
 	SubdirectionAddInfo    int
 	SubSubdirectionAddInfo int
 	SubdirectionAskMe      int

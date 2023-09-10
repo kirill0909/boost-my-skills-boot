@@ -16,7 +16,11 @@ type UserActivation struct {
 }
 
 type AskMeParams struct {
-	ChatID int64
+	ChatID            int64
+	MessageID         int
+	CallbackData      string
+	SubdirectionID    int
+	SubSubdirectionID int
 }
 
 type AddInfoParams struct {
@@ -41,12 +45,20 @@ type AddInfoSubSubdirectionParams struct {
 	SubSubdirectionID int
 }
 
-type AskMeSubdirectionsParams struct {
-	ChatID         int64
-	MessageID      int
-	CallbackData   string
-	SubdirectionID int
-}
+// type AskMeSubdirectionsParams struct {
+// 	ChatID         int64
+// 	MessageID      int
+// 	CallbackData   string
+// 	SubdirectionID int
+// }
+//
+// type AskMeSubSubdirectionsParams struct {
+// 	ChatID            int64
+// 	MessageID         int
+// 	CallbackData      string
+// 	SubdirectionID    int
+// 	SubSubdirectionID int
+// }
 
 type SaveQuestionParams struct {
 	ChatID            int64

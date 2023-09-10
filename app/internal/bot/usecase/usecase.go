@@ -6,7 +6,6 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 
@@ -243,7 +242,7 @@ func (u *BotUC) HandleAddInfoSubSubdirectionCallbackData(ctx context.Context, pa
 	return
 }
 
-func (u *BotUC) HandleAskMeSubdirectionCallbackData(ctx context.Context, params models.AskMeSubdirectionsParams) (err error) {
+func (u *BotUC) HandleAskMeSubdirectionCallbackData(ctx context.Context, params models.AskMeParams) (err error) {
 	if err = u.hideKeyboard(params.ChatID, params.MessageID); err != nil {
 		return
 	}
@@ -263,9 +262,9 @@ func (u *BotUC) HandleAskMeSubdirectionCallbackData(ctx context.Context, params 
 	n := len(subSubdirections)
 	switch {
 	case n > 0:
-		log.Println("More than 0")
+		u.handleAskMeSubSubdirectionsCase(ctx, params)
 	default:
-		if err = u.hanleAskMeSubdirectionsDefaultCase(ctx, params); err != nil {
+		if err = u.handleAskMeSubdirectionsDefaultCase(ctx, params); err != nil {
 			return
 		}
 	}
@@ -273,7 +272,20 @@ func (u *BotUC) HandleAskMeSubdirectionCallbackData(ctx context.Context, params 
 	return
 }
 
-func (u *BotUC) hanleAskMeSubdirectionsDefaultCase(ctx context.Context, params models.AskMeSubdirectionsParams) (err error) {
+func (u *BotUC) handleAskMeSubSubdirectionsCase(ctx context.Context, params models.AskMeParams) (err error) {
+
+	subSubdirections := u.stateDirections.GetSubSubdirectionsBySubdirectionID(params.SubdirectionID)
+
+	msg := tgbotapi.NewMessage(params.ChatID, subSubdirectionAskMeMessage)
+	msg.ReplyMarkup = u.createSubSubdirectionsKeyboardAskMe(subSubdirections)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return errors.Wrap(err, "BotUC.handleAskMeSubSubdirectionsCase.Send()")
+	}
+
+	return
+}
+
+func (u *BotUC) handleAskMeSubdirectionsDefaultCase(ctx context.Context, params models.AskMeParams) (err error) {
 
 	result, err := u.pgRepo.GetRandomQuestion(ctx, models.AksMeCallbackParams{
 		ChatID:         params.ChatID,

@@ -21,7 +21,7 @@ type Usecase interface {
 	HandleAddInfoSubdirectionCallbackData(ctx context.Context, params models.AddInfoSubdirectionParams) (err error)
 	HandleAddInfoSubSubdirectionCallbackData(ctx context.Context, params models.AddInfoSubSubdirectionParams) (err error)
 	HandleAskMeCommand(ctx context.Context, params models.AskMeParams) (err error)
-	HandleAskMeSubdirectionCallbackData(ctx context.Context, params models.AskMeSubdirectionsParams) (err error)
+	HandleAskMeSubdirectionCallbackData(ctx context.Context, params models.AskMeParams) (err error)
 
 	// worker
 	SyncDirectionsInfo(ctx context.Context) (err error)

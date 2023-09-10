@@ -56,7 +56,7 @@ func (t *TgBot) handleAddInfoSubSubdirectionCallbackData(chatID int64, messageID
 func (t *TgBot) handleAskMeSubdirectionCallbackData(chatID int64, messageID int, callbackData string) (err error) {
 	ctx := context.Background()
 
-	if err = t.tgUC.HandleAskMeSubdirectionCallbackData(ctx, models.AskMeSubdirectionsParams{
+	if err = t.tgUC.HandleAskMeSubdirectionCallbackData(ctx, models.AskMeParams{
 		ChatID:       chatID,
 		MessageID:    messageID,
 		CallbackData: callbackData,

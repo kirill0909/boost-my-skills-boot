@@ -41,6 +41,13 @@ type AddInfoSubSubdirectionParams struct {
 	SubSubdirectionID int
 }
 
+type AskMeSubdirectionsParams struct {
+	ChatID         int64
+	MessageID      int
+	CallbackData   string
+	SubdirectionID int
+}
+
 type SaveQuestionParams struct {
 	ChatID            int64
 	Question          string
@@ -68,7 +75,7 @@ type AksMeCallbackParams struct {
 	SubSubdirectionID int
 }
 
-type SubdirectionsCallbackResult struct {
+type AskMeCallbackResult struct {
 	Question   string
 	QuestionID int
 }

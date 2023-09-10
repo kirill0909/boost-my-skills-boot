@@ -6,6 +6,7 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -92,7 +93,7 @@ func (u *BotUC) SetUpDirection(ctx context.Context, params models.SetUpDirection
 }
 
 func (u *BotUC) GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (
-	result models.SubdirectionsCallbackResult, err error) {
+	result models.AskMeCallbackResult, err error) {
 	return u.pgRepo.GetRandomQuestion(ctx, params)
 }
 
@@ -242,23 +243,46 @@ func (u *BotUC) HandleAddInfoSubSubdirectionCallbackData(ctx context.Context, pa
 	return
 }
 
-func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {
-	directionsInfo, err := u.pgRepo.GetDirectionsInfo(ctx)
+func (u *BotUC) HandleAskMeSubdirectionCallbackData(ctx context.Context, params models.AskMeSubdirectionsParams) (err error) {
+	if err = u.hideKeyboard(params.ChatID, params.MessageID); err != nil {
+		return
+	}
+
+	splitedCallbackData := strings.Split(params.CallbackData, " ")
+	subdirectionIDCallbackData := splitedCallbackData[len(splitedCallbackData)-2]
+
+	subdirectionID, err := strconv.Atoi(subdirectionIDCallbackData)
+	if err != nil {
+		err = errors.Wrapf(err, "BotUC.HandleAskMeSubdirectionCallbackData.Atoi(%s)", subdirectionIDCallbackData)
+		return
+	}
+	params.SubdirectionID = subdirectionID
+
+	subSubdirections := u.stateDirections.GetSubSubdirectionsBySubdirectionID(params.SubdirectionID)
+
+	n := len(subSubdirections)
+	switch {
+	case n > 0:
+		log.Println("More than 0")
+	default:
+		if err = u.hanleAskMeSubdirectionsDefaultCase(ctx, params); err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (u *BotUC) hanleAskMeSubdirectionsDefaultCase(ctx context.Context, params models.AskMeSubdirectionsParams) (err error) {
+
+	result, err := u.pgRepo.GetRandomQuestion(ctx, models.AksMeCallbackParams{
+		ChatID:         params.ChatID,
+		SubdirectionID: params.SubdirectionID})
 	if err != nil {
 		return
 	}
 
-	subdirectionsInfo, err := u.pgRepo.GetSubdirectionsInfo(ctx)
-	if err != nil {
-		return
-	}
-
-	subSubdirectionsInfo, err := u.pgRepo.GetSubSubdirectionsInfo(ctx)
-	if err != nil {
-		return
-	}
-
-	u.stateDirections.Store(directionsInfo, subdirectionsInfo, subSubdirectionsInfo)
+	log.Println(result)
 
 	return
 }
@@ -276,6 +300,27 @@ func (u *BotUC) HandleAskMeCommand(ctx context.Context, params models.AskMeParam
 	if _, err = u.BotAPI.Send(msg); err != nil {
 		return errors.Wrap(err, "BotUC.HandleAskMeCommand.Send")
 	}
+
+	return
+}
+
+func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {
+	directionsInfo, err := u.pgRepo.GetDirectionsInfo(ctx)
+	if err != nil {
+		return
+	}
+
+	subdirectionsInfo, err := u.pgRepo.GetSubdirectionsInfo(ctx)
+	if err != nil {
+		return
+	}
+
+	subSubdirectionsInfo, err := u.pgRepo.GetSubSubdirectionsInfo(ctx)
+	if err != nil {
+		return
+	}
+
+	u.stateDirections.Store(directionsInfo, subdirectionsInfo, subSubdirectionsInfo)
 
 	return
 }

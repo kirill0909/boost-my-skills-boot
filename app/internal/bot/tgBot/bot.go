@@ -153,6 +153,12 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
+			case t.cfg.CallbackType.SubdirectionAskMe:
+				if err := t.handleAskMeSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
+					log.Printf("bot.TgBot.handleAskMeSubdirectionCallbackData: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
 			}
 		}
 	}

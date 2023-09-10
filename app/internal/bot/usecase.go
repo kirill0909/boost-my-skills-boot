@@ -9,7 +9,7 @@ type Usecase interface {
 	GetUUID(ctx context.Context, params models.GetUUID) (result string, err error)
 	UserActivation(ctx context.Context, params models.UserActivation) (err error)
 	GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (
-		result models.SubdirectionsCallbackResult, err error)
+		result models.AskMeCallbackResult, err error)
 	GetAnswer(ctx context.Context, questionID int) (result string, err error)
 	SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (result int, err error)
 	SaveAnswer(ctx context.Context, params models.SaveAnswerParams) (err error)
@@ -21,6 +21,7 @@ type Usecase interface {
 	HandleAddInfoSubdirectionCallbackData(ctx context.Context, params models.AddInfoSubdirectionParams) (err error)
 	HandleAddInfoSubSubdirectionCallbackData(ctx context.Context, params models.AddInfoSubSubdirectionParams) (err error)
 	HandleAskMeCommand(ctx context.Context, params models.AskMeParams) (err error)
+	HandleAskMeSubdirectionCallbackData(ctx context.Context, params models.AskMeSubdirectionsParams) (err error)
 
 	// worker
 	SyncDirectionsInfo(ctx context.Context) (err error)

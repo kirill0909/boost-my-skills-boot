@@ -9,8 +9,7 @@ type PgRepository interface {
 	GetUUID(ctx context.Context) (result string, err error)
 	IsAdmin(ctx context.Context, params models.GetUUID) (result bool, err error)
 	UserActivation(ctx context.Context, params models.UserActivation) (err error)
-	GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (
-		result models.SubdirectionsCallbackResult, err error)
+
 	GetAnswer(ctx context.Context, questionID int) (result string, err error)
 	SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (result int, err error)
 	SaveAnswer(ctx context.Context, params models.SaveAnswerParams) (err error)
@@ -19,6 +18,7 @@ type PgRepository interface {
 
 	GetDirectionIDByChatID(ctx context.Context, param int64) (result int, err error)
 	SetUpDirection(ctx context.Context, params models.SetUpDirection) (err error)
+	GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (result models.AskMeCallbackResult, err error)
 
 	// worker
 	GetDirectionsInfo(ctx context.Context) (result []models.DirectionInfo, err error)

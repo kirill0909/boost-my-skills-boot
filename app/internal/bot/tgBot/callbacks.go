@@ -2,6 +2,7 @@ package tgbot
 
 import (
 	"context"
+	"log"
 	"strconv"
 
 	models "boost-my-skills-bot/internal/models/bot"
@@ -39,11 +40,26 @@ func (t *TgBot) handleAddInfoSubdirectionCallbackData(chatID int64, messageID in
 func (t *TgBot) handleAddInfoSubSubdirectionCallbackData(chatID int64, messageID int, callbackData string) (err error) {
 	ctx := context.Background()
 
+	log.Println(t.stateUsers[chatID].SubdirectionID)
 	if err = t.tgUC.HandleAddInfoSubSubdirectionCallbackData(ctx, models.AddInfoSubSubdirectionParams{
 		ChatID:         chatID,
 		MessageID:      messageID,
 		CallbackData:   callbackData,
 		SubdirectionID: t.stateUsers[chatID].SubdirectionID,
+	}); err != nil {
+		return
+	}
+
+	return
+}
+
+func (t *TgBot) handleAskMeSubdirectionCallbackData(chatID int64, messageID int, callbackData string) (err error) {
+	ctx := context.Background()
+
+	if err = t.tgUC.HandleAskMeSubdirectionCallbackData(ctx, models.AskMeSubdirectionsParams{
+		ChatID:       chatID,
+		MessageID:    messageID,
+		CallbackData: callbackData,
 	}); err != nil {
 		return
 	}

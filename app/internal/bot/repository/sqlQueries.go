@@ -29,7 +29,7 @@ const (
    INNER JOIN users.sub_directions usd ON usd.id = ui.sub_direction_id
    LEFT JOIN users.sub_sub_directions ussd ON ussd.sub_direction_id =  ui.sub_sub_direction_id
    WHERE
-   uu.tg_chat_id = $1::INTEGER
+   uu.tg_chat_id = $1::BIGINT
    AND usd.id = $2::INTEGER
    AND ($3::INTEGER = 0 OR ui.sub_sub_direction_id = $3)
    ORDER BY RANDOM()

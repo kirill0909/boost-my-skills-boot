@@ -32,6 +32,8 @@ type CallbackType struct {
 	Direction              int
 	SubdirectionAddInfo    int
 	SubSubdirectionAddInfo int
+	SubdirectionAskMe      int
+	SubSubdirectionAskMe   int
 }
 
 func LoadConfig() (*viper.Viper, error) {

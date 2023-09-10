@@ -12,10 +12,11 @@ const (
 
 	// mesages
 	noOneSubdirectionsFoundMessage = "No subdirections were found for your direction. To add subdirections refer to @kirillkorunov"
-	subdirectionQuestionMessage    = "In which sub direction do you want to add a question?"
-	subSubdirectionQuestionMessage = "In which sub sub direction do you want to add a question?"
+	subdirectionAddInfoMessage     = "In which sub direction do you want to add a question?"
+	subSubdirectionAddInfoMessage  = "In which sub sub direction do you want to add a question?"
 	readyMessage                   = "Отлично! Как будете готовы жмите \"ask me\" и бот будет присылать вам вопросы"
 	enterQuestionMessage           = "Alright, Enter yout question"
+	subdirectionAskMeMessage       = "Choose sub direction for question"
 
 	// main buttons
 	getUUIDButton = "/get_uuid"

@@ -52,14 +52,7 @@ func (t *TgBot) handleStartCommand(chatID int64, params models.UserActivation, t
 func (t *TgBot) handleAskMeCommand(chatID int64, params models.AskMeParams) (err error) {
 	ctx := context.Background()
 
-	subdirections, err := t.tgUC.GetSubdirections(ctx, models.GetSubdirectionsParams{ChatID: chatID})
-	if err != nil {
-		return
-	}
-
-	msg := tgbotapi.NewMessage(params.ChatID, chooseSubdirectionMessage)
-	msg.ReplyMarkup = t.createSubdirectionsKeyboardAskMe(subdirections)
-	if _, err = t.BotAPI.Send(msg); err != nil {
+	if err = t.tgUC.HandleAskMeCommand(ctx, params); err != nil {
 		return
 	}
 

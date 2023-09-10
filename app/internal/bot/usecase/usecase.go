@@ -141,7 +141,7 @@ func (u *BotUC) HandleAddInfoCommand(ctx context.Context, chatID int64) (err err
 		return
 	}
 
-	msg.Text = subdirectionQuestionMessage
+	msg.Text = subdirectionAddInfoMessage
 	msg.ReplyMarkup = u.createSubdirectionsKeyboardAddInfo(subdirections)
 	if _, err = u.BotAPI.Send(msg); err != nil {
 		return
@@ -192,7 +192,7 @@ func (u *BotUC) handleAddInfoSubdirectionsCase(ctx context.Context, params model
 		return errors.Wrap(err, "handleAddInfoSubdirectionsCase.len(subSubdirections)")
 	}
 
-	msg := tgbotapi.NewMessage(params.ChatID, subSubdirectionQuestionMessage)
+	msg := tgbotapi.NewMessage(params.ChatID, subSubdirectionAddInfoMessage)
 	msg.ReplyMarkup = u.createSubSubdirectionsKeyboardAddInfo(subSubdirections)
 	if _, err = u.BotAPI.Send(msg); err != nil {
 		return errors.Wrap(err, "BotUC.handleAddInfoSubdirectionsCase.Send")
@@ -259,6 +259,23 @@ func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {
 	}
 
 	u.stateDirections.Store(directionsInfo, subdirectionsInfo, subSubdirectionsInfo)
+
+	return
+}
+
+func (u *BotUC) HandleAskMeCommand(ctx context.Context, params models.AskMeParams) (err error) {
+	directionID, err := u.pgRepo.GetDirectionIDByChatID(ctx, params.ChatID)
+	if err != nil {
+		return
+	}
+
+	subdirections := u.stateDirections.GetSubdirectionsByDirectionID(directionID)
+
+	msg := tgbotapi.NewMessage(params.ChatID, subdirectionAskMeMessage)
+	msg.ReplyMarkup = u.createSubdirectionsKeyboardAskMe(subdirections)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return errors.Wrap(err, "BotUC.HandleAskMeCommand.Send")
+	}
 
 	return
 }

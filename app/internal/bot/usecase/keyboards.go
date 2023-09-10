@@ -48,6 +48,26 @@ func (t *BotUC) createSubSubdirectionsKeyboardAddInfo(subSubdirections []models.
 	return
 }
 
+func (t *BotUC) createSubdirectionsKeyboardAskMe(subdirections []models.SubdirectionInfo) (keyboard tgbotapi.InlineKeyboardMarkup) {
+
+	var rows []tgbotapi.InlineKeyboardButton
+
+	for i := 0; i < len(subdirections); i++ {
+		buttons := tgbotapi.NewInlineKeyboardButtonData(
+			subdirections[i].SubdirectionName,
+			fmt.Sprintf("%d %d", subdirections[i].SubdirectionID, t.cfg.CallbackType.SubdirectionAskMe))
+		rows = append(rows, buttons)
+
+		if (i+1)%2 == 0 || i == len(subdirections)-1 {
+			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(rows...))
+			rows = rows[:0]
+		}
+
+	}
+
+	return
+}
+
 func (t *BotUC) hideKeyboard(chatID int64, messageID int) (err error) {
 	edit := tgbotapi.NewEditMessageReplyMarkup(
 		chatID,

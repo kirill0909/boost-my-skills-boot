@@ -116,6 +116,39 @@ func (u *BotUC) GetSubSubdirections(ctx context.Context, params models.GetSubSub
 	return u.pgRepo.GetSubSubdirections(ctx, params)
 }
 
+func (u *BotUC) HandleGetAnAnswerCallbackData(ctx context.Context, params models.GetAnAnswerParams) (err error) {
+	if err = u.hideKeyboard(params.ChatID, params.MessageID); err != nil {
+		return
+	}
+
+	splitedCallbackData := strings.Split(params.CallbackData, " ")
+	questionIDCallbackData := splitedCallbackData[0]
+	questionID, err := strconv.Atoi(questionIDCallbackData)
+	if err != nil {
+		return errors.Wrapf(err, "BotUC.HandleGetAnAnswerCallbackData.Atoi(%s)", questionIDCallbackData)
+	}
+
+	result, err := u.pgRepo.GetAnswer(ctx, questionID)
+	if err != nil {
+		return
+	}
+
+	if len(result) == 0 {
+		msg := tgbotapi.NewMessage(params.ChatID, "Unable to get answer for this question")
+		if _, err = u.BotAPI.Send(msg); err != nil {
+			return errors.Wrap(err, "BotUC.HandleGetAnAnswerCallbackData.Send")
+		}
+		return fmt.Errorf("BotUC.HandleGetAnAnswerCallbackData.len(%s)", result)
+	}
+
+	msg := tgbotapi.NewMessage(params.ChatID, result)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return errors.Wrap(err, "BotUC.HandleGetAnAnswerCallbackData.Send")
+	}
+
+	return
+}
+
 func (u *BotUC) SyncDirectionsInfo(ctx context.Context) (err error) {
 	directionsInfo, err := u.pgRepo.GetDirectionsInfo(ctx)
 	if err != nil {

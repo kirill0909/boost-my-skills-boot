@@ -65,6 +65,20 @@ func (t *TgBot) handleAskMeSubdirectionCallbackData(chatID int64, messageID int,
 	return
 }
 
+func (t *TgBot) handleGetAnAnswerCallbackData(chatID int64, messageID int, callbackData string) (err error) {
+	ctx := context.Background()
+
+	if err = t.tgUC.HandleGetAnAnswerCallbackData(ctx, models.GetAnAnswerParams{
+		ChatID:       chatID,
+		MessageID:    messageID,
+		CallbackData: callbackData,
+	}); err != nil {
+		return
+	}
+
+	return
+}
+
 func (t *TgBot) handleAskMeSubSubdirectionCallbackData(chatID int64, messageID int, callbackData string) (err error) {
 	ctx := context.Background()
 

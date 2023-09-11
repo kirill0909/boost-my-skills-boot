@@ -165,6 +165,12 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
+			case t.cfg.CallbackType.GetAnAnswer:
+				if err := t.handleGetAnAnswerCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
+					log.Printf("bot.TgBot.handleGetAnAnswerCallbackData: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
 			}
 		}
 	}

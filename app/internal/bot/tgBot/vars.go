@@ -22,7 +22,7 @@ var (
 	Frontend или Backend. После этого вы можете добавить свои вопросы нажав на кнопку add_question
 	и получать их в случайном порядке нажав на кнопку ask_me. Удачи)
 	`
-	notQuestionsMessage          = "Для этого пока не добавлено ни одного вопроса. Обратитесь к @kirillkorunov."
+	// notQuestionsMessage          = "Для этого пока не добавлено ни одного вопроса. Обратитесь к @kirillkorunov."
 	addQuestionMessage           = "Для добавления вопроса нажмите на кнопку add_question"
 	handleAddQuestionMessage     = "Ввeдите вопрос"
 	handleEnteredQuestionMessage = "Отлично! Теперь ввeдите ответ"
@@ -32,12 +32,12 @@ var (
 	chooseSubdirectionMessage = "Choose subdirections"
 
 	// Buttons
-	getUUIDButton   = "/get_uuid"
-	askMeButton     = "/ask_me"
-	addInfoButton   = "/add_info"
-	backenddButton  = "I ❤️  backend"
-	frontendButton  = "I ❤️  frontend"
-	getAnswerButton = "Get an answer"
+	getUUIDButton  = "/get_uuid"
+	askMeButton    = "/ask_me"
+	addInfoButton  = "/add_info"
+	backenddButton = "I ❤️  backend"
+	frontendButton = "I ❤️  frontend"
+	// getAnswerButton = "Get an answer"
 
 	// Commands name
 	startCommand   = "start"

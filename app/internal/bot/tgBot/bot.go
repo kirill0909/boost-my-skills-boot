@@ -153,6 +153,24 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
+			case t.cfg.CallbackType.SubdirectionAskMe:
+				if err := t.handleAskMeSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
+					log.Printf("bot.TgBot.handleAskMeSubdirectionCallbackData: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
+			case t.cfg.CallbackType.SubSubdirectionAskMe:
+				if err := t.handleAskMeSubSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
+					log.Printf("bot.TgBot.handleAskMeSubSubdirectionCallbackData: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
+			case t.cfg.CallbackType.GetAnAnswer:
+				if err := t.handleGetAnAnswerCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
+					log.Printf("bot.TgBot.handleGetAnAnswerCallbackData: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
 			}
 		}
 	}

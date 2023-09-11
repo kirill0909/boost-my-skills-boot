@@ -29,9 +29,12 @@ type TgBot struct {
 }
 
 type CallbackType struct {
-	Direction              int
-	SubdirectionAddInfo    int
-	SubSubdirectionAddInfo int
+	Direction              int `validate:"required"`
+	GetAnAnswer            int `validate:"required"`
+	SubdirectionAddInfo    int `validate:"required"`
+	SubSubdirectionAddInfo int `validate:"required"`
+	SubdirectionAskMe      int `validate:"required"`
+	SubSubdirectionAskMe   int `validate:"required"`
 }
 
 func LoadConfig() (*viper.Viper, error) {

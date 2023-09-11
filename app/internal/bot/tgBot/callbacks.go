@@ -51,6 +51,48 @@ func (t *TgBot) handleAddInfoSubSubdirectionCallbackData(chatID int64, messageID
 	return
 }
 
+func (t *TgBot) handleAskMeSubdirectionCallbackData(chatID int64, messageID int, callbackData string) (err error) {
+	ctx := context.Background()
+
+	if err = t.tgUC.HandleAskMeSubdirectionCallbackData(ctx, models.AskMeParams{
+		ChatID:       chatID,
+		MessageID:    messageID,
+		CallbackData: callbackData,
+	}); err != nil {
+		return
+	}
+
+	return
+}
+
+func (t *TgBot) handleGetAnAnswerCallbackData(chatID int64, messageID int, callbackData string) (err error) {
+	ctx := context.Background()
+
+	if err = t.tgUC.HandleGetAnAnswerCallbackData(ctx, models.GetAnAnswerParams{
+		ChatID:       chatID,
+		MessageID:    messageID,
+		CallbackData: callbackData,
+	}); err != nil {
+		return
+	}
+
+	return
+}
+
+func (t *TgBot) handleAskMeSubSubdirectionCallbackData(chatID int64, messageID int, callbackData string) (err error) {
+	ctx := context.Background()
+
+	if err = t.tgUC.HandleAskMeSubSubdirectionCallbackData(ctx, models.AskMeParams{
+		ChatID:       chatID,
+		MessageID:    messageID,
+		CallbackData: callbackData,
+	}); err != nil {
+
+	}
+
+	return
+}
+
 func (t *TgBot) handleGetAnswerCallbackData(chatID int64, questionID string, messageID int) (err error) {
 	ctx := context.Background()
 

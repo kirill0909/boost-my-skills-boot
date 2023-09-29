@@ -22,7 +22,7 @@ import (
 )
 
 func main() {
-	viper, err := config.LoadConfig()
+	viper, err := config.LoadConfig() // i can do it
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    restart: always
+    command: ["/app/wait-for-db.sh", "db", "5432", "/bin/main"]
+    networks:
+      - my_internal_network
+
+  db:
+    image: postgres:latest
+    volumes:
+      - ./app/dumps/bot_db_dump.sql:/docker-entrypoint-initdb.d/mydbdump.sql
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: bot_db
+    # ports:
+      # - "5432:5432"
+    restart: always
+    networks:
+      - my_internal_network
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  my_internal_network:
+    driver: bridge
+  

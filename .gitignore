@@ -2,6 +2,8 @@
 *config.yml
 *config.json
 config/config.json
+dumps/
+.env
 ProdRedisTSL
 *.key
 *.crt

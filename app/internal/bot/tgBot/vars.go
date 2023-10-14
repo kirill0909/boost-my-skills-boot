@@ -39,39 +39,6 @@ var (
 	askMeCommend   = "ask_me"
 	addInfo        = "add_info"
 
-	// Callback data
-	// directionCallbackType    = 1
-	// subdirectionCallbackData = ""
-	getAnswerCallbackData = "Get_an_answer"
-	// Ask me sub callback
-	callbackDataAskMe = []string{
-		"1_Go_AskMe", "2_ComputerSince_AskMe", "3_Network_AskMe", "4_DB_AskMe",
-		"5_Algorithms_AskMe", "6_Architecture_AskMe", "7_Unix_AskMe", "8_Rust_AskMe",
-		"9_DevOps_AskMe", "10_General_AskMe",
-	}
-	// Ask me sub sub callback
-	callbackDataSubSubdirectionAskMe = []string{
-		"1_1_Go_Channels_AskMe", "1_2_Go_Interface_AskMe", "1_3_Go_Sheduler_AskMe",
-		"1_4_Go_Sync_AskMe", "1_5_Go_Slice_AskMe", "1_6_Go_Context_AskMe",
-		"1_7_Go_GC_AskMe", "1_8_Go_Goroutines_AskMe", "1_9_Go_Map_AskMe",
-		"1_10_Go_OS_AskMe", "1_11_Go_BuildIn_AskMe", "1_12_Go_Pointers_AskMe",
-		"1_13_Go_net/http_AskMe", "1_14_Go_General_AskMe",
-	}
-	// Add sub question callback
-	callbackDataSubdirectionAddQuestion = []string{
-		"1_Go_AddQuestion", "2_Computer_Since_AddQuestion", "3_Network_AddQuestion", "4_DB_AddQuestion",
-		"5_Algorithm_AddQuestion", "6_Architecture_AddQuestion", "7_Unix_AddQuestion", "8_Rust_AddQuestion",
-		"9_DevOps_AddQuestion", "10_General_AddQuestion",
-	}
-	// Add sub sub quersis callback
-	callbackDataSubSubdirectionAddQuestion = []string{
-		"1_1_Go_Channels_AddQuestion", "1_2_Go_Interface_AddQuestion", "1_3_Go_Sheduler_AddQuestion",
-		"1_4_Go_Sync_AddQuestion", "1_5_Go_Slice_AddQuestion", "1_6_Go_Context_AddQuestion",
-		"1_7_Go_GC_AddQuestion", "1_8_Go_Goroutines_AddQuestion", "1_9_Go_Map_AddQuestion",
-		"1_10_Go_OS_AddQuestion", "1_11_Go_BuildIn_AddQuestion", "1_12_Go_Pointers_AddQuestion",
-		"1_13_Go_net/http_AddQuestion", "1_14_Go_General_AddQuestion",
-	}
-
 	// errors
 	errUserActivation      = "Error account activation"
 	errUUIDAlreadyExists   = "Error account activation. Account with some UUID already exists. For get new UUID connect to @kirillkorunov"

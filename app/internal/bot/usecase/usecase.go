@@ -83,7 +83,13 @@ func (u *BotUC) SetUpDirection(ctx context.Context, params models.SetUpDirection
 	}
 
 	msg := tgbotapi.NewMessage(params.ChatID, readyMessage)
-	msg.ReplyMarkup = u.createMainMenuKeyboard()
+	switch {
+	case params.ChatID == u.cfg.AdminChatID:
+		msg.ReplyMarkup = u.createAdminMainMenuKeyboard()
+	default:
+		msg.ReplyMarkup = u.createMainMenuKeyboard()
+	}
+
 	if _, err = u.BotAPI.Send(msg); err != nil {
 		return
 	}

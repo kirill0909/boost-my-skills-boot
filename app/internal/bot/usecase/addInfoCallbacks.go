@@ -26,7 +26,7 @@ func (u *BotUC) HandleAddInfoSubdirectionCallbackData(ctx context.Context, param
 		return
 	}
 	params.SubdirectionID = subdirectionID
-	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingSubSubdirection, SubdirectionID: subdirectionID}
+	u.stateUsers[params.ChatID] = models.AddInfoParams{State: u.cfg.StateMachineStatus.AwaitingSubSubdirection, SubdirectionID: subdirectionID}
 
 	subSubdirections := u.stateDirections.GetSubSubdirectionsBySubdirectionID(params.SubdirectionID)
 
@@ -46,7 +46,7 @@ func (u *BotUC) HandleAddInfoSubdirectionCallbackData(ctx context.Context, param
 }
 
 func (u *BotUC) handleAddInfoSubdirectionsCase(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
-	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingSubSubdirection, SubdirectionID: params.SubdirectionID}
+	u.stateUsers[params.ChatID] = models.AddInfoParams{State: u.cfg.StateMachineStatus.AwaitingSubSubdirection, SubdirectionID: params.SubdirectionID}
 
 	subSubdirections := u.stateDirections.GetSubSubdirectionsBySubdirectionID(params.SubdirectionID)
 	if len(subSubdirections) == 0 {
@@ -64,7 +64,7 @@ func (u *BotUC) handleAddInfoSubdirectionsCase(ctx context.Context, params model
 }
 
 func (u *BotUC) hanleAddInfoSubdirectionsDefaultCase(ctx context.Context, params models.AddInfoSubdirectionParams) (err error) {
-	u.stateUsers[params.ChatID] = models.AddInfoParams{State: awaitingQuestion, SubdirectionID: params.SubdirectionID}
+	u.stateUsers[params.ChatID] = models.AddInfoParams{State: u.cfg.StateMachineStatus.AwaitingQuestion, SubdirectionID: params.SubdirectionID}
 
 	msg := tgbotapi.NewMessage(params.ChatID, enterQuestionMessage)
 	if _, err = u.BotAPI.Send(msg); err != nil {
@@ -90,7 +90,7 @@ func (u *BotUC) HandleAddInfoSubSubdirectionCallbackData(ctx context.Context, pa
 	}
 
 	u.stateUsers[params.ChatID] = models.AddInfoParams{
-		State:             awaitingQuestion,
+		State:             u.cfg.StateMachineStatus.AwaitingQuestion,
 		SubdirectionID:    params.SubdirectionID,
 		SubSubdirectionID: subSubdirectionID,
 	}

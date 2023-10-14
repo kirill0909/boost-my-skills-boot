@@ -12,7 +12,7 @@ import (
 
 func (u *BotUC) HandleAddInfoCommand(ctx context.Context, chatID int64) (err error) {
 
-	u.stateUsers[chatID] = models.AddInfoParams{State: awaitingSubdirection}
+	u.stateUsers[chatID] = models.AddInfoParams{State: u.cfg.StateMachineStatus.AwaitingSubdirection}
 	directionID, err := u.pgRepo.GetDirectionIDByChatID(ctx, chatID)
 	if err != nil {
 		return
@@ -30,7 +30,7 @@ func (u *BotUC) HandleAddInfoCommand(ctx context.Context, chatID int64) (err err
 		if _, err = u.BotAPI.Send(msg); err != nil {
 			return
 		}
-		u.stateUsers[chatID] = models.AddInfoParams{State: idle}
+		u.stateUsers[chatID] = models.AddInfoParams{State: u.cfg.StateMachineStatus.Idle}
 
 		return
 	}

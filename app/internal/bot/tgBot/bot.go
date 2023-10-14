@@ -93,9 +93,9 @@ func (t *TgBot) Run() error {
 			}
 
 			questionParams, ok := t.stateUsers[update.Message.Chat.ID]
-			if !ok || questionParams.State == idle ||
-				questionParams.State == awaitingSubdirection ||
-				questionParams.State == awaitingSubSubdirection {
+			if !ok || questionParams.State == t.cfg.StateMachineStatus.Idle ||
+				questionParams.State == t.cfg.StateMachineStatus.AwaitingSubdirection ||
+				questionParams.State == t.cfg.StateMachineStatus.AwaitingSubSubdirection {
 				msg := tgbotapi.NewMessage(update.Message.Chat.ID, addQuestionMessage)
 				if _, err := t.BotAPI.Send(msg); err != nil {
 					log.Println(err)
@@ -104,19 +104,19 @@ func (t *TgBot) Run() error {
 			}
 
 			switch questionParams.State {
-			case awaitingQuestion:
+			case t.cfg.StateMachineStatus.AwaitingQuestion:
 				if err := t.handleEnteredQuestion(
 					update.Message.Chat.ID, update.Message.Text,
 					questionParams.SubdirectionID, questionParams.SubSubdirectionID); err != nil {
 					log.Printf("bot.TgBot.handleEnteredQuestion: %s", err.Error())
-					t.stateUsers[update.Message.Chat.ID] = models.AddInfoParams{State: idle}
+					t.stateUsers[update.Message.Chat.ID] = models.AddInfoParams{State: t.cfg.StateMachineStatus.Idle}
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
-			case awaitingAnswer:
+			case t.cfg.StateMachineStatus.AwaitingAnswer:
 				if err := t.handleEnteredAnswer(update.Message.Chat.ID, update.Message.Text); err != nil {
 					log.Printf("bot.TgBot.handleEnteredAnswer: %s", err.Error())
-					t.stateUsers[update.Message.Chat.ID] = models.AddInfoParams{State: idle}
+					t.stateUsers[update.Message.Chat.ID] = models.AddInfoParams{State: t.cfg.StateMachineStatus.Idle}
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}

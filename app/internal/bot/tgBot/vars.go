@@ -76,11 +76,4 @@ var (
 	errUserActivation      = "Ошибка активации аккаута"
 	errUUIDAlreadyExists   = "Ошибка активации аккаута. Аккаунт с таким UUID уже существует. Для получения новаго UUID обратитесь к @kirillkorunov"
 	errInternalServerError = "Внутренняя ошибка сервера"
-
-	// stat machine
-	idle                    = 1
-	awaitingQuestion        = 2
-	awaitingAnswer          = 3
-	awaitingSubdirection    = 4
-	awaitingSubSubdirection = 4
 )

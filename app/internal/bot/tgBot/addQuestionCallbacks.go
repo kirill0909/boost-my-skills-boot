@@ -32,7 +32,7 @@ func (t *TgBot) handleSubSubdirectionsExistsCaseAddQuestion(chatID int64, subSub
 		return
 	}
 	t.stateUsers[chatID] = models.AddInfoParams{
-		State: awaitingSubSubdirection, SubdirectionID: subdirectionID}
+		State: t.cfg.StateMachineStatus.AwaitingSubSubdirection, SubdirectionID: subdirectionID}
 
 	return
 }

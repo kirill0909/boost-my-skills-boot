@@ -13,6 +13,7 @@ type Config struct {
 	TgBot              TgBot
 	CallbackType       CallbackType
 	StateMachineStatus StateMachineStatus
+	AdminChatID        int64
 }
 
 type Postgres struct {

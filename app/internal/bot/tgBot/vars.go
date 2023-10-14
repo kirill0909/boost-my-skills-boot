@@ -73,7 +73,7 @@ var (
 	}
 
 	// errors
-	errUserActivation      = "Ошибка активации аккаута"
-	errUUIDAlreadyExists   = "Ошибка активации аккаута. Аккаунт с таким UUID уже существует. Для получения новаго UUID обратитесь к @kirillkorunov"
-	errInternalServerError = "Внутренняя ошибка сервера"
+	errUserActivation      = "Error account activation"
+	errUUIDAlreadyExists   = "Error account activation. Account with some UUID already exists. For get new UUID connect to @kirillkorunov"
+	errInternalServerError = "Internal server error"
 )

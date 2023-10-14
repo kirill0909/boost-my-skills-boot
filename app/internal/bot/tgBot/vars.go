@@ -22,14 +22,9 @@ var (
 	Frontend или Backend. После этого вы можете добавить свои вопросы нажав на кнопку add_question
 	и получать их в случайном порядке нажав на кнопку ask_me. Удачи)
 	`
-	// notQuestionsMessage          = "Для этого пока не добавлено ни одного вопроса. Обратитесь к @kirillkorunov."
-	addQuestionMessage           = "Для добавления вопроса нажмите на кнопку add_question"
-	handleAddQuestionMessage     = "Ввeдите вопрос"
-	handleEnteredQuestionMessage = "Отлично! Теперь ввeдите ответ"
-	handleEnteredAnswerMessage   = "Ваш вопрос и ответ успешно сохранен"
-	unableToGetAnswer            = `Невозможно получить ответ для этого вопроса. 
-	Обратитесь к @kirillkorunov для добовления или изменеия ответа к интересующему вас вопросу. Либо довьте вопрос/ответ заново)`
-	chooseSubdirectionMessage = "Choose subdirections"
+	addQuestionMessage           = "To add info press on the button add_question"
+	handleEnteredQuestionMessage = "Cool! Now enter your answer"
+	handleEnteredAnswerMessage   = "Your info successfully stored"
 
 	// Buttons
 	getUUIDButton  = "/get_uuid"
@@ -37,7 +32,6 @@ var (
 	addInfoButton  = "/add_info"
 	backenddButton = "I ❤️  backend"
 	frontendButton = "I ❤️  frontend"
-	// getAnswerButton = "Get an answer"
 
 	// Commands name
 	startCommand   = "start"

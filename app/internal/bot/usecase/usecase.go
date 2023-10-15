@@ -87,6 +87,9 @@ func (u *BotUC) SetUpDirection(ctx context.Context, params models.SetUpDirection
 	if params.ChatID == u.cfg.AdminChatID {
 		isAdmin = true
 		msg.ReplyMarkup = u.createMainMenuKeyboard(isAdmin)
+	} else {
+		isAdmin = false
+		msg.ReplyMarkup = u.createMainMenuKeyboard(isAdmin)
 	}
 
 	if _, err = u.BotAPI.Send(msg); err != nil {

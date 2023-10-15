@@ -115,28 +115,24 @@ func (t *BotUC) hideKeyboard(chatID int64, messageID int) (err error) {
 	return
 }
 
-func (t *BotUC) createAdminMainMenuKeyboard() (keyboard tgbotapi.ReplyKeyboardMarkup) {
+func (t *BotUC) createMainMenuKeyboard(isAdmin bool) (keyboard tgbotapi.ReplyKeyboardMarkup) {
 
-	keyboard = tgbotapi.NewReplyKeyboard(
-		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton(getUUIDButton),
-			tgbotapi.NewKeyboardButton(askMeButton),
-			tgbotapi.NewKeyboardButton(addInfoButton),
-		),
+	var keyboardButtons []tgbotapi.KeyboardButton
+	if isAdmin {
+		keyboardButtons = append(
+			keyboardButtons,
+			tgbotapi.NewKeyboardButton(getUUIDButton))
+	}
+
+	keyboardButtons = append(
+		keyboardButtons,
+		tgbotapi.NewKeyboardButton(askMeButton),
+		tgbotapi.NewKeyboardButton(addInfoButton),
 	)
 
-	keyboard.OneTimeKeyboard = false // Hide keyboard after one use
-	keyboard.ResizeKeyboard = true   // Resizes keyboard depending on the user's device
-
-	return
-}
-
-func (t *BotUC) createMainMenuKeyboard() (keyboard tgbotapi.ReplyKeyboardMarkup) {
-
 	keyboard = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton(askMeButton),
-			tgbotapi.NewKeyboardButton(addInfoButton),
+			keyboardButtons...,
 		),
 	)
 

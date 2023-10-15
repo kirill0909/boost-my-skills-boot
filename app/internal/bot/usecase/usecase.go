@@ -82,12 +82,11 @@ func (u *BotUC) SetUpDirection(ctx context.Context, params models.SetUpDirection
 		return
 	}
 
+	var isAdmin bool
 	msg := tgbotapi.NewMessage(params.ChatID, readyMessage)
-	switch {
-	case params.ChatID == u.cfg.AdminChatID:
-		msg.ReplyMarkup = u.createAdminMainMenuKeyboard()
-	default:
-		msg.ReplyMarkup = u.createMainMenuKeyboard()
+	if params.ChatID == u.cfg.AdminChatID {
+		isAdmin = true
+		msg.ReplyMarkup = u.createMainMenuKeyboard(isAdmin)
 	}
 
 	if _, err = u.BotAPI.Send(msg); err != nil {

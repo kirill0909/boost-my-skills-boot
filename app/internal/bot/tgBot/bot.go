@@ -3,7 +3,6 @@ package tgbot
 import (
 	"boost-my-skills-bot/config"
 	"boost-my-skills-bot/internal/bot"
-	"context"
 	"log"
 	"strconv"
 	"strings"
@@ -55,10 +54,10 @@ func (t *TgBot) Run() error {
 				if err := t.handleStartCommand(params); err != nil {
 					log.Printf("bot.TgBot.handleStartCommand: %s", err.Error())
 					if strings.Contains(err.Error(), "Wrong number of rows affected") {
-						t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errUUIDAlreadyExists)
+						t.sendErrorMessage(update.Message.Chat.ID, errUUIDAlreadyExists)
 						continue
 					}
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errUserActivation)
+					t.sendErrorMessage(update.Message.Chat.ID, errUserActivation)
 					continue
 				}
 				continue
@@ -67,28 +66,28 @@ func (t *TgBot) Run() error {
 					update.Message.Chat.ID,
 					models.GetUUID{ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}); err != nil {
 					log.Printf("bot.TgBot.handleGetUUIDCommand: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 				continue
 			case askMeCommend:
 				if err := t.handleAskMeCommand(update.Message.Chat.ID, models.AskMeParams{ChatID: update.Message.Chat.ID}); err != nil {
 					log.Printf("bot.TgBot.handleAskMeCommand: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 				continue
 			case addInfo:
 				if err := t.handleAddInfoCommand(update.Message.Chat.ID); err != nil {
 					log.Printf("bot.TgBot.handleAddInfoCommand: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 				continue
 			case printInfo:
 				if err := t.handlePrintInfoCommand(update.Message.Chat.ID); err != nil {
 					log.Printf("bot.TgBot.handlePrintInfoCommand: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 				continue
@@ -112,14 +111,14 @@ func (t *TgBot) Run() error {
 					questionParams.SubdirectionID, questionParams.SubSubdirectionID); err != nil {
 					log.Printf("bot.TgBot.handleEnteredQuestion: %s", err.Error())
 					t.stateUsers[update.Message.Chat.ID] = models.AddInfoParams{State: t.cfg.StateMachineStatus.Idle}
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			case t.cfg.StateMachineStatus.AwaitingAnswer:
 				if err := t.handleEnteredAnswer(update.Message.Chat.ID, update.Message.Text); err != nil {
 					log.Printf("bot.TgBot.handleEnteredAnswer: %s", err.Error())
 					t.stateUsers[update.Message.Chat.ID] = models.AddInfoParams{State: t.cfg.StateMachineStatus.Idle}
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			}
@@ -140,37 +139,37 @@ func (t *TgBot) Run() error {
 			case t.cfg.CallbackType.Direction:
 				if err := t.handleDirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
 					log.Printf("bot.TgBot.handleDirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			case t.cfg.CallbackType.SubdirectionAddInfo:
 				if err := t.handleAddInfoSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
 					log.Printf("bot.TgBot.handleAddInfoSubdirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			case t.cfg.CallbackType.SubSubdirectionAddInfo:
 				if err := t.handleAddInfoSubSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
 					log.Printf("bot.TgBot.handleAddInfoSubSubdirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			case t.cfg.CallbackType.SubdirectionAskMe:
 				if err := t.handleAskMeSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
 					log.Printf("bot.TgBot.handleAskMeSubdirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			case t.cfg.CallbackType.SubSubdirectionAskMe:
 				if err := t.handleAskMeSubSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
 					log.Printf("bot.TgBot.handleAskMeSubSubdirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			case t.cfg.CallbackType.GetAnAnswer:
 				if err := t.handleGetAnAnswerCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
 					log.Printf("bot.TgBot.handleGetAnAnswerCallbackData: %s", err.Error())
-					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 			}
@@ -191,7 +190,7 @@ func (t *TgBot) extractCallbackType(callbackData string) (result int, err error)
 	return callbackType, nil
 }
 
-func (t *TgBot) sendErrorMessage(ctx context.Context, chatID int64, text string) {
+func (t *TgBot) sendErrorMessage(chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
 	_, err := t.BotAPI.Send(msg)
 	if err != nil {

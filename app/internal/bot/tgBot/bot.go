@@ -179,7 +179,11 @@ func (t *TgBot) Run() error {
 					continue
 				}
 			case t.cfg.CallbackType.SubSubdirectionPrintQuestions:
-				log.Println("===SubSubdirectionPrintQuestions")
+				if err := t.handlePrintQuestionsSubSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
+					log.Printf("bot.TgBot.handlePrintQuestionsSubSubdirectionCallbackData: %s", err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
 			}
 
 		}

@@ -12,7 +12,8 @@ const (
 	enterQuestionMessage           = "Alright, Enter yout question"
 	subdirectionAskMeMessage       = "Choose sub direction for question"
 	subSubdirectionAskMeMessage    = "Choose sub sub direction for question"
-	notQuestionsMessage            = "Not a single question was found in this direction"
+	notSubSubDirectionMessage      = "Not a single sub sub direciton was found this sub direction"
+	notOneQuestion                 = "Not a single question for this sub sub direction"
 
 	// main buttons
 	getUUIDButton   = "/get_uuid"

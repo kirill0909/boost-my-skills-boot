@@ -92,16 +92,17 @@ type SetUpDirection struct {
 }
 
 type PrintQuestionsParams struct {
-	ChatID         int64
-	MessageID      int
-	CallbackData   string
-	SubdirectionID int
+	ChatID            int64
+	MessageID         int
+	CallbackData      string
+	SubdirectionID    int
+	SubSubdirectionID int
 }
 
 type PrintQuestionsResult struct {
-	ID       int
-	Question string
-	Answer   string
+	ID       int    `db:"id"`
+	Question string `db:"question"`
+	Answer   string `db:"answer"`
 }
 
 type DirectionInfo struct {

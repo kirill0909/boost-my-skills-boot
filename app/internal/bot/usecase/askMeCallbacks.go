@@ -69,7 +69,7 @@ func (u *BotUC) handleAskMeSubdirectionsDefaultCase(ctx context.Context, params 
 	}
 
 	if len(result.Question) == 0 {
-		msg := tgbotapi.NewMessage(params.ChatID, notQuestionsMessage)
+		msg := tgbotapi.NewMessage(params.ChatID, notOneQuestion)
 		if _, err = u.BotAPI.Send(msg); err != nil {
 			return errors.Wrap(err, "BotUC.hanleAskMeSubdirectionsDefaultCase.len(result.Question).Send")
 		}
@@ -112,7 +112,7 @@ func (u *BotUC) HandleAskMeSubSubdirectionCallbackData(ctx context.Context, para
 	}
 
 	if len(result.Question) == 0 {
-		msg := tgbotapi.NewMessage(params.ChatID, notQuestionsMessage)
+		msg := tgbotapi.NewMessage(params.ChatID, notOneQuestion)
 		if _, err = u.BotAPI.Send(msg); err != nil {
 			return errors.Wrap(err, "BotUC.HandleAskMeSubSubdirectionCallbackData.len(result.Question).Send")
 		}

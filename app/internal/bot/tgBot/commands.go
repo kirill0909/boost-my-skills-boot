@@ -26,10 +26,10 @@ func (t *TgBot) handleGetUUIDCommand(chatID int64, params models.GetUUID) (err e
 	return
 }
 
-func (t *TgBot) handleStartCommand(chatID int64, params models.UserActivation, text string) (err error) {
+func (t *TgBot) handleStartCommand(params models.UserActivation) (err error) {
 	ctx := context.Background()
 
-	splitedText := strings.Split(text, " ")
+	splitedText := strings.Split(params.Text, " ")
 	if len(splitedText) != 2 {
 		err = fmt.Errorf("Error invite token extracting")
 		return
@@ -40,7 +40,7 @@ func (t *TgBot) handleStartCommand(chatID int64, params models.UserActivation, t
 		return
 	}
 
-	msg := tgbotapi.NewMessage(chatID, wellcomeMessage)
+	msg := tgbotapi.NewMessage(params.ChatID, wellcomeMessage)
 	msg.ReplyMarkup = t.createDirectionsKeyboard(t.stateDirections.DirectionInfo)
 	if _, err = t.BotAPI.Send(msg); err != nil {
 		return

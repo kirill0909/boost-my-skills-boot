@@ -13,6 +13,7 @@ type UserActivation struct {
 	ChatID int64
 	TgName string
 	UUID   string
+	Text   string
 }
 
 type AskMeParams struct {

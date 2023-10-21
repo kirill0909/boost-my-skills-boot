@@ -14,9 +14,10 @@ const (
 	notQuestionsMessage            = "Not a single question was found in this direction"
 
 	// main buttons
-	getUUIDButton = "/get_uuid"
-	askMeButton   = "/ask_me"
-	addInfoButton = "/add_info"
+	getUUIDButton   = "/get_uuid"
+	askMeButton     = "/ask_me"
+	addInfoButton   = "/add_info"
+	printInfoButton = "/print_info"
 
 	// buttons
 	getAnswerButton = "Get an answer"

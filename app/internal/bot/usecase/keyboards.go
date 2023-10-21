@@ -118,7 +118,7 @@ func (t *BotUC) hideKeyboard(chatID int64, messageID int) (err error) {
 func (t *BotUC) createMainMenuKeyboard(isAdmin bool) (keyboard tgbotapi.ReplyKeyboardMarkup) {
 
 	var keyboardButtons []tgbotapi.KeyboardButton
-	if isAdmin {
+	if isAdmin { // buttons available only to the administrator
 		keyboardButtons = append(
 			keyboardButtons,
 			tgbotapi.NewKeyboardButton(getUUIDButton))
@@ -128,6 +128,7 @@ func (t *BotUC) createMainMenuKeyboard(isAdmin bool) (keyboard tgbotapi.ReplyKey
 		keyboardButtons,
 		tgbotapi.NewKeyboardButton(askMeButton),
 		tgbotapi.NewKeyboardButton(addInfoButton),
+		tgbotapi.NewKeyboardButton(printInfoButton),
 	)
 
 	keyboard = tgbotapi.NewReplyKeyboard(

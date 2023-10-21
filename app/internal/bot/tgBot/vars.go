@@ -38,6 +38,7 @@ var (
 	getUUIDCommand = "get_uuid"
 	askMeCommend   = "ask_me"
 	addInfo        = "add_info"
+	printInfo      = "print_info"
 
 	// errors
 	errUserActivation      = "Error account activation"

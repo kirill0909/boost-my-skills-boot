@@ -3,6 +3,7 @@ package tgbot
 import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
+	"log"
 
 	"fmt"
 	"strings"
@@ -65,6 +66,12 @@ func (t *TgBot) handleAddInfoCommand(chatID int64) (err error) {
 	if err = t.tgUC.HandleAddInfoCommand(ctx, chatID); err != nil {
 		return
 	}
+
+	return
+}
+
+func (t *TgBot) handlePrintInfoCommand(chatID int64) (err error) {
+	log.Println("handlePrintInfoCommand")
 
 	return
 }

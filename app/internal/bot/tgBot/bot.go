@@ -72,18 +72,22 @@ func (t *TgBot) Run() error {
 				}
 				continue
 			case askMeCommend:
-				if err := t.handleAskMeCommand(
-					update.Message.Chat.ID,
-					models.AskMeParams{ChatID: update.Message.Chat.ID}); err != nil {
+				if err := t.handleAskMeCommand(update.Message.Chat.ID, models.AskMeParams{ChatID: update.Message.Chat.ID}); err != nil {
 					log.Printf("bot.TgBot.handleAskMeCommand: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 				continue
 			case addInfo:
-				if err := t.handleAddInfoCommand(
-					update.Message.Chat.ID); err != nil {
+				if err := t.handleAddInfoCommand(update.Message.Chat.ID); err != nil {
 					log.Printf("bot.TgBot.handleAddInfoCommand: %s", err.Error())
+					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
+				continue
+			case printInfo:
+				if err := t.handlePrintInfoCommand(update.Message.Chat.ID); err != nil {
+					log.Printf("bot.TgBot.handlePrintInfoCommand: %s", err.Error())
 					t.sendErrorMessage(context.Background(), update.Message.Chat.ID, errInternalServerError)
 					continue
 				}

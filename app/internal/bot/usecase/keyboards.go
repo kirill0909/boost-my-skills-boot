@@ -173,9 +173,14 @@ func (t *BotUC) createMainMenuKeyboard(isAdmin bool) (keyboard tgbotapi.ReplyKey
 		tgbotapi.NewKeyboardButton(printInfoButton),
 	)
 
+	middle := len(keyboardButtons) / 2
+
 	keyboard = tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(
-			keyboardButtons...,
+			keyboardButtons[:middle]...,
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			keyboardButtons[middle:]...,
 		),
 	)
 

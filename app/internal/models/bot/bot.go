@@ -13,6 +13,7 @@ type UserActivation struct {
 	ChatID int64
 	TgName string
 	UUID   string
+	Text   string
 }
 
 type AskMeParams struct {
@@ -88,6 +89,20 @@ type SetUpDirection struct {
 	MessageID    int
 	CallbackData string
 	DirectionID  int
+}
+
+type PrintQuestionsParams struct {
+	ChatID            int64
+	MessageID         int
+	CallbackData      string
+	SubdirectionID    int
+	SubSubdirectionID int
+}
+
+type PrintQuestionsResult struct {
+	ID       int    `db:"id"`
+	Question string `db:"question"`
+	Answer   string `db:"answer"`
 }
 
 type DirectionInfo struct {

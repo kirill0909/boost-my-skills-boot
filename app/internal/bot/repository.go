@@ -15,6 +15,7 @@ type PgRepository interface {
 	SaveAnswer(ctx context.Context, params models.SaveAnswerParams) (err error)
 	GetSubdirections(ctx context.Context, params models.GetSubdirectionsParams) (result []string, err error)
 	GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error)
+	PrintQuestions(params models.PrintQuestionsParams) (result []models.PrintQuestionsResult, err error)
 
 	GetDirectionIDByChatID(ctx context.Context, param int64) (result int, err error)
 	SetUpDirection(ctx context.Context, params models.SetUpDirection) (err error)

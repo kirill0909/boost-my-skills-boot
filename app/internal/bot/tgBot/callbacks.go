@@ -83,7 +83,35 @@ func (t *TgBot) handleAskMeSubSubdirectionCallbackData(chatID int64, messageID i
 		MessageID:    messageID,
 		CallbackData: callbackData,
 	}); err != nil {
+		return
+	}
 
+	return
+}
+
+func (t *TgBot) handlePrintQuestionsSubdirectionCallbackData(chatID int64, messageID int, callbackData string) (err error) {
+	ctx := context.Background()
+
+	if err = t.tgUC.HandlePrintQuestionsSubdirectionCallbackData(ctx, models.PrintQuestionsParams{
+		ChatID:       chatID,
+		MessageID:    messageID,
+		CallbackData: callbackData,
+	}); err != nil {
+		return
+	}
+
+	return
+}
+
+func (t *TgBot) handlePrintQuestionsSubSubdirectionCallbackData(chatID int64, messageID int, callbackData string) (err error) {
+	ctx := context.Background()
+
+	if err = t.tgUC.HandlePrintQuestionsSubSubdirectionCallbackData(ctx, models.PrintQuestionsParams{
+		ChatID:       chatID,
+		MessageID:    messageID,
+		CallbackData: callbackData,
+	}); err != nil {
+		return
 	}
 
 	return

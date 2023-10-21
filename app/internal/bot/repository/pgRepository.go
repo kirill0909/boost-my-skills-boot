@@ -5,7 +5,6 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
-
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
@@ -270,6 +269,33 @@ func (r *BotPGRepo) GetSubSubdirectionsInfo(ctx context.Context) (result []model
 func (r *BotPGRepo) GetDirectionIDByChatID(ctx context.Context, param int64) (result int, err error) {
 	if err = r.db.GetContext(ctx, &result, queryGetDirectionByChatID, param); err != nil {
 		err = errors.Wrap(err, "BotPGRepo.GetDirectionIDByChatID.queryGetDirectionByChatID")
+		return
+	}
+
+	return
+}
+
+func (r *BotPGRepo) PrintQuestions(params models.PrintQuestionsParams) (result []models.PrintQuestionsResult, err error) {
+	rows, err := r.db.Query(queryPrintInfo, params.ChatID, params.SubdirectionID, params.SubSubdirectionID)
+	if err != nil {
+		err = errors.Wrapf(err, "BotPGRepo.PrintInfo.queryPrintInfo. chatID: %d", params.ChatID)
+		return
+	}
+
+	defer rows.Close()
+
+	var res models.PrintQuestionsResult
+	for rows.Next() {
+		if err = rows.Scan(&res.ID, &res.Question, &res.Answer); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.PrintInfo.Scan")
+			return
+		}
+
+		result = append(result, res)
+	}
+
+	if err = rows.Err(); err != nil {
+		err = errors.Wrap(err, "BotPGRepo.PrintInfo.Err")
 		return
 	}
 

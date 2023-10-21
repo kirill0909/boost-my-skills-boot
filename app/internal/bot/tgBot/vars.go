@@ -34,10 +34,11 @@ var (
 	frontendButton = "I ❤️  frontend"
 
 	// Commands name
-	startCommand   = "start"
-	getUUIDCommand = "get_uuid"
-	askMeCommend   = "ask_me"
-	addInfo        = "add_info"
+	startCommand          = "start"
+	getUUIDCommand        = "get_uuid"
+	askMeCommend          = "ask_me"
+	addInfoCommand        = "add_info"
+	printQuestionsCommand = "print_questions"
 
 	// errors
 	errUserActivation      = "Error account activation"

@@ -31,12 +31,14 @@ type TgBot struct {
 }
 
 type CallbackType struct {
-	Direction              int `validate:"required"`
-	GetAnAnswer            int `validate:"required"`
-	SubdirectionAddInfo    int `validate:"required"`
-	SubSubdirectionAddInfo int `validate:"required"`
-	SubdirectionAskMe      int `validate:"required"`
-	SubSubdirectionAskMe   int `validate:"required"`
+	Direction                     int `validate:"required"`
+	GetAnAnswer                   int `validate:"required"`
+	SubdirectionAddInfo           int `validate:"required"`
+	SubSubdirectionAddInfo        int `validate:"required"`
+	SubdirectionAskMe             int `validate:"required"`
+	SubSubdirectionAskMe          int `validate:"required"`
+	SubdirectionPrintQuestions    int `validate:"required"`
+	SubSubdirectionPrintQuestions int `validate:"required"`
 }
 
 type StateMachineStatus struct {

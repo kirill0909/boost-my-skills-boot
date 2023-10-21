@@ -6,11 +6,10 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
-	"strconv"
-	"strings"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/pkg/errors"
+	"strconv"
+	"strings"
 )
 
 type BotUC struct {
@@ -152,6 +151,138 @@ func (u *BotUC) HandleGetAnAnswerCallbackData(ctx context.Context, params models
 	msg := tgbotapi.NewMessage(params.ChatID, result)
 	if _, err = u.BotAPI.Send(msg); err != nil {
 		return errors.Wrap(err, "BotUC.HandleGetAnAnswerCallbackData.Send")
+	}
+
+	return
+}
+
+func (u *BotUC) HandlePrintQuestions(ctx context.Context, params models.PrintQuestionsParams) (err error) {
+	directionID, err := u.pgRepo.GetDirectionIDByChatID(ctx, params.ChatID)
+	if err != nil {
+		return
+	}
+
+	subdirections := u.stateDirections.GetSubdirectionsByDirectionID(directionID)
+	if len(subdirections) == 0 {
+		err = fmt.Errorf("subdirections not found")
+		return errors.Wrap(err, "BotUC.HandlePrintQuestions.len(subdirections)")
+	}
+
+	msg := tgbotapi.NewMessage(params.ChatID, "")
+	if len(subdirections) == 0 {
+		msg.Text = noOneSubdirectionsFoundMessage
+		if _, err = u.BotAPI.Send(msg); err != nil {
+			return
+		}
+
+		return
+	}
+
+	msg.Text = subdirectionPrintQuestions
+	msg.ReplyMarkup = u.createSubdirectionsKeyboardPrintQuestions(subdirections)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return
+	}
+
+	return
+}
+
+func (u *BotUC) HandlePrintQuestionsSubdirectionCallbackData(ctx context.Context, params models.PrintQuestionsParams) (err error) {
+	if err = u.hideKeyboard(params.ChatID, params.MessageID); err != nil {
+		return
+	}
+
+	splitedCallbackData := strings.Split(params.CallbackData, " ")
+	subdirectionIDCallbackData := splitedCallbackData[len(splitedCallbackData)-2]
+
+	subdirectionID, err := strconv.Atoi(subdirectionIDCallbackData)
+	if err != nil {
+		err = errors.Wrapf(err, "BotUC.HandlePrintQuestionsSubdirectionCallbackData.Atoi(%s)", subdirectionIDCallbackData)
+		return
+	}
+	params.SubdirectionID = subdirectionID
+
+	subSubdirections := u.stateDirections.GetSubSubdirectionsBySubdirectionID(params.SubdirectionID)
+
+	n := len(subSubdirections)
+	switch {
+	case n > 0:
+		if err = u.handlePrintQuestionsSubSubdirectionsCase(ctx, params); err != nil {
+			return
+		}
+	default:
+		if err = u.handlePrintQuestionsSubSubdirectionsDefaultCase(ctx, params); err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (u *BotUC) handlePrintQuestionsSubSubdirectionsCase(ctx context.Context, params models.PrintQuestionsParams) (err error) {
+	subSubdirections := u.stateDirections.GetSubSubdirectionsBySubdirectionID(params.SubdirectionID)
+	u.stateUsers[params.ChatID] = models.AddInfoParams{
+		SubdirectionID: params.SubdirectionID,
+	}
+
+	msg := tgbotapi.NewMessage(params.ChatID, subSubdirectionAskMeMessage)
+	msg.ReplyMarkup = u.createSubSubdirectionsKeyboardPrintQuestions(subSubdirections)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return errors.Wrap(err, "BotUC.handlePrintQuestionsSubSubdirectionscase.Send()")
+	}
+
+	return
+}
+
+func (u *BotUC) handlePrintQuestionsSubSubdirectionsDefaultCase(ctx context.Context, params models.PrintQuestionsParams) (err error) {
+	msg := tgbotapi.NewMessage(params.ChatID, notSubSubDirectionMessage)
+	if _, err = u.BotAPI.Send(msg); err != nil {
+		return errors.Wrap(err, "BotUC.handlePrintQuestionsSubSubdirectionsDefaultCase.Send()")
+	}
+
+	return
+}
+
+func (u *BotUC) HandlePrintQuestionsSubSubdirectionCallbackData(ctx context.Context, params models.PrintQuestionsParams) (err error) {
+	if err = u.hideKeyboard(params.ChatID, params.MessageID); err != nil {
+		return
+	}
+
+	splitedCallbackData := strings.Split(params.CallbackData, " ")
+	subSubdirectionIDCallbackData := splitedCallbackData[len(splitedCallbackData)-2]
+
+	subSubdirectionID, err := strconv.Atoi(subSubdirectionIDCallbackData)
+	if err != nil {
+		err = errors.Wrapf(err, "BotUC.HandlePrintQuestionsSubSubdirectionCallbackData.Atoi(%s)", subSubdirectionIDCallbackData)
+		return
+	}
+
+	params.SubSubdirectionID = subSubdirectionID
+	params.SubdirectionID = u.stateUsers[params.ChatID].SubdirectionID
+
+	result, err := u.pgRepo.PrintQuestions(models.PrintQuestionsParams{
+		ChatID:            params.ChatID,
+		SubdirectionID:    params.SubdirectionID,
+		SubSubdirectionID: params.SubSubdirectionID,
+	})
+	if err != nil {
+		return
+	}
+
+	if len(result) == 0 {
+		msg := tgbotapi.NewMessage(params.ChatID, notOneQuestion)
+		if _, err = u.BotAPI.Send(msg); err != nil {
+			return errors.Wrap(err, "BotUC.HandlePrintQuestionsSubSubdirectionCallbackData.len(result).Send")
+		}
+
+		return
+	}
+
+	for _, question := range result {
+		msg := tgbotapi.NewMessage(params.ChatID, question.Question)
+		if _, err = u.BotAPI.Send(msg); err != nil {
+			return errors.Wrap(err, "BotUC.HandlePrintQuestionsSubSubdirectionCallbackData..Send")
+		}
 	}
 
 	return

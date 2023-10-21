@@ -102,4 +102,14 @@ const (
 	queryGetDirectionByChatID = `
 	SELECT direction_id FROM users.user WHERE tg_chat_id = $1
 	`
+
+	queryPrintInfo = `
+	SELECT
+ ui.id AS id,
+ ui.question AS question,
+ ui.answer AS answer
+ FROM users.info ui
+ INNER JOIN users.user uu ON uu.tg_chat_id = $1
+ WHERE ui.sub_direction_id = $2 AND ui.sub_sub_direction_id = $3
+	`
 )

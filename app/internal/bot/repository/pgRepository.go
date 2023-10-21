@@ -275,3 +275,28 @@ func (r *BotPGRepo) GetDirectionIDByChatID(ctx context.Context, param int64) (re
 
 	return
 }
+
+func (r *BotPGRepo) PrintQuestions(params models.PrintQuestionsParams) (result []models.PrintQuestionsResult, err error) {
+	rows, err := r.db.Query(queryPrintInfo, params.ChatID)
+	if err != nil {
+		err = errors.Wrapf(err, "BotPGRepo.PrintInfo.queryPrintInfo. chatID: %d", params.ChatID)
+		return
+	}
+
+	defer rows.Close()
+
+	var res models.PrintQuestionsResult
+	for rows.Next() {
+		if err = rows.Scan(&res.ID, &res.Question, &res.Answer); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.PrintInfo.Scan")
+			return
+		}
+	}
+
+	if err = rows.Err(); err != nil {
+		err = errors.Wrap(err, "BotPGRepo.PrintInfo.Err")
+		return
+	}
+
+	return
+}

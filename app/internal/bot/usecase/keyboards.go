@@ -88,6 +88,48 @@ func (t *BotUC) createSubSubdirectionsKeyboardAskMe(subSubdirections []models.Su
 	return
 }
 
+func (t *BotUC) createSubdirectionsKeyboardPrintQuestions(subdirections []models.SubdirectionInfo) (
+	keyboard tgbotapi.InlineKeyboardMarkup) {
+
+	var rows []tgbotapi.InlineKeyboardButton
+
+	for i := 0; i < len(subdirections); i++ {
+		buttons := tgbotapi.NewInlineKeyboardButtonData(
+			subdirections[i].SubdirectionName,
+			fmt.Sprintf("%d %d", subdirections[i].SubdirectionID, t.cfg.CallbackType.SubdirectionPrintQuestions))
+		rows = append(rows, buttons)
+
+		if (i+1)%2 == 0 || i == len(subdirections)-1 {
+			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(rows...))
+			rows = rows[:0]
+		}
+
+	}
+
+	return
+}
+
+func (t *BotUC) createSubSubdirectionsKeyboardPrintQuestions(subSubdirections []models.SubSubdirectionInfo) (
+	keyboard tgbotapi.InlineKeyboardMarkup) {
+
+	var rows []tgbotapi.InlineKeyboardButton
+
+	for i := 0; i < len(subSubdirections); i++ {
+		buttons := tgbotapi.NewInlineKeyboardButtonData(
+			subSubdirections[i].SubSubdirectionName,
+			fmt.Sprintf("%d %d", subSubdirections[i].SubSubdirectionID, t.cfg.CallbackType.SubSubdirectionPrintQuestions))
+		rows = append(rows, buttons)
+
+		if (i+1)%2 == 0 || i == len(subSubdirections)-1 {
+			keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(rows...))
+			rows = rows[:0]
+		}
+
+	}
+
+	return
+}
+
 func (t *BotUC) createAnswerKeyboard(questionID int) (keyboard tgbotapi.InlineKeyboardMarkup) {
 	keyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(

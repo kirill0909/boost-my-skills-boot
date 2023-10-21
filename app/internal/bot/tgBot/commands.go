@@ -3,12 +3,9 @@ package tgbot
 import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
-	"log"
-
 	"fmt"
-	"strings"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"strings"
 )
 
 func (t *TgBot) handleGetUUIDCommand(chatID int64, params models.GetUUID) (err error) {
@@ -70,8 +67,12 @@ func (t *TgBot) handleAddInfoCommand(chatID int64) (err error) {
 	return
 }
 
-func (t *TgBot) handlePrintInfoCommand(chatID int64) (err error) {
-	log.Println("handlePrintInfoCommand")
+func (t *TgBot) handlePrintQuestionsCommand(chatID int64) (err error) {
+	ctx := context.Background()
+
+	if err = t.tgUC.HandlePrintQuestions(ctx, models.PrintQuestionsParams{ChatID: chatID}); err != nil {
+		return err
+	}
 
 	return
 }

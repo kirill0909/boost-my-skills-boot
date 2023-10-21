@@ -91,6 +91,19 @@ type SetUpDirection struct {
 	DirectionID  int
 }
 
+type PrintQuestionsParams struct {
+	ChatID         int64
+	MessageID      int
+	CallbackData   string
+	SubdirectionID int
+}
+
+type PrintQuestionsResult struct {
+	ID       int
+	Question string
+	Answer   string
+}
+
 type DirectionInfo struct {
 	DirectionID   int    `db:"direction_id"`
 	DirectionName string `db:"direction_name"`

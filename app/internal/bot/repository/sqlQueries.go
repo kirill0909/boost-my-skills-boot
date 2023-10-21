@@ -102,4 +102,6 @@ const (
 	queryGetDirectionByChatID = `
 	SELECT direction_id FROM users.user WHERE tg_chat_id = $1
 	`
+
+	queryPrintInfo = ``
 )

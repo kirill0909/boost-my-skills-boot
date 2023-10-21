@@ -77,15 +77,15 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
-			case addInfo:
+			case addInfoCommand:
 				if err := t.handleAddInfoCommand(update.Message.Chat.ID); err != nil {
 					log.Printf("bot.TgBot.handleAddInfoCommand: %s", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
 				continue
-			case printInfo:
-				if err := t.handlePrintInfoCommand(update.Message.Chat.ID); err != nil {
+			case printQuestionsCommand:
+				if err := t.handlePrintQuestionsCommand(update.Message.Chat.ID); err != nil {
 					log.Printf("bot.TgBot.handlePrintInfoCommand: %s", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
@@ -172,7 +172,16 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
 					continue
 				}
+			case t.cfg.CallbackType.SubdirectionPrintQuestions:
+				if err := t.handlePrintQuestionsSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
+					log.Printf("bot.TgBot.handlePrintQuestionsSubdirectionCallbackData: %s", err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
+					continue
+				}
+			case t.cfg.CallbackType.SubSubdirectionPrintQuestions:
+				log.Println("===SubSubdirectionPrintQuestions")
 			}
+
 		}
 	}
 	return nil

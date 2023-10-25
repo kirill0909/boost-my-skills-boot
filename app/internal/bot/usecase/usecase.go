@@ -6,10 +6,12 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/pkg/errors"
 	"strconv"
 	"strings"
+	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/pkg/errors"
 )
 
 type BotUC struct {
@@ -280,9 +282,12 @@ func (u *BotUC) HandlePrintQuestionsSubSubdirectionCallbackData(ctx context.Cont
 
 	for _, question := range result {
 		msg := tgbotapi.NewMessage(params.ChatID, question.Question)
+		msg.ReplyMarkup = u.printInfoKeyboard(question.ID)
 		if _, err = u.BotAPI.Send(msg); err != nil {
-			return errors.Wrap(err, "BotUC.HandlePrintQuestionsSubSubdirectionCallbackData..Send")
+			return errors.Wrap(err, "BotUC.HandlePrintQuestionsSubSubdirectionCallbackData.Send")
 		}
+
+		time.Sleep(time.Millisecond * 100)
 	}
 
 	return

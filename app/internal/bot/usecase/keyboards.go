@@ -140,6 +140,16 @@ func (t *BotUC) createAnswerKeyboard(questionID int) (keyboard tgbotapi.InlineKe
 	return
 }
 
+func (t *BotUC) printInfoKeyboard(questionID int) (keyboard tgbotapi.InlineKeyboardMarkup) {
+	keyboard = tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData(getAnswerButton, fmt.Sprintf("%d %d", questionID, t.cfg.CallbackType.GetAnAnswer)),
+		),
+	)
+
+	return
+}
+
 func (t *BotUC) hideKeyboard(chatID int64, messageID int) (err error) {
 	edit := tgbotapi.NewEditMessageReplyMarkup(
 		chatID,

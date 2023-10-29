@@ -71,7 +71,7 @@ const (
 	`
 
 	querySaveAnswer = `
-	UPDATE users.info SET answer = $1 WHERE id = $2
+	UPDATE users.info SET answer = $1, updated_at = NOW() WHERE id = $2
 	`
 	queryGetDirectionsInfo = `
 	SELECT

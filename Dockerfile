@@ -15,7 +15,7 @@ RUN chmod +x /app/wait-for-db.sh
 RUN go build -o /bin/main ./cmd/main.go
 
 # Use a small image to run the app
-FROM alpine:3.18.4
+FROM alpine:3.9
 
 RUN apk add --no-cache bash
 

@@ -42,7 +42,7 @@ const (
 	FROM users.sub_directions usd
  INNER JOIN users.user uu ON uu.direction_id = usd.direction_id
  WHERE uu.tg_chat_id = $1
- ORDER BY usd.id
+ ORDER BY usd.sub_direction
 	`
 	queryGetSubSubdirectons = `
 	SELECT
@@ -53,7 +53,7 @@ const (
   WHERE
   sub_direction_id = $1
   AND uu.tg_chat_id = $2
-  ORDER BY ussd.id
+  ORDER BY sub_sub_direction
 	`
 
 	queryGetAnswer = `

@@ -78,7 +78,7 @@ const (
  ud.id AS direction_id,
  ud.direction AS direction_name
  FROM users.directions ud
- ORDER BY ud.id
+ ORDER BY ud.direction
 	`
 	queryGetSubdirectionsInfo = `
 	SELECT
@@ -86,7 +86,7 @@ const (
   usd.id AS sub_direction_id,
   usd.sub_direction AS sub_direction_name
   FROM users.sub_directions usd
-  ORDER BY usd.id
+  ORDER BY usd.sub_direction
 	`
 
 	queryGetSubSubdirectionsInfo = `
@@ -96,7 +96,7 @@ const (
   ussd.id AS sub_sub_direction_id,
   ussd.sub_sub_direction AS sub_sub_direction_name
   FROM users.sub_sub_directions ussd
-  ORDER BY ussd.id
+  ORDER BY ussd.sub_sub_direction
 	`
 
 	queryGetDirectionByChatID = `

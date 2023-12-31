@@ -9,11 +9,8 @@ import (
 )
 
 type Config struct {
-	Postgres           Postgres
-	TgBot              TgBot
-	CallbackType       CallbackType
-	StateMachineStatus StateMachineStatus
-	AdminChatID        int64
+	Postgres Postgres
+	TgBot    TgBot
 }
 
 type Postgres struct {
@@ -28,25 +25,6 @@ type Postgres struct {
 type TgBot struct {
 	ApiKey string `validate:"required"`
 	Prefix string `validate:"required"`
-}
-
-type CallbackType struct {
-	Direction                     int `validate:"required"`
-	GetAnAnswer                   int `validate:"required"`
-	SubdirectionAddInfo           int `validate:"required"`
-	SubSubdirectionAddInfo        int `validate:"required"`
-	SubdirectionAskMe             int `validate:"required"`
-	SubSubdirectionAskMe          int `validate:"required"`
-	SubdirectionPrintQuestions    int `validate:"required"`
-	SubSubdirectionPrintQuestions int `validate:"required"`
-}
-
-type StateMachineStatus struct {
-	Idle                    int `validate:"required"`
-	AwaitingQuestion        int `validate:"required"`
-	AwaitingAnswer          int `validate:"required"`
-	AwaitingSubdirection    int `validate:"required"`
-	AwaitingSubSubdirection int `validate:"required"`
 }
 
 func LoadConfig() (*viper.Viper, error) {

@@ -2,23 +2,17 @@ package main
 
 import (
 	"boost-my-skills-bot/config"
-	"context"
-	"log"
-
-	models "boost-my-skills-bot/internal/models/bot"
+	"boost-my-skills-bot/internal/bot/repository"
+	"boost-my-skills-bot/internal/bot/tgBot"
+	"boost-my-skills-bot/internal/bot/usecase"
 	"boost-my-skills-bot/pkg/storage/postgres"
+	"context"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/jmoiron/sqlx"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
-
-	"boost-my-skills-bot/internal/bot/repository"
-	"boost-my-skills-bot/internal/bot/usecase"
-
-	"boost-my-skills-bot/internal/bot/tgBot"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/jmoiron/sqlx"
 )
 
 func main() {
@@ -75,27 +69,14 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 		return
 	}
 
-	stateUsers := make(map[int64]models.AddInfoParams)
-	stateDirections := models.DirectionsData{}
-
 	// repository
 	botRepo := repository.NewBotPGRepo(db)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, stateUsers, &stateDirections)
+	botUC := usecase.NewBotUC(cfg, botRepo, botAPI)
 
 	// bot
-	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, stateUsers, &stateDirections)
-
-	// map worker
-	go func() {
-		ticker := time.NewTicker(time.Duration(time.Second * 2))
-		for ; true; <-ticker.C {
-			if err = botUC.SyncDirectionsInfo(ctx); err != nil {
-				log.Println(err)
-			}
-		}
-	}()
+	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI)
 
 	return tgBot, nil
 }

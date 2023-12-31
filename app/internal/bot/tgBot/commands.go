@@ -2,10 +2,14 @@ package tgbot
 
 import (
 	models "boost-my-skills-bot/internal/models/bot"
-	"fmt"
+	"context"
 )
 
 func (t *TgBot) handleStartCommand(params models.HandleStartCommandParams) error {
-	t.log.Infof("This is my log info with args: (%s)", "my args")
-	return fmt.Errorf("This is my test error with args: %d", 3)
+	ctx := context.Background()
+	if err := t.tgUC.HandleStartCommand(ctx, params); err != nil {
+		return err
+	}
+
+	return nil
 }

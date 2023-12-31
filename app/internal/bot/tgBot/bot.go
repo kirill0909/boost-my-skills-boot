@@ -46,7 +46,10 @@ func (t *TgBot) Run() error {
 					Text:   update.Message.Text,
 					ChatID: update.Message.Chat.ID}); err != nil {
 					t.log.Errorf(err.Error())
+					t.sendMessage(update.Message.Chat.ID, "account activation error")
+					continue
 				}
+				t.sendMessage(update.Message.Chat.ID, "yout account has been successfully activated")
 			}
 		}
 	}
@@ -54,10 +57,10 @@ func (t *TgBot) Run() error {
 	return nil
 }
 
-func (t *TgBot) sendErrorMessage(chatID int64, text string) {
+func (t *TgBot) sendMessage(chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
 	_, err := t.BotAPI.Send(msg)
 	if err != nil {
-		log.Println(err)
+		t.log.Errorf(err.Error())
 	}
 }

@@ -7,6 +7,7 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.16.0
 )
 
@@ -33,7 +34,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
-	golang.org/x/exp v0.0.0-20231226003508-02704c960a9b // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect
 	golang.org/x/text v0.9.0 // indirect

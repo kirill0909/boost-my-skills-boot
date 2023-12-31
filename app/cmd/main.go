@@ -5,6 +5,7 @@ import (
 	"boost-my-skills-bot/internal/bot/repository"
 	"boost-my-skills-bot/internal/bot/tgBot"
 	"boost-my-skills-bot/internal/bot/usecase"
+	"boost-my-skills-bot/pkg/logger"
 	"boost-my-skills-bot/pkg/storage/postgres"
 	"context"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -69,6 +70,8 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 		return
 	}
 
+	logger := logger.InitLogger()
+
 	// repository
 	botRepo := repository.NewBotPGRepo(db)
 
@@ -76,7 +79,7 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 	botUC := usecase.NewBotUC(cfg, botRepo, botAPI)
 
 	// bot
-	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI)
+	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, logger)
 
 	return tgBot, nil
 }

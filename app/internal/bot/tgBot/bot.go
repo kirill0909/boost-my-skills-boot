@@ -3,6 +3,8 @@ package tgbot
 import (
 	"boost-my-skills-bot/config"
 	"boost-my-skills-bot/internal/bot"
+	models "boost-my-skills-bot/internal/models/bot"
+	"boost-my-skills-bot/pkg/logger"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"log"
 )
@@ -11,17 +13,20 @@ type TgBot struct {
 	BotAPI *tgbotapi.BotAPI
 	cfg    *config.Config
 	tgUC   bot.Usecase
+	log    *logger.Logger
 }
 
 func NewTgBot(
 	cfg *config.Config,
 	usecase bot.Usecase,
 	botAPI *tgbotapi.BotAPI,
+	log *logger.Logger,
 ) *TgBot {
 	return &TgBot{
 		cfg:    cfg,
 		BotAPI: botAPI,
 		tgUC:   usecase,
+		log:    log,
 	}
 }
 
@@ -37,7 +42,12 @@ func (t *TgBot) Run() error {
 		if update.Message != nil {
 			switch update.Message.Command() {
 			case startCommand:
-				log.Println("start command")
+				if err := t.handleStartCommand(models.HandleStartCommandParams{
+					Text:   update.Message.Text,
+					ChatID: update.Message.Chat.ID}); err != nil {
+					t.log.Errorf(err.Error())
+
+				}
 			}
 		}
 	}

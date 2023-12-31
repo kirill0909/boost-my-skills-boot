@@ -8,4 +8,5 @@ import (
 type PgRepository interface {
 	// commands
 	SetStatusActive(context.Context, models.SetStatusActiveParams) error
+	GetMainButtons(context.Context) ([]models.GetMainButtonsResult, error)
 }

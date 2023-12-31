@@ -13,4 +13,11 @@ const (
 	UPDATE bot.users SET active = TRUE, tg_chat_id = $1, tg_name = $3 
 	WHERE tg_uuid = $2 AND active IS FALSE
 	`
+
+	queryGetMainButtons = `
+	SELECT
+	name AS name,
+	only_for_admin AS only_for_admin
+	FROM bot.main_buttons
+	`
 )

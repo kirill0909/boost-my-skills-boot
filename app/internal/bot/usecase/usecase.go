@@ -4,6 +4,7 @@ import (
 	"boost-my-skills-bot/config"
 	"boost-my-skills-bot/internal/bot"
 	models "boost-my-skills-bot/internal/models/bot"
+	"boost-my-skills-bot/pkg/logger"
 	"context"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -15,17 +16,20 @@ type BotUC struct {
 	cfg    *config.Config
 	pgRepo bot.PgRepository
 	BotAPI *tgbotapi.BotAPI
+	log    *logger.Logger
 }
 
 func NewBotUC(
 	cfg *config.Config,
 	pgRepo bot.PgRepository,
 	botAPI *tgbotapi.BotAPI,
+	log *logger.Logger,
 ) bot.Usecase {
 	return &BotUC{
 		cfg:    cfg,
 		pgRepo: pgRepo,
 		BotAPI: botAPI,
+		log:    log,
 	}
 }
 

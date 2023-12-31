@@ -76,7 +76,7 @@ func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tg
 	botRepo := repository.NewBotPGRepo(db)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI)
+	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, logger)
 
 	// bot
 	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, logger)

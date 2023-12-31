@@ -11,3 +11,8 @@ type SetStatusActiveParams struct {
 	ChatID int64
 	UUID   string
 }
+
+type GetMainButtonsResult struct {
+	Name         string `db:"name"`
+	OnlyForAdmin bool   `db:"only_for_admin"`
+}

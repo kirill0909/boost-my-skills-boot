@@ -35,3 +35,24 @@ func (r *BotPGRepo) SetStatusActive(ctx context.Context, params models.SetStatus
 
 	return nil
 }
+
+func (r *BotPGRepo) GetMainButtons(ctx context.Context) ([]models.GetMainButtonsResult, error) {
+	rows, err := r.db.QueryContext(ctx, queryGetMainButtons)
+	if err != nil {
+		err = errors.Wrap(err, "BotPGRepo.GetMainButtons.queryGetMainButtons")
+		return []models.GetMainButtonsResult{}, err
+	}
+
+	var buttons []models.GetMainButtonsResult
+	var button models.GetMainButtonsResult
+	for rows.Next() {
+		if err := rows.Scan(&button.Name, &button.OnlyForAdmin); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetMainButtons.Scan")
+			return []models.GetMainButtonsResult{}, err
+		}
+
+		buttons = append(buttons, button)
+	}
+
+	return buttons, nil
+}

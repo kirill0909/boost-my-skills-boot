@@ -50,7 +50,6 @@ func (t *TgBot) Run() error {
 					t.sendMessage(update.Message.Chat.ID, "account activation error")
 					continue
 				}
-				continue
 			}
 		}
 	}

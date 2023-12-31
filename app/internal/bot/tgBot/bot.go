@@ -46,7 +46,6 @@ func (t *TgBot) Run() error {
 					Text:   update.Message.Text,
 					ChatID: update.Message.Chat.ID}); err != nil {
 					t.log.Errorf(err.Error())
-
 				}
 			}
 		}

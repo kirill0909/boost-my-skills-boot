@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/pkg/errors"
 	"strings"
 )
 
@@ -36,19 +37,26 @@ func (u *BotUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 	}
 
 	uuid := splitedText[1]
-	result, err := u.pgRepo.CompareUUID(ctx, models.CompareUUIDParams{
-		UUID:   uuid,
-		ChatID: params.ChatID})
-	if err != nil {
+	if err := u.pgRepo.SetStatusActive(ctx, models.SetStatusActiveParams{
+		TgName: params.TgName,
+		ChatID: params.ChatID,
+		UUID:   uuid}); err != nil {
 		return err
 	}
 
-	if !result {
-		return fmt.Errorf("wrong uuid(%s) comparison for user(%d)", uuid, params.ChatID)
+	var isAdmin bool
+	msg := tgbotapi.NewMessage(params.ChatID, "your account has been successfully activated")
+	if params.ChatID == u.cfg.AdminChatID {
+		isAdmin = true
+		msg.ReplyMarkup = u.createMainMenuKeyboard(isAdmin)
+	} else {
+		isAdmin = false
+		msg.ReplyMarkup = u.createMainMenuKeyboard(isAdmin)
 	}
 
-	if err := u.pgRepo.SetStatusActive(ctx, params.ChatID); err != nil {
-		return err
+	if _, err := u.BotAPI.Send(msg); err != nil {
+		return errors.Wrapf(err, "BotUC.HandleStartCommand.Send")
+
 	}
 
 	return nil

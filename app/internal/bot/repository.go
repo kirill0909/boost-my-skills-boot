@@ -7,6 +7,5 @@ import (
 
 type PgRepository interface {
 	// commands
-	CompareUUID(context.Context, models.CompareUUIDParams) (bool, error)
-	SetStatusActive(context.Context, int64) error
+	SetStatusActive(context.Context, models.SetStatusActiveParams) error
 }

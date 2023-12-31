@@ -4,6 +4,7 @@ import (
 	"boost-my-skills-bot/internal/bot"
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
@@ -16,21 +17,20 @@ func NewBotPGRepo(db *sqlx.DB) bot.PgRepository {
 	return &BotPGRepo{db: db}
 }
 
-func (r *BotPGRepo) CompareUUID(ctx context.Context, params models.CompareUUIDParams) (bool, error) {
-	var result bool
-	if err := r.db.GetContext(ctx, &result, queryCompareUUID, params.ChatID, params.UUID); err != nil {
-		err = errors.Wrapf(err, "BotPGRepo.CompareUUID.queryCompareUUID. params(%+v)", params)
-		return false, err
+func (r *BotPGRepo) SetStatusActive(ctx context.Context, params models.SetStatusActiveParams) error {
+	res, err := r.db.ExecContext(ctx, querySetStatusActive, params.ChatID, params.UUID, params.TgName)
+	if err != nil {
+		return errors.Wrapf(err, "BotPGRepo.SetStatusActive.querySetStatusActive. params(%+v)", params)
 	}
 
-	return result, nil
-}
-
-func (r *BotPGRepo) SetStatusActive(ctx context.Context, chatID int64) error {
-	_, err := r.db.ExecContext(ctx, querySetStatusActive, chatID)
+	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		err = errors.Wrapf(err, "BotPGRepo.SetStatusActive.querySetStatusActive. chatID: %d", chatID)
-		return err
+		return errors.Wrapf(err, "BotPGRepo.SetStatusActive.RowsAffected. params(%+v)", params)
+
+	}
+
+	if rowsAffected != 1 {
+		return fmt.Errorf("BotPGRepo.SetStatusActive rowsAffected != 1. params(%+v)", params)
 	}
 
 	return nil

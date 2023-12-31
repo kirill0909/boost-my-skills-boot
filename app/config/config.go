@@ -9,8 +9,9 @@ import (
 )
 
 type Config struct {
-	Postgres Postgres
-	TgBot    TgBot
+	Postgres    Postgres
+	TgBot       TgBot
+	AdminChatID int64
 }
 
 type Postgres struct {

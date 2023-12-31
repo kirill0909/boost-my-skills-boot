@@ -44,12 +44,13 @@ func (t *TgBot) Run() error {
 			case startCommand:
 				if err := t.handleStartCommand(models.HandleStartCommandParams{
 					Text:   update.Message.Text,
-					ChatID: update.Message.Chat.ID}); err != nil {
+					ChatID: update.Message.Chat.ID,
+					TgName: update.Message.Chat.UserName}); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendMessage(update.Message.Chat.ID, "account activation error")
 					continue
 				}
-				t.sendMessage(update.Message.Chat.ID, "yout account has been successfully activated")
+				continue
 			}
 		}
 	}

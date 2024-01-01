@@ -5,11 +5,13 @@ import (
 	"boost-my-skills-bot/internal/bot/repository"
 	"boost-my-skills-bot/internal/bot/tgBot"
 	"boost-my-skills-bot/internal/bot/usecase"
+	models "boost-my-skills-bot/internal/models/bot"
 	"boost-my-skills-bot/pkg/logger"
 	"boost-my-skills-bot/pkg/storage/postgres"
 	"context"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/jmoiron/sqlx"
+	// "github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"log"
 	"os"
 	"os/signal"
@@ -29,33 +31,29 @@ func main() {
 	log.Println("Config loaded")
 
 	ctx := context.Background()
-	psqlDB, err := postgres.InitPsqlDB(ctx, cfg)
+	dependencies, err := initDependencies(ctx, cfg)
 	if err != nil {
-		log.Printf("PostgreSQL error connection: %s", err.Error())
-		return
-	} else {
-		log.Println("PostgreSQL successful connection")
+		log.Println(err.Error())
 	}
-	defer func(psqlDB *sqlx.DB) {
-		if err := psqlDB.Close(); err != nil {
-			log.Printf("PostgreSQL error close connection: %s", err.Error())
-			return
-		} else {
-			log.Println("PostgreSQL successful close connection")
+
+	defer func(dependencies models.Dependencies) {
+		if err := closeDependencies(dependencies); err != nil {
+			log.Println(err)
 		}
+	}(dependencies)
 
-	}(psqlDB)
-
-	tgbot, err := mapHandler(ctx, cfg, psqlDB)
+	tgbot, err := mapHandler(ctx, cfg, dependencies)
 	if err != nil {
 		log.Printf("Error map handler: %s", err.Error())
 		return
 	}
 
-	if err := tgbot.Run(); err != nil {
-		log.Printf("Error bot run: %s", err.Error())
-		return
-	}
+	go func() {
+		if err := tgbot.Run(); err != nil {
+			log.Printf("Error bot run: %s", err.Error())
+			return
+		}
+	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
@@ -63,23 +61,43 @@ func main() {
 
 }
 
-func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tgbot.TgBot, err error) {
-
+func mapHandler(ctx context.Context, cfg *config.Config, dep models.Dependencies) (tgBot *tgbot.TgBot, err error) {
 	botAPI, err := tgbotapi.NewBotAPI(cfg.TgBot.ApiKey)
 	if err != nil {
 		return
 	}
 
-	logger := logger.InitLogger()
-
 	// repository
-	botRepo := repository.NewBotPGRepo(db)
+	botRepo := repository.NewBotPGRepo(dep.PgDB)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, logger)
+	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, dep.Logger)
 
 	// bot
-	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, logger)
+	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)
 
 	return tgBot, nil
+}
+
+func initDependencies(ctx context.Context, cfg *config.Config) (models.Dependencies, error) {
+	pgDB, err := postgres.InitPgDB(ctx, cfg)
+	if err != nil {
+		return models.Dependencies{}, err
+	} else {
+		log.Println("PostgreSQL successful connection")
+	}
+
+	logger := logger.InitLogger()
+
+	return models.Dependencies{PgDB: pgDB, Logger: logger}, nil
+}
+
+func closeDependencies(dep models.Dependencies) error {
+	if err := dep.PgDB.Close(); err != nil {
+		return errors.Wrap(err, "PostgreSQL error close connection")
+	} else {
+		log.Println("PostgreSQL successful close connection")
+	}
+
+	return nil
 }

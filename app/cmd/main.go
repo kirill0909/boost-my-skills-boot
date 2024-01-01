@@ -76,6 +76,10 @@ func mapHandler(ctx context.Context, cfg *config.Config, dep models.Dependencies
 	// bot
 	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)
 
+	go func() {
+		botUC.SyncMainKeyboardWorker()
+	}()
+
 	return tgBot, nil
 }
 

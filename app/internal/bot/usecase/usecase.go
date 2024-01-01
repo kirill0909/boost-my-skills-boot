@@ -10,13 +10,15 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/pkg/errors"
 	"strings"
+	"time"
 )
 
 type BotUC struct {
-	cfg    *config.Config
-	pgRepo bot.PgRepository
-	BotAPI *tgbotapi.BotAPI
-	log    *logger.Logger
+	cfg                  *config.Config
+	pgRepo               bot.PgRepository
+	BotAPI               *tgbotapi.BotAPI
+	log                  *logger.Logger
+	lastKeyboardChecking int64
 }
 
 func NewBotUC(
@@ -26,10 +28,11 @@ func NewBotUC(
 	log *logger.Logger,
 ) bot.Usecase {
 	return &BotUC{
-		cfg:    cfg,
-		pgRepo: pgRepo,
-		BotAPI: botAPI,
-		log:    log,
+		cfg:                  cfg,
+		pgRepo:               pgRepo,
+		BotAPI:               botAPI,
+		log:                  log,
+		lastKeyboardChecking: time.Now().Unix(),
 	}
 }
 

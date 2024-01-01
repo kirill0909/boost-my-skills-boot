@@ -8,4 +8,7 @@ import (
 type Usecase interface {
 	// commands
 	HandleStartCommand(context.Context, models.HandleStartCommandParams) error
+
+	// workers
+	SyncMainKeyboardWorker()
 }

@@ -6,7 +6,6 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"boost-my-skills-bot/pkg/logger"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"log"
 )
 
 type TgBot struct {
@@ -31,7 +30,7 @@ func NewTgBot(
 }
 
 func (t *TgBot) Run() error {
-	log.Printf("Authorized on account %s", t.BotAPI.Self.UserName)
+	t.log.Infof("Authorized on account %s", t.BotAPI.Self.UserName)
 
 	updateConfig := tgbotapi.NewUpdate(0)
 	updateConfig.Timeout = 30

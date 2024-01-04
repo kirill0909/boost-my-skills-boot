@@ -12,6 +12,7 @@ type Config struct {
 	Postgres    Postgres
 	TgBot       TgBot
 	AdminChatID int64
+	RabbitMQ    RabbitMQ
 }
 
 type Postgres struct {
@@ -26,6 +27,14 @@ type Postgres struct {
 type TgBot struct {
 	ApiKey string `validate:"required"`
 	Prefix string `validate:"required"`
+}
+
+type RabbitMQ struct {
+	Host   string
+	Port   string
+	Queues struct {
+		UserActivationQueue string
+	}
 }
 
 func LoadConfig() (*viper.Viper, error) {

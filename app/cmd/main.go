@@ -8,6 +8,7 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"boost-my-skills-bot/pkg/logger"
 	"boost-my-skills-bot/pkg/storage/postgres"
+	"boost-my-skills-bot/pkg/storage/rabbit"
 	"context"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/pkg/errors"
@@ -70,7 +71,7 @@ func mapHandler(ctx context.Context, cfg *config.Config, dep models.Dependencies
 	botRepo := repository.NewBotPGRepo(dep.PgDB)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, dep.Logger)
+	botUC := usecase.NewBotUC(cfg, botRepo, dep.RabbitMQ, botAPI, dep.Logger)
 
 	// bot
 	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)
@@ -83,16 +84,23 @@ func mapHandler(ctx context.Context, cfg *config.Config, dep models.Dependencies
 }
 
 func initDependencies(ctx context.Context, cfg *config.Config) (models.Dependencies, error) {
+	logger := logger.InitLogger()
+
 	pgDB, err := postgres.InitPgDB(ctx, cfg)
 	if err != nil {
 		return models.Dependencies{}, err
 	} else {
-		log.Println("PostgreSQL successful connection")
+		logger.Infof("PostgreSQL successful connection")
 	}
 
-	logger := logger.InitLogger()
+	rabbitMQ, err := rabbit.InitRabbit(cfg)
+	if err != nil {
+		return models.Dependencies{}, err
+	} else {
+		logger.Infof("RabbitMQ successfil initialization")
+	}
 
-	return models.Dependencies{PgDB: pgDB, Logger: logger}, nil
+	return models.Dependencies{PgDB: pgDB, Logger: logger, RabbitMQ: rabbitMQ}, nil
 }
 
 func closeDependencies(dep models.Dependencies) error {
@@ -100,6 +108,18 @@ func closeDependencies(dep models.Dependencies) error {
 		return errors.Wrap(err, "PostgreSQL error close connection")
 	} else {
 		log.Println("PostgreSQL successful close connection")
+	}
+
+	if err := dep.RabbitMQ.Chann.Close(); err != nil {
+		return errors.Wrap(err, "RabbitMQ error close chann")
+	} else {
+		log.Println("RabbitMQ successful close chann")
+	}
+
+	if err := dep.RabbitMQ.Conn.Close(); err != nil {
+		return errors.Wrap(err, "RabbitMQ error close connection")
+	} else {
+		log.Println("RabbitMQ successful close connection")
 	}
 
 	return nil

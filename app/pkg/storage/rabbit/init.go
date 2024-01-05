@@ -8,18 +8,18 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func InitRabbit(cfg *config.Config) (models.RabbitMQ, error) {
+func InitRabbitProducer(cfg *config.Config) (models.Producer, error) {
 	url := fmt.Sprintf("%s:%s/", cfg.RabbitMQ.Host, cfg.RabbitMQ.Port)
 	conn, err := amqp.Dial(url)
 	if err != nil {
-		err = errors.Wrap(err, "rabbit.InitRabbit. failed to connect to rabbitMQ")
-		return models.RabbitMQ{}, err
+		err = errors.Wrap(err, "rabbit.InitRabbitProducer. failed to connect to rabbitMQ")
+		return models.Producer{}, err
 	}
 
 	ch, err := conn.Channel()
 	if err != nil {
-		err = errors.Wrap(err, "rabbit.InitRabbit. failed to open channel")
-		return models.RabbitMQ{}, err
+		err = errors.Wrap(err, "rabbit.InitRabbitProducer. failed to open channel")
+		return models.Producer{}, err
 	}
 
 	userActivationQueue, err := ch.QueueDeclare(
@@ -31,16 +31,13 @@ func InitRabbit(cfg *config.Config) (models.RabbitMQ, error) {
 		nil,                                     // arguments
 	)
 	if err != nil {
-		err = errors.Wrap(err, "rabbit.InitRabbit. Failed to declare queue ")
-		return models.RabbitMQ{}, err
+		err = errors.Wrap(err, "rabbit.InitRabbitProducer. Failed to declare queue ")
+		return models.Producer{}, err
 	}
 
-	return models.RabbitMQ{
-			Conn:  conn,
-			Chann: ch,
-			Queues: models.Queues{
-				UserActivationQueue: userActivationQueue,
-			},
-		},
-		nil
+	return models.Producer{
+		Conn:  conn,
+		Chann: ch,
+		Queues: models.Queues{
+			UserActivationQueue: userActivationQueue}}, nil
 }

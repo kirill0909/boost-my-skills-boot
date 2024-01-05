@@ -59,7 +59,7 @@ func (u *BotUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 		err = errors.Wrapf(err, "BotUC.HandleStartCommand.Marshal. params(%+v)", setStatusActiveParams)
 	}
 
-	if err := u.writeToBroker(u.rabbitMQ.Queues.UserActivationQueue.Name, setStatusActiveParamsBytes); err != nil {
+	if err := u.writeToBroker(u.rabbitMQ.Producer.Queues.UserActivationQueue.Name, setStatusActiveParamsBytes); err != nil {
 		return err
 	}
 
@@ -85,7 +85,7 @@ func (u *BotUC) writeToBroker(queue string, message []byte) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err := u.rabbitMQ.Chann.PublishWithContext(ctx,
+	err := u.rabbitMQ.Producer.Chann.PublishWithContext(ctx,
 		"",    // exchange
 		queue, // routing key
 		false, // mandatory

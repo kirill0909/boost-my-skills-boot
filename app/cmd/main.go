@@ -93,14 +93,17 @@ func initDependencies(ctx context.Context, cfg *config.Config) (models.Dependenc
 		logger.Infof("PostgreSQL successful connection")
 	}
 
-	rabbitMQ, err := rabbit.InitRabbit(cfg)
+	rabbitProducer, err := rabbit.InitRabbitProducer(cfg)
 	if err != nil {
 		return models.Dependencies{}, err
 	} else {
 		logger.Infof("RabbitMQ successfil initialization")
 	}
 
-	return models.Dependencies{PgDB: pgDB, Logger: logger, RabbitMQ: rabbitMQ}, nil
+	return models.Dependencies{
+		PgDB:     pgDB,
+		Logger:   logger,
+		RabbitMQ: models.RabbitMQ{Producer: rabbitProducer}}, nil
 }
 
 func closeDependencies(dep models.Dependencies) error {
@@ -110,16 +113,16 @@ func closeDependencies(dep models.Dependencies) error {
 		dep.Logger.Infof("PostgreSQL successful close connection")
 	}
 
-	if err := dep.RabbitMQ.Chann.Close(); err != nil {
-		return errors.Wrap(err, "RabbitMQ error close chann")
+	if err := dep.RabbitMQ.Producer.Chann.Close(); err != nil {
+		return errors.Wrap(err, "RabbitMQ error close producer chann")
 	} else {
-		dep.Logger.Infof("RabbitMQ successful close chann")
+		dep.Logger.Infof("RabbitMQ successful close producer chann")
 	}
 
-	if err := dep.RabbitMQ.Conn.Close(); err != nil {
-		return errors.Wrap(err, "RabbitMQ error close connection")
+	if err := dep.RabbitMQ.Producer.Conn.Close(); err != nil {
+		return errors.Wrap(err, "RabbitMQ error close producer connection")
 	} else {
-		dep.Logger.Infof("RabbitMQ successful close connection")
+		dep.Logger.Infof("RabbitMQ successful close producer connection")
 	}
 
 	return nil

@@ -13,6 +13,10 @@ type Dependencies struct {
 }
 
 type RabbitMQ struct {
+	Producer Producer
+}
+
+type Producer struct {
 	Conn   *amqp.Connection
 	Chann  *amqp.Channel
 	Queues Queues

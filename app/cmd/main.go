@@ -38,19 +38,19 @@ func main() {
 
 	defer func(dependencies models.Dependencies) {
 		if err := closeDependencies(dependencies); err != nil {
-			log.Println(err)
+			dependencies.Logger.Errorf(err.Error())
 		}
 	}(dependencies)
 
 	tgbot, err := mapHandler(ctx, cfg, dependencies)
 	if err != nil {
-		log.Printf("Error map handler: %s", err.Error())
+		dependencies.Logger.Errorf("Error map handler: %s", err.Error())
 		return
 	}
 
 	go func() {
 		if err := tgbot.Run(); err != nil {
-			log.Printf("Error bot run: %s", err.Error())
+			dependencies.Logger.Errorf("Error bot run: %s", err.Error())
 			return
 		}
 	}()
@@ -107,19 +107,19 @@ func closeDependencies(dep models.Dependencies) error {
 	if err := dep.PgDB.Close(); err != nil {
 		return errors.Wrap(err, "PostgreSQL error close connection")
 	} else {
-		log.Println("PostgreSQL successful close connection")
+		dep.Logger.Infof("PostgreSQL successful close connection")
 	}
 
 	if err := dep.RabbitMQ.Chann.Close(); err != nil {
 		return errors.Wrap(err, "RabbitMQ error close chann")
 	} else {
-		log.Println("RabbitMQ successful close chann")
+		dep.Logger.Infof("RabbitMQ successful close chann")
 	}
 
 	if err := dep.RabbitMQ.Conn.Close(); err != nil {
 		return errors.Wrap(err, "RabbitMQ error close connection")
 	} else {
-		log.Println("RabbitMQ successful close connection")
+		dep.Logger.Infof("RabbitMQ successful close connection")
 	}
 
 	return nil

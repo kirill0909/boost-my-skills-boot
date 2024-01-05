@@ -49,7 +49,7 @@ func (u *BotUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 	}
 
 	uuid := splitedText[1]
-	setStatusActiveParams := models.SetStatusActiveParams{
+	setStatusActiveParams := models.UserActivationParams{
 		TgName: params.TgName,
 		ChatID: params.ChatID,
 		UUID:   uuid}
@@ -62,14 +62,6 @@ func (u *BotUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 	if err := u.writeToBroker(u.rabbitMQ.Queues.UserActivationQueue.Name, setStatusActiveParamsBytes); err != nil {
 		return err
 	}
-
-	// uuid := splitedText[1]
-	// if err := u.pgRepo.SetStatusActive(ctx, models.SetStatusActiveParams{
-	// 	TgName: params.TgName,
-	// 	ChatID: params.ChatID,
-	// 	UUID:   uuid}); err != nil {
-	// 	return err
-	// }
 
 	var isAdmin bool
 	msg := tgbotapi.NewMessage(params.ChatID, "your account has been successfully activated")

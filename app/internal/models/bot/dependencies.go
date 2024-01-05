@@ -1,8 +1,8 @@
 package bot
 
 import (
-	"boost-my-skills-bot/pkg/logger"
 	"github.com/jmoiron/sqlx"
+	"github.com/kirill0909/logger"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 

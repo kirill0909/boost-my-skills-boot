@@ -6,12 +6,6 @@ type HandleStartCommandParams struct {
 	TgName string
 }
 
-// type SetStatusActiveParams struct {
-// 	TgName string
-// 	ChatID int64
-// 	UUID   string
-// }
-
 type UserActivationParams struct {
 	TgName string
 	ChatID int64

@@ -30,10 +30,11 @@ type TgBot struct {
 }
 
 type RabbitMQ struct {
-	Host   string
-	Port   string
-	Queues struct {
-		UserActivationQueue string
+	Host       string
+	Port       string
+	QueueNames struct {
+		UserActivationQueue    string
+		GetUpdatedButtonsQueue string
 	}
 }
 

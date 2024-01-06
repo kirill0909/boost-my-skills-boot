@@ -17,11 +17,11 @@ type RabbitMQ struct {
 }
 
 type Producer struct {
-	Conn   *amqp.Connection
-	Chann  *amqp.Channel
-	Queues Queues
+	Conn  *amqp.Connection
+	Chann *amqp.Channel
 }
 
 type Queues struct {
-	UserActivationQueue amqp.Queue
+	UserActivationQueue    amqp.Queue
+	GetUpdatedButtonsQueue amqp.Queue
 }

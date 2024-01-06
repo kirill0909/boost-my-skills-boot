@@ -22,22 +22,34 @@ func InitRabbitProducer(cfg *config.Config) (models.Producer, error) {
 		return models.Producer{}, err
 	}
 
-	userActivationQueue, err := ch.QueueDeclare(
-		cfg.RabbitMQ.Queues.UserActivationQueue, // name
-		false,                                   // durable
-		false,                                   // delete when unused
-		false,                                   // exclusive
-		false,                                   // no-wait
-		nil,                                     // arguments
-	)
-	if err != nil {
-		err = errors.Wrap(err, "rabbit.InitRabbitProducer. Failed to declare queue ")
+	if err = queueDeclare(ch, cfg); err != nil {
 		return models.Producer{}, err
 	}
 
 	return models.Producer{
 		Conn:  conn,
-		Chann: ch,
-		Queues: models.Queues{
-			UserActivationQueue: userActivationQueue}}, nil
+		Chann: ch}, nil
+}
+
+func queueDeclare(ch *amqp.Channel, cfg *config.Config) error {
+	queueNames := []string{
+		cfg.RabbitMQ.QueueNames.UserActivationQueue,
+		cfg.RabbitMQ.QueueNames.GetUpdatedButtonsQueue}
+
+	for _, name := range queueNames {
+		if _, err := ch.QueueDeclare(
+			name,  // name
+			false, // durable
+			false, // delete when unused
+			false, // exclusive
+			false, // no-wait
+			nil,   // arguments
+		); err != nil {
+			err = errors.Wrap(err, "rabbit.queueDeclare. Failed to declare queue")
+			return err
+		}
+	}
+
+	return nil
+
 }

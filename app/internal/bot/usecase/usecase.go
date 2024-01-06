@@ -59,7 +59,9 @@ func (u *BotUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 		err = errors.Wrapf(err, "BotUC.HandleStartCommand.Marshal. params(%+v)", setStatusActiveParams)
 	}
 
-	if err := u.writeToBroker(u.rabbitMQ.Producer.Queues.UserActivationQueue.Name, setStatusActiveParamsBytes); err != nil {
+	if err := u.writeToBroker(
+		u.cfg.RabbitMQ.QueueNames.UserActivationQueue,
+		setStatusActiveParamsBytes); err != nil {
 		return err
 	}
 

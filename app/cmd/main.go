@@ -42,7 +42,7 @@ func main() {
 		}
 	}(dependencies)
 
-	tgbot, err := mapHandler(ctx, cfg, dependencies)
+	tgbot, err := maping(ctx, cfg, dependencies)
 	if err != nil {
 		dependencies.Logger.Errorf("Error map handler: %s", err.Error())
 		return
@@ -61,7 +61,7 @@ func main() {
 
 }
 
-func mapHandler(ctx context.Context, cfg *config.Config, dep models.Dependencies) (tgBot *tgbot.TgBot, err error) {
+func maping(ctx context.Context, cfg *config.Config, dep models.Dependencies) (tgBot *tgbot.TgBot, err error) {
 	botAPI, err := tgbotapi.NewBotAPI(cfg.TgBot.ApiKey)
 	if err != nil {
 		return

@@ -2,7 +2,7 @@ package repository
 
 const (
 	querySetStatusActive = `
-	UPDATE bot.users SET active = TRUE, tg_chat_id = $1, tg_name = $3 
+	UPDATE users SET active = TRUE, tg_chat_id = $1, tg_name = $3 
 	WHERE tg_uuid = $2 AND active IS FALSE
 	`
 
@@ -10,27 +10,27 @@ const (
 	SELECT
 	name AS name,
 	only_for_admin AS only_for_admin
-	FROM bot.main_buttons
+	FROM main_buttons
 	`
 
 	queryGetActiveUsers = `
 	SELECT 
 	tg_chat_id AS tg_chat_id, 
 	is_admin AS is_admin
-	FROM bot.users WHERE active
+	FROM users WHERE active
 	`
 
 	queryGetUpdatedButtons = `
 	SELECT
     name AS name,
     only_for_admin AS only_for_admin
-FROM bot.main_buttons
+FROM main_buttons
             WHERE EXTRACT(EPOCH FROM created_at) > $1 OR
                     EXTRACT(EPOCH FROM updated_at) > $1;
 	`
 
 	querySetUserActive = `
-	UPDATE bot.users SET 
+	UPDATE users SET 
 	active = TRUE
 	, tg_chat_id = $1
 	, tg_name = $3

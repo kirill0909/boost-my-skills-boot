@@ -9,6 +9,7 @@ ProdRedisTSL
 *.crt
 *.cnf
 migrations/
+migrator.sh
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,osx,jetbrains,jetbrains+all,jetbrains+iml,go,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,macos,osx,jetbrains,jetbrains+all,jetbrains+iml,go,windows

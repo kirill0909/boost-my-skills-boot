@@ -28,4 +28,13 @@ FROM bot.main_buttons
             WHERE EXTRACT(EPOCH FROM created_at) > $1 OR
                     EXTRACT(EPOCH FROM updated_at) > $1;
 	`
+
+	querySetUserActive = `
+	UPDATE bot.users SET 
+	active = TRUE
+	, tg_chat_id = $1
+	, tg_name = $3
+	, updated_at = NOW()
+	WHERE tg_uuid = $2 AND active IS FALSE
+	`
 )

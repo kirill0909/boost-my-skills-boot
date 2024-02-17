@@ -5,12 +5,10 @@ import (
 	"boost-my-skills-bot/internal/bot"
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
-	"encoding/json"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/kirill0909/logger"
 	"github.com/pkg/errors"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"strings"
 	"time"
 )
@@ -18,7 +16,6 @@ import (
 type BotUC struct {
 	cfg                  *config.Config
 	pgRepo               bot.PgRepository
-	rabbitMQ             models.RabbitMQ
 	BotAPI               *tgbotapi.BotAPI
 	log                  *logger.Logger
 	lastKeyboardChecking int64
@@ -27,14 +24,12 @@ type BotUC struct {
 func NewBotUC(
 	cfg *config.Config,
 	pgRepo bot.PgRepository,
-	rabbitMQ models.RabbitMQ,
 	botAPI *tgbotapi.BotAPI,
 	log *logger.Logger,
 ) bot.Usecase {
 	return &BotUC{
 		cfg:                  cfg,
 		pgRepo:               pgRepo,
-		rabbitMQ:             rabbitMQ,
 		BotAPI:               botAPI,
 		log:                  log,
 		lastKeyboardChecking: time.Now().Unix(),
@@ -49,19 +44,12 @@ func (u *BotUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 	}
 
 	uuid := splitedText[1]
-	setStatusActiveParams := models.UserActivationParams{
+	setUserActiveParams := models.SetUserActiveParams{
 		TgName: params.TgName,
 		ChatID: params.ChatID,
 		UUID:   uuid}
 
-	setStatusActiveParamsBytes, err := json.Marshal(setStatusActiveParams)
-	if err != nil {
-		err = errors.Wrapf(err, "BotUC.HandleStartCommand.Marshal. params(%+v)", setStatusActiveParams)
-	}
-
-	if err := u.writeToBroker(
-		u.cfg.RabbitMQ.QueueNames.UserActivationQueue,
-		setStatusActiveParamsBytes); err != nil {
+	if err := u.pgRepo.SetUserActive(ctx, setUserActiveParams); err != nil {
 		return err
 	}
 
@@ -79,27 +67,6 @@ func (u *BotUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 		return errors.Wrapf(err, "BotUC.HandleStartCommand.Send")
 
 	}
-
-	return nil
-}
-
-func (u *BotUC) writeToBroker(queue string, message []byte) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	err := u.rabbitMQ.Producer.Chann.PublishWithContext(ctx,
-		"",    // exchange
-		queue, // routing key
-		false, // mandatory
-		false, // immediate
-		amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        message})
-	if err != nil {
-		return errors.Wrapf(err, "unable to wirte message(%s) to queue(%s)", message, queue)
-	}
-
-	u.log.Infof("sent message(%s) to queue(%s)", message, queue)
 
 	return nil
 }

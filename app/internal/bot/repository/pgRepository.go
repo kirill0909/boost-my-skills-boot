@@ -4,6 +4,7 @@ import (
 	"boost-my-skills-bot/internal/bot"
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
@@ -96,4 +97,23 @@ func (r *BotPGRepo) GetUpdatedButtons(ctx context.Context, param int64) ([]model
 
 	return buttons, nil
 
+}
+
+func (r *BotPGRepo) SetUserActive(ctx context.Context, params models.SetUserActiveParams) error {
+	res, err := r.db.ExecContext(ctx, querySetUserActive, params.ChatID, params.UUID, params.TgName)
+	if err != nil {
+		return errors.Wrapf(err, "BotPGRepo.SetUserActive.querySetUserActive. params(%+v)", params)
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return errors.Wrapf(err, "BotPGRepo.SetUserActive.RowsAffected. params(%+v)", params)
+
+	}
+
+	if rowsAffected != 1 {
+		return fmt.Errorf("BotPGRepo.SetUserActive rowsAffected != 1. params(%+v)", params)
+	}
+
+	return nil
 }

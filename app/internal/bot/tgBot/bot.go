@@ -4,6 +4,8 @@ import (
 	"boost-my-skills-bot/config"
 	"boost-my-skills-bot/internal/bot"
 	models "boost-my-skills-bot/internal/models/bot"
+	"context"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/kirill0909/logger"
 )
@@ -39,20 +41,22 @@ func (t *TgBot) Run() error {
 
 	for update := range updates {
 		if update.Message != nil {
+			ctx := context.Background()
 			switch update.Message.Command() {
 			case startCommand:
-				if err := t.handleStartCommand(models.HandleStartCommandParams{
-					Text:   update.Message.Text,
-					ChatID: update.Message.Chat.ID,
-					TgName: update.Message.Chat.UserName}); err != nil {
+				params := models.HandleStartCommandParams{
+					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
+				if err := t.handleStartCommand(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendMessage(update.Message.Chat.ID, "account activation error")
 					continue
 				}
 			case createDirection:
-				if err := t.handleCreateDirectionCommand(); err != nil {
+				params := models.HandleCreateDirectionCommandParams{
+					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
+				if err := t.handleCreateDirectionCommand(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
-					t.sendMessage(update.Message.Chat.ID, "account activation error")
+					t.sendMessage(update.Message.Chat.ID, "create direction error")
 					continue
 				}
 			}

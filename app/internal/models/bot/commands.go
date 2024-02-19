@@ -16,3 +16,9 @@ type GetMainButtonsResult struct {
 	Name         string `db:"name"`
 	OnlyForAdmin bool   `db:"only_for_admin"`
 }
+
+type HandleCreateDirectionCommandParams struct {
+	Text   string
+	TgName string
+	ChatID int64
+}

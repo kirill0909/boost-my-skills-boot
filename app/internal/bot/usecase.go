@@ -8,6 +8,7 @@ import (
 type Usecase interface {
 	// commands
 	HandleStartCommand(context.Context, models.HandleStartCommandParams) error
+	HandleCreateDirectionCommand(context.Context, models.HandleCreateDirectionCommandParams) error
 
 	// workers
 	SyncMainKeyboardWorker()

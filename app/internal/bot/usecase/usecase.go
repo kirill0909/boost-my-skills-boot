@@ -70,3 +70,8 @@ func (u *BotUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 
 	return nil
 }
+
+func (u *BotUC) HandleCreateDirectionCommand(ctx context.Context, params models.HandleCreateDirectionCommandParams) error {
+	u.log.Infof("hello from create direction inside UC")
+	return nil
+}

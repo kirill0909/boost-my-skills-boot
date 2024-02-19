@@ -10,6 +10,7 @@ import (
 
 type Config struct {
 	Postgres    Postgres
+	Redis       Redis
 	TgBot       TgBot
 	AdminChatID int64
 }
@@ -21,6 +22,24 @@ type Postgres struct {
 	Password string `validate:"required"`
 	DBName   string `validate:"required"`
 	SSLMode  string `validate:"required"`
+}
+
+type Redis struct {
+	Host               string `validate:"required"`
+	Port               string `validate:"required"`
+	UserName           string `validate:"required"`
+	Password           string `validate:"required"`
+	MinIdleConns       int    `validate:"required"`
+	PoolTimeout        int    `validate:"required"`
+	DB                 int
+	PoolSize           int
+	UseCertificates    bool
+	InsecureSkipVerify bool
+	CertificatesPaths  struct {
+		Cert string
+		Key  string
+		Ca   string
+	}
 }
 
 type TgBot struct {

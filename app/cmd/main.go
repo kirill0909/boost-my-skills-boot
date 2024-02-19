@@ -7,6 +7,7 @@ import (
 	"boost-my-skills-bot/internal/bot/usecase"
 	models "boost-my-skills-bot/internal/models/bot"
 	"boost-my-skills-bot/pkg/storage/postgres"
+	"boost-my-skills-bot/pkg/storage/redis"
 	"context"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/kirill0909/logger"
@@ -70,7 +71,7 @@ func maping(ctx context.Context, cfg *config.Config, dep models.Dependencies) (t
 	botRepo := repository.NewBotPGRepo(dep.PgDB)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, dep.Logger)
+	botUC := usecase.NewBotUC(cfg, botRepo, dep.Redis, botAPI, dep.Logger)
 
 	// bot
 	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)
@@ -92,8 +93,16 @@ func initDependencies(ctx context.Context, cfg *config.Config) (models.Dependenc
 		logger.Infof("PostgreSQL successful connection")
 	}
 
+	redisDB, _, err := redis.InitRedisClient(cfg)
+	if err != nil {
+		return models.Dependencies{}, err
+	} else {
+		logger.Infof("Redis successful connection")
+	}
+
 	return models.Dependencies{
 		PgDB:   pgDB,
+		Redis:  redisDB,
 		Logger: logger}, nil
 }
 
@@ -102,6 +111,12 @@ func closeDependencies(dep models.Dependencies) error {
 		return errors.Wrap(err, "PostgreSQL error close connection")
 	} else {
 		dep.Logger.Infof("PostgreSQL successful close connection")
+	}
+
+	if err := dep.Redis.Close(); err != nil {
+		return errors.Wrap(err, "Redis err close connection")
+	} else {
+		dep.Logger.Infof("Redis successful close connection")
 	}
 
 	return nil

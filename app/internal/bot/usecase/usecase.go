@@ -79,9 +79,16 @@ func (u *BotUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 
 	if len(directions) == 0 {
 		// create first direction
-		u.log.Infof("you do not have directinos")
+		u.sendMessage(params.ChatID, "enter name of your first direction")
 	}
 
 	u.log.Infof("directions: %+v", directions)
 	return nil
+}
+
+func (u *BotUC) sendMessage(chatID int64, text string) {
+	msg := tgbotapi.NewMessage(chatID, text)
+	if _, err := u.BotAPI.Send(msg); err != nil {
+		u.log.Errorf(err.Error())
+	}
 }

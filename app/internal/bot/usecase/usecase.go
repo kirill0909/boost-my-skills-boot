@@ -78,6 +78,7 @@ func (u *BotUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 	}
 
 	if len(directions) == 0 {
+		// create first direction
 		u.log.Infof("you do not have directinos")
 	}
 

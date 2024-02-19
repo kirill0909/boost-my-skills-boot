@@ -2,7 +2,7 @@ package repository
 
 const (
 	querySetStatusActive = `
-	UPDATE users SET active = TRUE, tg_chat_id = $1, tg_name = $3 
+	UPDATE users SET active = TRUE, tg_chat_id = $1, tg_name = $3
 	WHERE tg_uuid = $2 AND active IS FALSE
 	`
 
@@ -14,8 +14,8 @@ const (
 	`
 
 	queryGetActiveUsers = `
-	SELECT 
-	tg_chat_id AS tg_chat_id, 
+	SELECT
+	tg_chat_id AS tg_chat_id,
 	is_admin AS is_admin
 	FROM users WHERE active
 	`
@@ -30,11 +30,22 @@ FROM main_buttons
 	`
 
 	querySetUserActive = `
-	UPDATE users SET 
+	UPDATE users SET
 	active = TRUE
 	, tg_chat_id = $1
 	, tg_name = $3
 	, updated_at = NOW()
 	WHERE tg_uuid = $2 AND active IS FALSE
+	`
+	queryGetUserDirection = `
+	SELECT
+    d.id AS id,
+    d.direction AS direction,
+    COALESCE(d.parent_direction_id, 0) AS parent_directon_id,
+    CAST(EXTRACT(EPOCH FROM d.created_at) AS BIGINT) AS created_at,
+    CAST(COALESCE(EXTRACT (EPOCH FROM d.updated_at), 0) AS BIGINT) AS updated_at
+FROM directions d
+INNER JOIN users u ON u.id = d.user_id
+WHERE u.tg_chat_id = $1;
 	`
 )

@@ -72,6 +72,15 @@ func (u *BotUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 }
 
 func (u *BotUC) HandleCreateDirectionCommand(ctx context.Context, params models.HandleCreateDirectionCommandParams) error {
-	u.log.Infof("hello from create direction inside UC")
+	directions, err := u.pgRepo.GetUserDirection(ctx, params.ChatID)
+	if err != nil {
+		return err
+	}
+
+	if len(directions) == 0 {
+		u.log.Infof("you do not have directinos")
+	}
+
+	u.log.Infof("directions: %+v", directions)
 	return nil
 }

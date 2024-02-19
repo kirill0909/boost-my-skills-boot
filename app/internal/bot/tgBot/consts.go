@@ -2,5 +2,6 @@ package tgbot
 
 const (
 	// commands
-	startCommand = "start"
+	startCommand    = "start"
+	createDirection = "create_direction"
 )

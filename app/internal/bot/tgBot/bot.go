@@ -49,6 +49,12 @@ func (t *TgBot) Run() error {
 					t.sendMessage(update.Message.Chat.ID, "account activation error")
 					continue
 				}
+			case createDirection:
+				if err := t.handleCreateDirectionCommand(); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendMessage(update.Message.Chat.ID, "account activation error")
+					continue
+				}
 			}
 		}
 	}

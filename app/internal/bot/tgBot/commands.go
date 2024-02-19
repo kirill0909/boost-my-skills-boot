@@ -3,6 +3,7 @@ package tgbot
 import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
+	"log"
 )
 
 func (t *TgBot) handleStartCommand(params models.HandleStartCommandParams) error {
@@ -11,5 +12,10 @@ func (t *TgBot) handleStartCommand(params models.HandleStartCommandParams) error
 		return err
 	}
 
+	return nil
+}
+
+func (t *TgBot) handleCreateDirectionCommand() error {
+	log.Println("hello from create direction case")
 	return nil
 }

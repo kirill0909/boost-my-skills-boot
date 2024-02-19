@@ -48,7 +48,7 @@ func (t *TgBot) Run() error {
 					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
 				if err := t.handleStartCommand(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
-					t.sendMessage(update.Message.Chat.ID, "account activation error")
+					t.sendErrorMessage(update.Message.Chat.ID, "account activation error")
 					continue
 				}
 			case createDirection:
@@ -56,7 +56,7 @@ func (t *TgBot) Run() error {
 					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
 				if err := t.handleCreateDirectionCommand(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
-					t.sendMessage(update.Message.Chat.ID, "create direction error")
+					t.sendErrorMessage(update.Message.Chat.ID, "create direction error")
 					continue
 				}
 			}
@@ -66,7 +66,7 @@ func (t *TgBot) Run() error {
 	return nil
 }
 
-func (t *TgBot) sendMessage(chatID int64, text string) {
+func (t *TgBot) sendErrorMessage(chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
 	_, err := t.BotAPI.Send(msg)
 	if err != nil {

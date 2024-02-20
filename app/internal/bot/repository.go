@@ -12,3 +12,5 @@ type PgRepository interface {
 	GetUpdatedButtons(context.Context, int64) ([]models.GetUpdatedButtonsResult, error)
 	GetUserDirection(context.Context, int64) ([]models.GetUserDirectionsResult, error)
 }
+
+type RedisRepository interface{}

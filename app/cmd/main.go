@@ -68,10 +68,11 @@ func maping(ctx context.Context, cfg *config.Config, dep models.Dependencies) (t
 	}
 
 	// repository
-	botRepo := repository.NewBotPGRepo(dep.PgDB)
+	botPgRepo := repository.NewBotPGRepo(dep.PgDB)
+	botRedisRepo := repository.NewBotRedisRepo(dep.Redis, cfg)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, dep.Redis, botAPI, dep.Logger)
+	botUC := usecase.NewBotUC(cfg, botPgRepo, botRedisRepo, botAPI, dep.Logger)
 
 	// bot
 	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)

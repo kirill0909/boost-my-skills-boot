@@ -9,7 +9,6 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/kirill0909/logger"
 	"github.com/pkg/errors"
-	"github.com/redis/go-redis/v9"
 	"strings"
 	"time"
 )
@@ -17,7 +16,7 @@ import (
 type BotUC struct {
 	cfg                  *config.Config
 	pgRepo               bot.PgRepository
-	rdb                  *redis.Client
+	rdb                  bot.RedisRepository
 	BotAPI               *tgbotapi.BotAPI
 	log                  *logger.Logger
 	lastKeyboardChecking int64
@@ -26,7 +25,7 @@ type BotUC struct {
 func NewBotUC(
 	cfg *config.Config,
 	pgRepo bot.PgRepository,
-	rdb *redis.Client,
+	rdb bot.RedisRepository,
 	botAPI *tgbotapi.BotAPI,
 	log *logger.Logger,
 ) bot.Usecase {

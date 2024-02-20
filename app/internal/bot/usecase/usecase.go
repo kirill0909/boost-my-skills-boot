@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-type BotUC struct {
+type botUC struct {
 	cfg                  *config.Config
 	pgRepo               bot.PgRepository
 	rdb                  bot.RedisRepository
@@ -29,7 +29,7 @@ func NewBotUC(
 	botAPI *tgbotapi.BotAPI,
 	log *logger.Logger,
 ) bot.Usecase {
-	return &BotUC{
+	return &botUC{
 		cfg:                  cfg,
 		pgRepo:               pgRepo,
 		rdb:                  rdb,
@@ -39,7 +39,7 @@ func NewBotUC(
 	}
 }
 
-func (u *BotUC) HandleStartCommand(ctx context.Context, params models.HandleStartCommandParams) error {
+func (u *botUC) HandleStartCommand(ctx context.Context, params models.HandleStartCommandParams) error {
 	splitedText := strings.Split(params.Text, " ")
 
 	if len(splitedText) != 2 {
@@ -74,7 +74,7 @@ func (u *BotUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 	return nil
 }
 
-func (u *BotUC) HandleCreateDirectionCommand(ctx context.Context, params models.HandleCreateDirectionCommandParams) error {
+func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.HandleCreateDirectionCommandParams) error {
 	directions, err := u.pgRepo.GetUserDirection(ctx, params.ChatID)
 	if err != nil {
 		return err
@@ -83,6 +83,10 @@ func (u *BotUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 	switch len(directions) {
 	case 0:
 		// set status awaiting direction name
+		params := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: awaitingDirectionName}
+		if err := u.rdb.SetAwaitingStatus(ctx, params); err != nil {
+			return err
+		}
 		// create first direction
 		u.sendMessage(params.ChatID, "enter name of your FIRST direction")
 	default:
@@ -94,7 +98,7 @@ func (u *BotUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 	return nil
 }
 
-func (u *BotUC) sendMessage(chatID int64, text string) {
+func (u *botUC) sendMessage(chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
 	if _, err := u.BotAPI.Send(msg); err != nil {
 		u.log.Errorf(err.Error())

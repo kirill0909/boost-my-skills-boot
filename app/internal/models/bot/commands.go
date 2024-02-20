@@ -18,6 +18,11 @@ type HandleCreateDirectionCommandParams struct {
 	ChatID int64
 }
 
+type SetAwaitingStatusParams struct {
+	StatusID int
+	ChatID   int64
+}
+
 type GetMainButtonsResult struct {
 	Name         string `db:"name"`
 	OnlyForAdmin bool   `db:"only_for_admin"`

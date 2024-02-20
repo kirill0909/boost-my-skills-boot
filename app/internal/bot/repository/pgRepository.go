@@ -9,15 +9,15 @@ import (
 	"github.com/pkg/errors"
 )
 
-type BotPGRepo struct {
+type botPGRepo struct {
 	db *sqlx.DB
 }
 
 func NewBotPGRepo(db *sqlx.DB) bot.PgRepository {
-	return &BotPGRepo{db: db}
+	return &botPGRepo{db: db}
 }
 
-func (r *BotPGRepo) GetMainButtons(ctx context.Context) ([]models.GetMainButtonsResult, error) {
+func (r *botPGRepo) GetMainButtons(ctx context.Context) ([]models.GetMainButtonsResult, error) {
 	rows, err := r.db.QueryContext(ctx, queryGetMainButtons)
 	if err != nil {
 		err = errors.Wrap(err, "BotPGRepo.GetMainButtons.queryGetMainButtons")
@@ -44,7 +44,7 @@ func (r *BotPGRepo) GetMainButtons(ctx context.Context) ([]models.GetMainButtons
 	return buttons, nil
 }
 
-func (r *BotPGRepo) GetActiveUsers(ctx context.Context) ([]models.GetActiveUsersResult, error) {
+func (r *botPGRepo) GetActiveUsers(ctx context.Context) ([]models.GetActiveUsersResult, error) {
 	rows, err := r.db.QueryContext(ctx, queryGetActiveUsers)
 	if err != nil {
 		err = errors.Wrap(err, "BotPGRepo.GetActiveUsers.queryGetActiveUsers")
@@ -71,7 +71,7 @@ func (r *BotPGRepo) GetActiveUsers(ctx context.Context) ([]models.GetActiveUsers
 	return users, nil
 }
 
-func (r *BotPGRepo) GetUpdatedButtons(ctx context.Context, param int64) ([]models.GetUpdatedButtonsResult, error) {
+func (r *botPGRepo) GetUpdatedButtons(ctx context.Context, param int64) ([]models.GetUpdatedButtonsResult, error) {
 	rows, err := r.db.QueryContext(ctx, queryGetUpdatedButtons, param)
 	if err != nil {
 		err = errors.Wrap(err, "BotPGRepo.GetUpdatedButtons.queryGetUpdatedButtons")
@@ -99,7 +99,7 @@ func (r *BotPGRepo) GetUpdatedButtons(ctx context.Context, param int64) ([]model
 
 }
 
-func (r *BotPGRepo) SetUserActive(ctx context.Context, params models.SetUserActiveParams) error {
+func (r *botPGRepo) SetUserActive(ctx context.Context, params models.SetUserActiveParams) error {
 	res, err := r.db.ExecContext(ctx, querySetUserActive, params.ChatID, params.UUID, params.TgName)
 	if err != nil {
 		return errors.Wrapf(err, "BotPGRepo.SetUserActive.querySetUserActive. params(%+v)", params)
@@ -118,7 +118,7 @@ func (r *BotPGRepo) SetUserActive(ctx context.Context, params models.SetUserActi
 	return nil
 }
 
-func (r *BotPGRepo) GetUserDirection(ctx context.Context, chatID int64) ([]models.GetUserDirectionsResult, error) {
+func (r *botPGRepo) GetUserDirection(ctx context.Context, chatID int64) ([]models.GetUserDirectionsResult, error) {
 	rows, err := r.db.QueryContext(ctx, queryGetUserDirection, chatID)
 	if err != nil {
 		err = errors.Wrapf(err, "BotPGRepo.GetUserDirection.queryGetUserDirection. chatID: %d", chatID)

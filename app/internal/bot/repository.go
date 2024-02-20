@@ -13,4 +13,6 @@ type PgRepository interface {
 	GetUserDirection(context.Context, int64) ([]models.GetUserDirectionsResult, error)
 }
 
-type RedisRepository interface{}
+type RedisRepository interface {
+	SetAwaitingStatus(context.Context, models.SetAwaitingStatusParams) error
+}

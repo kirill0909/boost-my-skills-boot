@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (u *BotUC) SyncMainKeyboardWorker() {
+func (u *botUC) SyncMainKeyboardWorker() {
 	u.log.Infof("SyncMainKeyboardWorker is started")
 	ctx := context.Background()
 	ticker := time.NewTicker(time.Second * 10)
@@ -46,7 +46,7 @@ func (u *BotUC) SyncMainKeyboardWorker() {
 	}
 }
 
-func (u *BotUC) handleOnlyForAdminCaes(users []models.GetActiveUsersResult) error {
+func (u *botUC) handleOnlyForAdminCaes(users []models.GetActiveUsersResult) error {
 	for _, user := range users {
 		if user.IsAdmin {
 			msg := tgbotapi.NewMessage(user.ChatID, "main kyboard was updated")
@@ -60,7 +60,7 @@ func (u *BotUC) handleOnlyForAdminCaes(users []models.GetActiveUsersResult) erro
 	return nil
 }
 
-func (u *BotUC) handleOnlyForUserCase(users []models.GetActiveUsersResult) error {
+func (u *botUC) handleOnlyForUserCase(users []models.GetActiveUsersResult) error {
 	for _, user := range users {
 		msg := tgbotapi.NewMessage(user.ChatID, "main kyboard was updated")
 		msg.ReplyMarkup = u.createMainMenuKeyboard(user.IsAdmin)

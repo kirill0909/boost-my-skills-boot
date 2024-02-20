@@ -1,3 +1,6 @@
 package usecase
 
-const ()
+const (
+	// user states
+	waitDirectionName = 1
+)

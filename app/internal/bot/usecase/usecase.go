@@ -81,12 +81,17 @@ func (u *BotUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 		return err
 	}
 
-	if len(directions) == 0 {
+	switch len(directions) {
+	case 0:
+		// set status awaiting direction name
 		// create first direction
-		u.sendMessage(params.ChatID, "enter name of your first direction")
+		u.sendMessage(params.ChatID, "enter name of your FIRST direction")
+	default:
+		// set status awaiting parent dirction
+		// create another direction
+		u.sendMessage(params.ChatID, "enter name of your  direction")
 	}
 
-	u.log.Infof("directions: %+v", directions)
 	return nil
 }
 

@@ -48,4 +48,9 @@ FROM directions d
 INNER JOIN users u ON u.id = d.user_id
 WHERE u.tg_chat_id = $1;
 	`
+
+	queryCreateDirection = `
+	INSERT INTO directions (direction, user_id, parent_direction_id)
+	VALUES ($1, (SELECT id FROM users WHERE tg_chat_id = $2), $3);
+	`
 )

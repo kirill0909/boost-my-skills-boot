@@ -137,3 +137,12 @@ func (r *botPGRepo) GetUserDirection(ctx context.Context, chatID int64) ([]model
 
 	return result, nil
 }
+
+func (r *botPGRepo) CreateDirection(ctx context.Context, params models.CreateDirectionParams) error {
+	_, err := r.db.ExecContext(ctx, queryCreateDirection, params.DirectionName, params.ChatID, params.ParentDirectionID)
+	if err != nil {
+		return errors.Wrapf(err, "botPGRepo.CreateDirection.queryCreateDirection. params(%+v)", params)
+	}
+
+	return nil
+}

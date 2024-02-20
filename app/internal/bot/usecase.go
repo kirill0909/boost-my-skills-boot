@@ -11,7 +11,7 @@ type Usecase interface {
 	HandleCreateDirectionCommand(context.Context, models.HandleCreateDirectionCommandParams) error
 
 	GetAwaitingStatus(context.Context, int64) (int, error)
-
+	CreateDirection(context.Context, models.CreateDirectionParams) error
 	// workers
 	SyncMainKeyboardWorker()
 }

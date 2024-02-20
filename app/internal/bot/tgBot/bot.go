@@ -51,6 +51,7 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, "account activation error")
 					continue
 				}
+				continue
 			case utils.CreateDirection:
 				params := models.HandleCreateDirectionCommandParams{
 					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
@@ -59,17 +60,24 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, "create direction error")
 					continue
 				}
+				continue
 			}
 
 			statusID, err := t.tgUC.GetAwaitingStatus(ctx, update.Message.Chat.ID)
 			if err != nil {
 				t.log.Errorf(err.Error())
 				t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+				continue
 			}
 
 			switch statusID {
 			case utils.AwaitingDirectionName:
-				t.sendErrorMessage(update.Message.Chat.ID, "hello")
+				params := models.HandleAwaitingDirectionNameParams{ChatID: update.Message.Chat.ID, DirectionName: update.Message.Text}
+				if err := t.handleAwaitingDirectionName(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
 			}
 		}
 	}

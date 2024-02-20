@@ -7,12 +7,14 @@ import (
 	"boost-my-skills-bot/pkg/utils"
 	"context"
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/kirill0909/logger"
-	"github.com/pkg/errors"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/kirill0909/logger"
+	"github.com/pkg/errors"
 )
 
 type botUC struct {
@@ -100,13 +102,6 @@ func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 	return nil
 }
 
-func (u *botUC) sendMessage(chatID int64, text string) {
-	msg := tgbotapi.NewMessage(chatID, text)
-	if _, err := u.BotAPI.Send(msg); err != nil {
-		u.log.Errorf(err.Error())
-	}
-}
-
 func (u *botUC) GetAwaitingStatus(ctx context.Context, chatID int64) (int, error) {
 	value, err := u.rdb.GetAwaitingStatus(ctx, chatID)
 	if err != nil {
@@ -119,4 +114,20 @@ func (u *botUC) GetAwaitingStatus(ctx context.Context, chatID int64) (int, error
 	}
 
 	return statusID, nil
+}
+
+func (u *botUC) CreateDirection(ctx context.Context, params models.CreateDirectionParams) error {
+	re := regexp.MustCompile(utils.DirectionNameLayout)
+	if !re.MatchString(params.DirectionName) {
+		return fmt.Errorf("direction name contains unacceptable symbols. params(%+v)", params)
+	}
+
+	return u.pgRepo.CreateDirection(ctx, params)
+}
+
+func (u *botUC) sendMessage(chatID int64, text string) {
+	msg := tgbotapi.NewMessage(chatID, text)
+	if _, err := u.BotAPI.Send(msg); err != nil {
+		u.log.Errorf(err.Error())
+	}
 }

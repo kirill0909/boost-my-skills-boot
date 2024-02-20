@@ -6,6 +6,7 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/redis/go-redis/v9"
@@ -22,7 +23,8 @@ func NewBotRedisRepo(redis *redis.Client, cfg *config.Config) bot.RedisRepositor
 
 func (r *botRedisRepo) SetAwaitingStatus(ctx context.Context, params models.SetAwaitingStatusParams) error {
 	key := fmt.Sprintf("%d", params.ChatID)
-	if _, err := r.db.Set(ctx, key, params.StatusID, 0).Result(); err != nil {
+	delay := time.Duration(time.Second * time.Duration(r.cfg.AwaitingDirectionNameDelay))
+	if _, err := r.db.Set(ctx, key, params.StatusID, delay).Result(); err != nil {
 		return errors.Wrapf(err, "botRedisRepo.SetAwaitingStatus.Set.Result(). params(%+v)", params)
 	}
 

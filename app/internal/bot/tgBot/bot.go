@@ -4,8 +4,8 @@ import (
 	"boost-my-skills-bot/config"
 	"boost-my-skills-bot/internal/bot"
 	models "boost-my-skills-bot/internal/models/bot"
+	"boost-my-skills-bot/pkg/utils"
 	"context"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/kirill0909/logger"
 )
@@ -43,7 +43,7 @@ func (t *TgBot) Run() error {
 		if update.Message != nil {
 			ctx := context.Background()
 			switch update.Message.Command() {
-			case startCommand:
+			case utils.StartCommand:
 				params := models.HandleStartCommandParams{
 					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
 				if err := t.handleStartCommand(ctx, params); err != nil {
@@ -51,7 +51,7 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, "account activation error")
 					continue
 				}
-			case createDirection:
+			case utils.CreateDirection:
 				params := models.HandleCreateDirectionCommandParams{
 					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
 				if err := t.handleCreateDirectionCommand(ctx, params); err != nil {
@@ -59,6 +59,17 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, "create direction error")
 					continue
 				}
+			}
+
+			statusID, err := t.tgUC.GetAwaitingStatus(ctx, update.Message.Chat.ID)
+			if err != nil {
+				t.log.Errorf(err.Error())
+				t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+			}
+
+			switch statusID {
+			case utils.AwaitingDirectionName:
+				t.sendErrorMessage(update.Message.Chat.ID, "hello")
 			}
 		}
 	}

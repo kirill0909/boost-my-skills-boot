@@ -4,11 +4,13 @@ import (
 	"boost-my-skills-bot/config"
 	"boost-my-skills-bot/internal/bot"
 	models "boost-my-skills-bot/internal/models/bot"
+	"boost-my-skills-bot/pkg/utils"
 	"context"
 	"fmt"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/kirill0909/logger"
 	"github.com/pkg/errors"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -83,7 +85,7 @@ func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 	switch len(directions) {
 	case 0:
 		// set status awaiting direction name
-		params := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: awaitingDirectionName}
+		params := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingDirectionName}
 		if err := u.rdb.SetAwaitingStatus(ctx, params); err != nil {
 			return err
 		}
@@ -103,4 +105,18 @@ func (u *botUC) sendMessage(chatID int64, text string) {
 	if _, err := u.BotAPI.Send(msg); err != nil {
 		u.log.Errorf(err.Error())
 	}
+}
+
+func (u *botUC) GetAwaitingStatus(ctx context.Context, chatID int64) (int, error) {
+	value, err := u.rdb.GetAwaitingStatus(ctx, chatID)
+	if err != nil {
+		return 0, err
+	}
+
+	statusID, err := strconv.Atoi(value)
+	if err != nil {
+		return 0, errors.Wrapf(err, "botUC.GetAwaitingStatus.Atoi(). uanble convert value:%s to int for chatID:%d", value, chatID)
+	}
+
+	return statusID, nil
 }

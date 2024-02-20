@@ -23,8 +23,18 @@ func NewBotRedisRepo(redis *redis.Client, cfg *config.Config) bot.RedisRepositor
 func (r *botRedisRepo) SetAwaitingStatus(ctx context.Context, params models.SetAwaitingStatusParams) error {
 	key := fmt.Sprintf("%d", params.ChatID)
 	if _, err := r.db.Set(ctx, key, params.StatusID, 0).Result(); err != nil {
-		return errors.Wrapf(err, "botRedisRepo.SetAwaitingStatus.Set(). params(%+v)", params)
+		return errors.Wrapf(err, "botRedisRepo.SetAwaitingStatus.Set.Result(). params(%+v)", params)
 	}
 
 	return nil
+}
+
+func (r *botRedisRepo) GetAwaitingStatus(ctx context.Context, chatID int64) (string, error) {
+	key := fmt.Sprintf("%d", chatID)
+	value, err := r.db.Get(ctx, key).Result()
+	if err != nil {
+		return "", errors.Wrapf(err, "botRedisRepo.GetAwaitingStatus.Get.Result(). chatID: %d", chatID)
+	}
+
+	return value, nil
 }

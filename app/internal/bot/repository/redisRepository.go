@@ -29,6 +29,15 @@ func (r *botRedisRepo) SetAwaitingStatus(ctx context.Context, params models.SetA
 	return nil
 }
 
+func (r *botRedisRepo) ResetAwaitingStatus(ctx context.Context, chatID int64) error {
+	key := fmt.Sprintf("%d", chatID)
+	if _, err := r.db.Del(ctx, key).Result(); err != nil {
+		return errors.Wrapf(err, "botRedisRepo.ResetAwaitingStatus.Del.Result(). chatID: %d", chatID)
+	}
+
+	return nil
+}
+
 func (r *botRedisRepo) GetAwaitingStatus(ctx context.Context, chatID int64) (string, error) {
 	key := fmt.Sprintf("%d", chatID)
 	value, err := r.db.Get(ctx, key).Result()

@@ -78,6 +78,9 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
+			default:
+				t.sendMessage(update.Message.Chat.ID, "use commands to interact with the bot")
+				continue
 			}
 		}
 	}

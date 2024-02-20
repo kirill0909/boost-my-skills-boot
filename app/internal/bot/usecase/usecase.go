@@ -15,6 +15,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/kirill0909/logger"
 	"github.com/pkg/errors"
+	"github.com/redis/go-redis/v9"
 )
 
 type botUC struct {
@@ -105,6 +106,10 @@ func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 func (u *botUC) GetAwaitingStatus(ctx context.Context, chatID int64) (int, error) {
 	value, err := u.rdb.GetAwaitingStatus(ctx, chatID)
 	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			return 0, nil
+		}
+
 		return 0, err
 	}
 
@@ -122,7 +127,15 @@ func (u *botUC) CreateDirection(ctx context.Context, params models.CreateDirecti
 		return fmt.Errorf("direction name contains unacceptable symbols. params(%+v)", params)
 	}
 
-	return u.pgRepo.CreateDirection(ctx, params)
+	if err := u.pgRepo.CreateDirection(ctx, params); err != nil {
+		return err
+	}
+
+	if err := u.rdb.ResetAwaitingStatus(ctx, params.ChatID); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (u *botUC) sendMessage(chatID int64, text string) {

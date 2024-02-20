@@ -16,5 +16,6 @@ type PgRepository interface {
 
 type RedisRepository interface {
 	SetAwaitingStatus(context.Context, models.SetAwaitingStatusParams) error
+	ResetAwaitingStatus(context.Context, int64) error
 	GetAwaitingStatus(context.Context, int64) (string, error)
 }

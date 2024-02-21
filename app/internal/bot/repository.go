@@ -10,7 +10,7 @@ type PgRepository interface {
 	GetMainButtons(context.Context) ([]models.GetMainButtonsResult, error)
 	GetActiveUsers(context.Context) ([]models.GetActiveUsersResult, error)
 	GetUpdatedButtons(context.Context, int64) ([]models.GetUpdatedButtonsResult, error)
-	GetUserDirection(context.Context, int64) ([]models.GetUserDirectionsResult, error)
+	GetUserDirection(context.Context, int64) ([]models.UserDirection, error)
 	CreateDirection(context.Context, models.CreateDirectionParams) error
 }
 

@@ -28,7 +28,7 @@ type GetMainButtonsResult struct {
 	OnlyForAdmin bool   `db:"only_for_admin"`
 }
 
-type GetUserDirectionsResult struct {
+type UserDirection struct {
 	ID                int    `db:"id"`
 	Direction         string `db:"direction"`
 	ParentDirectionID int    `db:"parent_directon_id"`

@@ -86,20 +86,18 @@ func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 	}
 
 	var statusID int
-	var msg string
 	if len(directions) == 0 {
 		statusID = utils.AwaitingDirectionName
-		msg = "enter name of your FIRST direction"
+		u.sendMessage(params.ChatID, "enter name of your FIRST direction")
 	} else {
 		statusID = utils.AwaitingParentDireciton
-		msg = "choose parent direciton"
+		u.sendMessage(params.ChatID, "choose parent direciton", u.createDirectionsKeyboard(directions))
 	}
 
 	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: statusID}
 	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
 		return err
 	}
-	u.sendMessage(params.ChatID, msg)
 
 	return nil
 }
@@ -139,8 +137,11 @@ func (u *botUC) CreateDirection(ctx context.Context, params models.CreateDirecti
 	return nil
 }
 
-func (u *botUC) sendMessage(chatID int64, text string) {
+func (u *botUC) sendMessage(chatID int64, text string, keyboard ...tgbotapi.InlineKeyboardMarkup) {
 	msg := tgbotapi.NewMessage(chatID, text)
+	if len(keyboard) > 0 {
+		msg.ReplyMarkup = keyboard[0]
+	}
 	if _, err := u.BotAPI.Send(msg); err != nil {
 		u.log.Errorf(err.Error())
 	}

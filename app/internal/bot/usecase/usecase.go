@@ -92,7 +92,7 @@ func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 		msg = "enter name of your FIRST direction"
 	} else {
 		statusID = utils.AwaitingParentDireciton
-		msg = "enter name of your direction"
+		msg = "choose parent direciton"
 	}
 
 	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: statusID}

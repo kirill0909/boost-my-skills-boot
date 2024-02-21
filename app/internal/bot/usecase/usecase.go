@@ -85,20 +85,21 @@ func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 		return err
 	}
 
-	switch len(directions) {
-	case 0:
-		// set status awaiting direction name
-		params := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingDirectionName}
-		if err := u.rdb.SetAwaitingStatus(ctx, params); err != nil {
-			return err
-		}
-		// create first direction
-		u.sendMessage(params.ChatID, "enter name of your FIRST direction")
-	default:
-		// set status awaiting parent dirction
-		// create another direction
-		u.sendMessage(params.ChatID, "enter name of your  direction")
+	var statusID int
+	var msg string
+	if len(directions) == 0 {
+		statusID = utils.AwaitingDirectionName
+		msg = "enter name of your FIRST direction"
+	} else {
+		statusID = utils.AwaitingParentDireciton
+		msg = "enter name of your direction"
 	}
+
+	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: statusID}
+	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
+		return err
+	}
+	u.sendMessage(params.ChatID, msg)
 
 	return nil
 }

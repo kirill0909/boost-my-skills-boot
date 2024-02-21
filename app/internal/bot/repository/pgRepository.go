@@ -125,17 +125,17 @@ func (r *botPGRepo) GetUserDirection(ctx context.Context, chatID int64) ([]model
 		return []models.GetUserDirectionsResult{}, err
 	}
 
-	var result []models.GetUserDirectionsResult
-	var res models.GetUserDirectionsResult
+	directionList := make([]models.GetUserDirectionsResult, 0, 50)
+	var direction models.GetUserDirectionsResult
 	for rows.Next() {
-		if err := rows.Scan(&res.ID, &res.Direction, &res.ParentDirectionID, &res.CreatedAt, &res.UpdatedAt); err != nil {
+		if err := rows.Scan(&direction.ID, &direction.Direction, &direction.ParentDirectionID, &direction.CreatedAt, &direction.UpdatedAt); err != nil {
 			err = errors.Wrapf(err, "BotPGRepo.GetUserDirection.queryGetUserDirection. chatID: %d", chatID)
 			return []models.GetUserDirectionsResult{}, err
 		}
-		result = append(result, res)
+		directionList = append(directionList, direction)
 	}
 
-	return result, nil
+	return directionList, nil
 }
 
 func (r *botPGRepo) CreateDirection(ctx context.Context, params models.CreateDirectionParams) error {

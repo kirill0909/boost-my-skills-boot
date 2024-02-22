@@ -31,9 +31,9 @@ type SetUserActiveParams struct {
 }
 
 type HandleCreateDirectionCommandParams struct {
-	Text   string
-	TgName string
-	ChatID int64
+	Text         string
+	ChatID       int64
+	CallbackData string
 }
 
 type SetAwaitingStatusParams struct {
@@ -57,4 +57,10 @@ type UserDirection struct {
 	ParentDirectionID int    `db:"parent_directon_id"`
 	CreatedAt         int64  `db:"created_at"`
 	UpdatedAt         int64  `db:"updated_at"`
+}
+
+type SetParentDirectionParams struct {
+	ChatID            int64
+	ParentDirectionID int
+	CallbackData      string
 }

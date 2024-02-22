@@ -6,15 +6,17 @@ import (
 	"boost-my-skills-bot/internal/bot/models"
 	"boost-my-skills-bot/pkg/utils"
 	"context"
+	"database/sql"
 	"fmt"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/kirill0909/logger"
-	"github.com/pkg/errors"
-	"github.com/redis/go-redis/v9"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/kirill0909/logger"
+	"github.com/pkg/errors"
+	"github.com/redis/go-redis/v9"
 )
 
 type botUC struct {
@@ -78,7 +80,18 @@ func (u *botUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 }
 
 func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.HandleCreateDirectionCommandParams) error {
-	getUserDirectionParms := models.GetUserDirectionParams{ChatID: params.ChatID}
+	var err error
+	var parentDirectionID int
+	var getUserDirectionParms models.GetUserDirectionParams
+	if params.CallbackData != "" {
+		parentDirectionID, err = strconv.Atoi(params.CallbackData)
+		if err != nil {
+			return errors.Wrapf(err, "botUC.HandleCreateDirectionCommand.Atoi(). params(%+v)", params)
+		}
+		getUserDirectionParms.ParentDirectionID = sql.NullInt64{Int64: int64(parentDirectionID), Valid: true}
+	}
+	getUserDirectionParms.ChatID = params.ChatID
+
 	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParms)
 	if err != nil {
 		return err
@@ -86,10 +99,10 @@ func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 
 	var statusID int
 	if len(directions) == 0 {
-		statusID = utils.AwaitingDirectionName
+		statusID = utils.AwaitingDirectionNameStatus
 		u.sendMessage(params.ChatID, "enter name of your FIRST direction")
 	} else {
-		statusID = utils.AwaitingParentDireciton
+		statusID = utils.AwaitingParentDirecitonStatus
 		u.sendMessage(params.ChatID, "choose parent direciton", u.createDirectionsKeyboard(directions))
 	}
 
@@ -125,6 +138,21 @@ func (u *botUC) CreateDirection(ctx context.Context, params models.CreateDirecti
 		return fmt.Errorf("direction name contains unacceptable symbols. params(%+v)", params)
 	}
 
+	getParentDirectionResult, err := u.rdb.GetParentDirection(ctx, params.ChatID)
+	if errors.Is(err, redis.Nil) {
+		err = nil
+	} else if err != nil {
+		return err
+	}
+
+	if getParentDirectionResult != "" {
+		parentDirectionID, err := strconv.Atoi(getParentDirectionResult)
+		if err != nil {
+			return err
+		}
+		params.ParentDirectionID = sql.NullInt64{Int64: int64(parentDirectionID), Valid: true}
+	}
+
 	direction, err := u.pgRepo.CreateDirection(ctx, params)
 	if err != nil {
 		return err
@@ -136,6 +164,21 @@ func (u *botUC) CreateDirection(ctx context.Context, params models.CreateDirecti
 
 	text := fmt.Sprintf("successfully created \"%s\" direction", direction)
 	u.sendMessage(params.ChatID, text)
+
+	return nil
+}
+
+func (u *botUC) SetParentDirection(ctx context.Context, params models.SetParentDirectionParams) error {
+	parendDirectionID, err := strconv.Atoi(params.CallbackData)
+	if err != nil {
+		return errors.Wrapf(err, "botUC.SetParentDirection.Atoi(). params(%+v)", params)
+	}
+
+	params.ParentDirectionID = parendDirectionID
+
+	if err := u.rdb.SetParentDirection(ctx, params); err != nil {
+		return err
+	}
 
 	return nil
 }

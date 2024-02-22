@@ -9,6 +9,10 @@ const (
 	CreateDirectionCommand = "create_direction"
 
 	// user states
-	AwaitingDirectionName   = 1
-	AwaitingParentDireciton = 2
+	AwaitingDirectionNameStatus   = 1
+	AwaitingParentDirecitonStatus = 2
+
+	// prefix
+	AwaitingStatusPrefix  = "awaitingStatusPrefix"
+	ParentDirectionPrefix = "parentDirectionPrefix"
 )

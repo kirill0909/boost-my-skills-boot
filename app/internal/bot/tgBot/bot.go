@@ -61,7 +61,7 @@ func (t *TgBot) Run() error {
 				continue
 			case utils.CreateDirectionCommand:
 				params := models.HandleCreateDirectionCommandParams{
-					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
+					Text: update.Message.Text, ChatID: update.Message.Chat.ID}
 				if err := t.tgUC.HandleCreateDirectionCommand(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "create direction error")
@@ -70,22 +70,35 @@ func (t *TgBot) Run() error {
 				continue
 			}
 
-			switch statusID {
-			case utils.AwaitingDirectionName:
+			if statusID == utils.AwaitingDirectionNameStatus || statusID == utils.AwaitingParentDirecitonStatus {
 				params := models.CreateDirectionParams{ChatID: update.Message.Chat.ID, DirectionName: update.Message.Text}
 				if err := t.tgUC.CreateDirection(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
-			default:
-				t.sendMessage(update.Message.Chat.ID, "use commands to interact with the bot")
-				continue
+			} else {
+				t.sendMessage(update.Message.From.ID, "use keyboard to interact with bot")
 			}
 		}
 
-		if update.CallbackQuery != nil && statusID == utils.AwaitingParentDireciton {
+		if update.CallbackQuery != nil && statusID == utils.AwaitingParentDirecitonStatus {
 			t.log.Infof("callback data: %s", update.CallbackData())
+			parentDirectionParams := models.SetParentDirectionParams{ChatID: update.CallbackQuery.From.ID, CallbackData: update.CallbackData()}
+			if err := t.tgUC.SetParentDirection(ctx, parentDirectionParams); err != nil {
+				t.log.Errorf(err.Error())
+				t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+				continue
+			}
+
+			createDirectionCommandParams := models.HandleCreateDirectionCommandParams{
+				ChatID:       update.CallbackQuery.From.ID,
+				CallbackData: update.CallbackData()}
+			if err := t.tgUC.HandleCreateDirectionCommand(ctx, createDirectionCommandParams); err != nil {
+				t.log.Errorf(err.Error())
+				t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+				continue
+			}
 		}
 	}
 

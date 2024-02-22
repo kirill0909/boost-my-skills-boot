@@ -81,7 +81,7 @@ func (u *botUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 }
 
 func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.HandleCreateDirectionCommandParams) error {
-	getUserDirectionParms := models.GetUserDirectionParams{ChatID: params.ChatID, ParentDirectionID: sql.NullInt64{Int64: 15, Valid: false}}
+	getUserDirectionParms := models.GetUserDirectionParams{ChatID: params.ChatID}
 	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParms)
 	if err != nil {
 		return err

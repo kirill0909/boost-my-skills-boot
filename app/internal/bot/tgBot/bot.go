@@ -59,7 +59,7 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
-			case utils.CreateDirection:
+			case utils.CreateDirectionCommand:
 				params := models.HandleCreateDirectionCommandParams{
 					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
 				if err := t.tgUC.HandleCreateDirectionCommand(ctx, params); err != nil {

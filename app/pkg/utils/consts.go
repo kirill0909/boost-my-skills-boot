@@ -5,8 +5,8 @@ const (
 	DirectionNameLayout = "^[a-zA-Z0-9 ]+$"
 
 	// commands
-	StartCommand    = "start"
-	CreateDirection = "create_direction"
+	StartCommand           = "start"
+	CreateDirectionCommand = "create_direction"
 
 	// user states
 	AwaitingDirectionName   = 1

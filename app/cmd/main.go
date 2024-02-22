@@ -5,7 +5,7 @@ import (
 	"boost-my-skills-bot/internal/bot/repository"
 	"boost-my-skills-bot/internal/bot/tgBot"
 	"boost-my-skills-bot/internal/bot/usecase"
-	models "boost-my-skills-bot/internal/models/bot"
+	"boost-my-skills-bot/internal/models"
 	"boost-my-skills-bot/pkg/storage/postgres"
 	"boost-my-skills-bot/pkg/storage/redis"
 	"context"

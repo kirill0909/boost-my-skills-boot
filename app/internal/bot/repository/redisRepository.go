@@ -3,7 +3,7 @@ package repository
 import (
 	"boost-my-skills-bot/config"
 	"boost-my-skills-bot/internal/bot"
-	models "boost-my-skills-bot/internal/models/bot"
+	"boost-my-skills-bot/internal/bot/models"
 	"context"
 	"fmt"
 	"time"

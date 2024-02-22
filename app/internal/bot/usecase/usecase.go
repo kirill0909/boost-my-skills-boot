@@ -6,17 +6,15 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"boost-my-skills-bot/pkg/utils"
 	"context"
-	"database/sql"
 	"fmt"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/kirill0909/logger"
 	"github.com/pkg/errors"
 	"github.com/redis/go-redis/v9"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type botUC struct {
@@ -74,7 +72,6 @@ func (u *botUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 
 	if _, err := u.BotAPI.Send(msg); err != nil {
 		return errors.Wrapf(err, "BotUC.HandleStartCommand.Send")
-
 	}
 
 	return nil

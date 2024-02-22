@@ -56,6 +56,7 @@ WHERE
 
 	queryCreateDirection = `
 	INSERT INTO directions (direction, user_id, parent_direction_id)
-	VALUES ($1, (SELECT id FROM users WHERE tg_chat_id = $2), $3);
+	VALUES ($1, (SELECT id FROM users WHERE tg_chat_id = $2), $3)
+	RETURNING direction;
 	`
 )

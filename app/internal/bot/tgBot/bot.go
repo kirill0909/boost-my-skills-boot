@@ -72,8 +72,8 @@ func (t *TgBot) Run() error {
 
 			switch statusID {
 			case utils.AwaitingDirectionName:
-				params := models.HandleAwaitingDirectionNameParams{ChatID: update.Message.Chat.ID, DirectionName: update.Message.Text}
-				if err := t.handleAwaitingDirectionName(ctx, params); err != nil {
+				params := models.CreateDirectionParams{ChatID: update.Message.Chat.ID, DirectionName: update.Message.Text}
+				if err := t.tgUC.CreateDirection(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
@@ -96,6 +96,13 @@ func (t *TgBot) sendErrorMessage(chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
 	_, err := t.BotAPI.Send(msg)
 	if err != nil {
+		t.log.Errorf(err.Error())
+	}
+}
+
+func (t *TgBot) sendMessage(chatID int64, text string) {
+	msg := tgbotapi.NewMessage(chatID, text)
+	if _, err := t.BotAPI.Send(msg); err != nil {
 		t.log.Errorf(err.Error())
 	}
 }

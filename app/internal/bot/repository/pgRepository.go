@@ -138,11 +138,11 @@ func (r *botPGRepo) GetUserDirection(ctx context.Context, params models.GetUserD
 	return directionList, nil
 }
 
-func (r *botPGRepo) CreateDirection(ctx context.Context, params models.CreateDirectionParams) error {
-	_, err := r.db.ExecContext(ctx, queryCreateDirection, params.DirectionName, params.ChatID, params.ParentDirectionID)
-	if err != nil {
-		return errors.Wrapf(err, "botPGRepo.CreateDirection.queryCreateDirection. params(%+v)", params)
+func (r *botPGRepo) CreateDirection(ctx context.Context, params models.CreateDirectionParams) (string, error) {
+	var direction string
+	if err := r.db.GetContext(ctx, &direction, queryCreateDirection, params.DirectionName, params.ChatID, params.ParentDirectionID); err != nil {
+		return "", errors.Wrapf(err, "botPGRepo.CreateDirection.queryCreateDirection. params(%+v)", params)
 	}
 
-	return nil
+	return direction, nil
 }

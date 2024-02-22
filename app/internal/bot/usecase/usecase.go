@@ -128,13 +128,17 @@ func (u *botUC) CreateDirection(ctx context.Context, params models.CreateDirecti
 		return fmt.Errorf("direction name contains unacceptable symbols. params(%+v)", params)
 	}
 
-	if err := u.pgRepo.CreateDirection(ctx, params); err != nil {
+	direction, err := u.pgRepo.CreateDirection(ctx, params)
+	if err != nil {
 		return err
 	}
 
 	if err := u.rdb.ResetAwaitingStatus(ctx, params.ChatID); err != nil {
 		return err
 	}
+
+	text := fmt.Sprintf("successfully created \"%s\" direction", direction)
+	u.sendMessage(params.ChatID, text)
 
 	return nil
 }

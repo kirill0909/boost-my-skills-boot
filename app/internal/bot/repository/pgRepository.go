@@ -118,10 +118,10 @@ func (r *botPGRepo) SetUserActive(ctx context.Context, params models.SetUserActi
 	return nil
 }
 
-func (r *botPGRepo) GetUserDirection(ctx context.Context, chatID int64) ([]models.UserDirection, error) {
-	rows, err := r.db.QueryContext(ctx, queryGetUserDirection, chatID)
+func (r *botPGRepo) GetUserDirection(ctx context.Context, params models.GetUserDirectionParams) ([]models.UserDirection, error) {
+	rows, err := r.db.QueryContext(ctx, queryGetUserDirection, params.ChatID, params.ParentDirectionID)
 	if err != nil {
-		err = errors.Wrapf(err, "BotPGRepo.GetUserDirection.queryGetUserDirection. chatID: %d", chatID)
+		err = errors.Wrapf(err, "BotPGRepo.GetUserDirection.queryGetUserDirection. params(%+v)", params)
 		return []models.UserDirection{}, err
 	}
 
@@ -129,7 +129,7 @@ func (r *botPGRepo) GetUserDirection(ctx context.Context, chatID int64) ([]model
 	var direction models.UserDirection
 	for rows.Next() {
 		if err := rows.Scan(&direction.ID, &direction.Direction, &direction.ParentDirectionID, &direction.CreatedAt, &direction.UpdatedAt); err != nil {
-			err = errors.Wrapf(err, "BotPGRepo.GetUserDirection.queryGetUserDirection. chatID: %d", chatID)
+			err = errors.Wrapf(err, "BotPGRepo.GetUserDirection.queryGetUserDirection. params(%+v)", params)
 			return []models.UserDirection{}, err
 		}
 		directionList = append(directionList, direction)

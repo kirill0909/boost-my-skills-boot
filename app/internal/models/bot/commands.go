@@ -1,5 +1,9 @@
 package bot
 
+import (
+	"database/sql"
+)
+
 type HandleStartCommandParams struct {
 	Text   string
 	ChatID int64
@@ -21,6 +25,11 @@ type HandleCreateDirectionCommandParams struct {
 type SetAwaitingStatusParams struct {
 	StatusID int
 	ChatID   int64
+}
+
+type GetUserDirectionParams struct {
+	ChatID            int64
+	ParentDirectionID sql.NullInt64
 }
 
 type GetMainButtonsResult struct {

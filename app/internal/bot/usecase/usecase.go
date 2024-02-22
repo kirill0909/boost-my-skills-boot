@@ -6,6 +6,7 @@ import (
 	models "boost-my-skills-bot/internal/models/bot"
 	"boost-my-skills-bot/pkg/utils"
 	"context"
+	"database/sql"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -80,7 +81,8 @@ func (u *botUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 }
 
 func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.HandleCreateDirectionCommandParams) error {
-	directions, err := u.pgRepo.GetUserDirection(ctx, params.ChatID)
+	getUserDirectionParms := models.GetUserDirectionParams{ChatID: params.ChatID, ParentDirectionID: sql.NullInt64{Int64: 15, Valid: false}}
+	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParms)
 	if err != nil {
 		return err
 	}

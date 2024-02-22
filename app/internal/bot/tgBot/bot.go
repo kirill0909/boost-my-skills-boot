@@ -40,8 +40,15 @@ func (t *TgBot) Run() error {
 	updates := t.BotAPI.GetUpdatesChan(updateConfig)
 
 	for update := range updates {
+		ctx := context.Background()
+		statusID, err := t.tgUC.GetAwaitingStatus(ctx, update.FromChat().ID)
+		if err != nil {
+			t.log.Errorf(err.Error())
+			t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+			continue
+		}
+
 		if update.Message != nil {
-			ctx := context.Background()
 			switch update.Message.Command() {
 			case utils.StartCommand:
 				params := models.HandleStartCommandParams{
@@ -63,13 +70,6 @@ func (t *TgBot) Run() error {
 				continue
 			}
 
-			statusID, err := t.tgUC.GetAwaitingStatus(ctx, update.Message.Chat.ID)
-			if err != nil {
-				t.log.Errorf(err.Error())
-				t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
-				continue
-			}
-
 			switch statusID {
 			case utils.AwaitingDirectionName:
 				params := models.HandleAwaitingDirectionNameParams{ChatID: update.Message.Chat.ID, DirectionName: update.Message.Text}
@@ -82,6 +82,10 @@ func (t *TgBot) Run() error {
 				t.sendMessage(update.Message.Chat.ID, "use commands to interact with the bot")
 				continue
 			}
+		}
+
+		if update.CallbackQuery != nil && statusID == utils.AwaitingParentDireciton {
+			t.log.Infof("callback data: %s", update.CallbackData())
 		}
 	}
 

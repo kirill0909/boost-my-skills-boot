@@ -53,7 +53,7 @@ func (t *TgBot) Run() error {
 			case utils.StartCommand:
 				params := models.HandleStartCommandParams{
 					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
-				if err := t.handleStartCommand(ctx, params); err != nil {
+				if err := t.tgUC.HandleStartCommand(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "account activation error")
 					continue
@@ -62,7 +62,7 @@ func (t *TgBot) Run() error {
 			case utils.CreateDirection:
 				params := models.HandleCreateDirectionCommandParams{
 					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
-				if err := t.handleCreateDirectionCommand(ctx, params); err != nil {
+				if err := t.tgUC.HandleCreateDirectionCommand(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "create direction error")
 					continue

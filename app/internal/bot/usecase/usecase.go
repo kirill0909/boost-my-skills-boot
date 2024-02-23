@@ -212,7 +212,17 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, chatID int64) error {
 		u.sendMessage(sendMessageParms)
 	}
 
-	u.log.Infof("add info")
+	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: chatID, StatusID: utils.AwaitingAddInfoDirection}
+	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
+		return err
+	}
+
+	sendMessageParams := models.SendMessageParams{
+		ChatID:   chatID,
+		Text:     "choose direction for add info",
+		Keyboard: u.createDirectionsKeyboard(directions),
+	}
+	u.sendMessage(sendMessageParams)
 
 	return nil
 }

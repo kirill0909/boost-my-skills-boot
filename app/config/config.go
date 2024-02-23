@@ -15,6 +15,7 @@ type Config struct {
 	AdminChatID                  int64 `validate:"required"`
 	AwaitingDirectionNameDelay   int   `validate:"required"`
 	AwaitingParentDirectionDelay int   `validate:"required"`
+	AwaitingAddInfoDirection     int   `validate:"required"`
 }
 
 type Postgres struct {

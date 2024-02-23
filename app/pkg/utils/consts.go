@@ -14,6 +14,7 @@ const (
 	// user states
 	AwaitingDirectionNameStatus   = 1
 	AwaitingParentDirecitonStatus = 2
+	AwaitingAddInfoDirection      = 3
 
 	// prefix
 	AwaitingStatusPrefix        = "awaitingStatusPrefix"

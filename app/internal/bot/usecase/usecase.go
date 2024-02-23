@@ -218,10 +218,10 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, chatID int64) error {
 	}
 
 	sendMessageParams := models.SendMessageParams{
-		ChatID:   chatID,
-		Text:     "choose direction for add info",
-		Keyboard: u.createDirectionsKeyboard(directions),
-	}
+		ChatID:         chatID,
+		Text:           "choose direction for add info",
+		Keyboard:       u.createDirectionsKeyboard(directions),
+		IsNeedToRemove: true}
 	u.sendMessage(sendMessageParams)
 
 	return nil

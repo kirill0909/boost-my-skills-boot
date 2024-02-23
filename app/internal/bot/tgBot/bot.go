@@ -111,6 +111,8 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
+			case statusID == utils.AwaitingAddInfoDirection:
+				t.log.Infof("%s", update.CallbackData())
 			}
 		}
 	}

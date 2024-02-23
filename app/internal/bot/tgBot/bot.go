@@ -83,7 +83,6 @@ func (t *TgBot) Run() error {
 		}
 
 		if update.CallbackQuery != nil && statusID == utils.AwaitingParentDirecitonStatus {
-			t.log.Infof("callback data: %s", update.CallbackData())
 			parentDirectionParams := models.SetParentDirectionParams{ChatID: update.CallbackQuery.From.ID, CallbackData: update.CallbackData()}
 			if err := t.tgUC.SetParentDirection(ctx, parentDirectionParams); err != nil {
 				t.log.Errorf(err.Error())

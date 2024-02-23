@@ -69,3 +69,12 @@ func (r *botRedisRepo) GetParentDirection(ctx context.Context, chatID int64) (st
 
 	return parentDirectionID, nil
 }
+
+func (r *botRedisRepo) ResetParentDirection(ctx context.Context, chatID int64) error {
+	key := fmt.Sprintf("%s_%d", utils.ParentDirectionPrefix, chatID)
+	if _, err := r.db.Del(ctx, key).Result(); err != nil {
+		return errors.Wrapf(err, "botRedisRepo.ResetParentDirection.Result(). chatID: %d", chatID)
+	}
+
+	return nil
+}

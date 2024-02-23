@@ -162,6 +162,10 @@ func (u *botUC) CreateDirection(ctx context.Context, params models.CreateDirecti
 		return err
 	}
 
+	if err := u.rdb.ResetParentDirection(ctx, params.ChatID); err != nil {
+		return err
+	}
+
 	text := fmt.Sprintf("successfully created \"%s\" direction", direction)
 	u.sendMessage(params.ChatID, text)
 

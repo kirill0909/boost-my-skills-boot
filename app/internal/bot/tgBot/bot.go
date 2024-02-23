@@ -48,6 +48,7 @@ func (t *TgBot) Run() error {
 			continue
 		}
 
+		// handle message
 		if update.Message != nil {
 			switch update.Message.Command() {
 			case utils.StartCommand:
@@ -70,19 +71,23 @@ func (t *TgBot) Run() error {
 				continue
 			}
 
-			if statusID == utils.AwaitingDirectionNameStatus || statusID == utils.AwaitingParentDirecitonStatus {
+			// handle entered text
+			switch {
+			case statusID == utils.AwaitingDirectionNameStatus || statusID == utils.AwaitingParentDirecitonStatus: // execute when user enter direction name
 				params := models.CreateDirectionParams{ChatID: update.Message.Chat.ID, DirectionName: update.Message.Text}
 				if err := t.tgUC.CreateDirection(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
-			} else {
+			default:
 				t.sendMessage(update.Message.From.ID, "use keyboard to interact with bot")
 			}
 		}
 
-		if update.CallbackQuery != nil && statusID == utils.AwaitingParentDirecitonStatus {
+		// handle callbacks
+		switch {
+		case update.CallbackQuery != nil && statusID == utils.AwaitingParentDirecitonStatus: // executes when user tap on direction name button
 			parentDirectionParams := models.SetParentDirectionParams{ChatID: update.CallbackQuery.From.ID, CallbackData: update.CallbackData()}
 			if err := t.tgUC.SetParentDirection(ctx, parentDirectionParams); err != nil {
 				t.log.Errorf(err.Error())
@@ -98,6 +103,7 @@ func (t *TgBot) Run() error {
 				t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 				continue
 			}
+
 		}
 	}
 

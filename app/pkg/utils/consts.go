@@ -9,6 +9,7 @@ const (
 	// commands
 	StartCommand           = "start"
 	CreateDirectionCommand = "create_direction"
+	AddInfoCommand         = "add_info"
 
 	// user states
 	AwaitingDirectionNameStatus   = 1

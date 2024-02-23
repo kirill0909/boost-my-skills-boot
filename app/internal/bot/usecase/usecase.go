@@ -200,6 +200,23 @@ func (u *botUC) SetParentDirection(ctx context.Context, params models.SetParentD
 	return nil
 }
 
+func (u *botUC) HandleAddInfoCommand(ctx context.Context, chatID int64) error {
+	getUserDirectionParams := models.GetUserDirectionParams{ChatID: chatID}
+	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParams)
+	if err != nil {
+		return err
+	}
+
+	if len(directions) == 0 {
+		sendMessageParms := models.SendMessageParams{ChatID: chatID, Text: "To add information, create at least one direction"}
+		u.sendMessage(sendMessageParms)
+	}
+
+	u.log.Infof("add info")
+
+	return nil
+}
+
 func (u *botUC) sendMessage(params models.SendMessageParams) {
 	msg := tgbotapi.NewMessage(params.ChatID, params.Text)
 	if params.Keyboard.InlineKeyboard != nil {
@@ -212,7 +229,6 @@ func (u *botUC) sendMessage(params models.SendMessageParams) {
 	}
 
 	if params.IsNeedToRemove {
-		u.log.Infof("Set expired time for message: %d", sendedMsg.MessageID)
 		if err := u.rdb.SetExpirationTimeForMessage(context.Background(), sendedMsg.MessageID, params.ChatID); err != nil {
 			u.log.Errorf(err.Error())
 		}

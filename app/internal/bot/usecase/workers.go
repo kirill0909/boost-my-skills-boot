@@ -84,7 +84,6 @@ func (u *botUC) ListenExpiredMessageWorker() {
 			if err := u.removeMessage(msg.Payload); err != nil {
 				u.log.Errorf(err.Error())
 			}
-			u.log.Infof("remove msg: %s", msg.Payload)
 		}
 	}
 }

@@ -112,6 +112,7 @@ func (t *TgBot) Run() error {
 					continue
 				}
 			case statusID == utils.AwaitingAddInfoDirection:
+				//TODO: pass parent direction to usecase
 				t.log.Infof("%s", update.CallbackData())
 			}
 		}

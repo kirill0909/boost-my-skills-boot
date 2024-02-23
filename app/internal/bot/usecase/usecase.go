@@ -201,6 +201,11 @@ func (u *botUC) SetParentDirection(ctx context.Context, params models.SetParentD
 }
 
 func (u *botUC) HandleAddInfoCommand(ctx context.Context, chatID int64) error {
+	// TODO:
+	// if callback data is not empty,
+	// convert it to direction id
+	// get all child directions
+	// send child dictions to user
 	getUserDirectionParams := models.GetUserDirectionParams{ChatID: chatID}
 	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParams)
 	if err != nil {

@@ -74,8 +74,8 @@ func InitRedisClient(cfg *config.Config) (*redis.Client, *redis.PubSub, error) {
 		return nil, nil, err
 	}
 
-	// TODO: format number for redis db
-	pubsub := client.PSubscribe(ctx, "__keyevent@0__:expired")
+	keyevent := fmt.Sprintf("__keyevent@%d__:expired", cfg.Redis.DB)
+	pubsub := client.PSubscribe(ctx, keyevent)
 
 	return client, pubsub, nil
 }

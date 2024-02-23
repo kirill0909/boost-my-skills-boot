@@ -78,3 +78,13 @@ func (r *botRedisRepo) ResetParentDirection(ctx context.Context, chatID int64) e
 
 	return nil
 }
+
+func (r *botRedisRepo) SetExpirationTimeForMessage(ctx context.Context, messageID int, chatID int64) error {
+	key := fmt.Sprintf("%s_MessageID_%d_ChatID_%d", utils.ExpirationTimeMessagePrefix, messageID, chatID)
+	delay := time.Duration(time.Second * time.Duration(r.cfg.AwaitingParentDirectionDelay))
+	if _, err := r.db.Set(ctx, key, "", delay).Result(); err != nil {
+		return errors.Wrapf(err, "botRedisRepo.SetExpirationTimeForMessage.Result(). messageID: %d", messageID)
+	}
+
+	return nil
+}

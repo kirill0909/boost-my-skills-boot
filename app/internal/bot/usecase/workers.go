@@ -2,10 +2,15 @@ package usecase
 
 import (
 	"boost-my-skills-bot/internal/bot/models"
+	"boost-my-skills-bot/pkg/utils"
 	"context"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/pkg/errors"
-	"time"
 )
 
 func (u *botUC) SyncMainKeyboardWorker() {
@@ -68,6 +73,39 @@ func (u *botUC) handleOnlyForUserCase(users []models.GetActiveUsersResult) error
 			return errors.Wrap(err, "BotUC.handleOnlyForUserCase")
 		}
 	}
+
+	return nil
+}
+
+func (u *botUC) ListenExpiredMessageWorker() {
+	u.log.Infof("ListenExpirationMessageWorker is started")
+	for msg := range u.redisPubSub.Channel() {
+		if strings.HasPrefix(msg.Payload, utils.ExpirationTimeMessagePrefix) {
+			if err := u.removeMessage(msg.Payload); err != nil {
+				u.log.Errorf(err.Error())
+			}
+			u.log.Infof("remove msg: %s", msg.Payload)
+		}
+	}
+}
+
+func (u *botUC) removeMessage(payload string) error {
+	messageIDRegex := regexp.MustCompile(utils.MessageIDLayout)
+	submatchResult := messageIDRegex.FindStringSubmatch(payload)
+	messageID, err := strconv.Atoi(submatchResult[1])
+	if err != nil {
+		return errors.Wrapf(err, "botUC.removeMessage.Atoi(). payload: %s", payload)
+	}
+
+	chatIDRegex := regexp.MustCompile(utils.ChatIDLayout)
+	submatchResult = chatIDRegex.FindStringSubmatch(payload)
+	chatID, err := strconv.Atoi(submatchResult[1])
+	if err != nil {
+		return errors.Wrapf(err, "botUC.removeMessage.Atoi(). payload: %s", payload)
+	}
+
+	deleteMsg := tgbotapi.NewDeleteMessage(int64(chatID), messageID)
+	u.BotAPI.Send(deleteMsg)
 
 	return nil
 }

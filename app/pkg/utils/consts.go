@@ -3,6 +3,8 @@ package utils
 const (
 	// regex layouts
 	DirectionNameLayout = "^[a-zA-Z0-9 ]+$"
+	MessageIDLayout     = "_MessageID_(\\d+)"
+	ChatIDLayout        = "_ChatID_(\\d+)"
 
 	// commands
 	StartCommand           = "start"
@@ -13,6 +15,7 @@ const (
 	AwaitingParentDirecitonStatus = 2
 
 	// prefix
-	AwaitingStatusPrefix  = "awaitingStatusPrefix"
-	ParentDirectionPrefix = "parentDirectionPrefix"
+	AwaitingStatusPrefix        = "awaitingStatusPrefix"
+	ParentDirectionPrefix       = "parentDirectionPrefix"
+	ExpirationTimeMessagePrefix = "ExpirationTimeMessagePreifx"
 )

@@ -7,7 +7,8 @@ import (
 )
 
 type Dependencies struct {
-	PgDB   *sqlx.DB
-	Redis  *redis.Client
-	Logger *logger.Logger
+	PgDB        *sqlx.DB
+	Redis       *redis.Client
+	RedisPubSub *redis.PubSub
+	Logger      *logger.Logger
 }

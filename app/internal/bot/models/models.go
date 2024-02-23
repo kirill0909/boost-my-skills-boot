@@ -1,6 +1,9 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+)
 
 type GetActiveUsersResult struct {
 	ChatID  int64 `db:"tg_chat_id"`
@@ -63,4 +66,11 @@ type SetParentDirectionParams struct {
 	ChatID            int64
 	ParentDirectionID int
 	CallbackData      string
+}
+
+type SendMessageParams struct {
+	ChatID         int64
+	Text           string
+	Keyboard       tgbotapi.InlineKeyboardMarkup
+	IsNeedToRemove bool
 }

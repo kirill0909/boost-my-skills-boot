@@ -16,4 +16,5 @@ type Usecase interface {
 
 	// workers
 	SyncMainKeyboardWorker()
+	ListenExpiredMessageWorker()
 }

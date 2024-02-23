@@ -72,14 +72,14 @@ func maping(ctx context.Context, cfg *config.Config, dep models.Dependencies) (t
 	botRedisRepo := repository.NewBotRedisRepo(dep.Redis, cfg)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botPgRepo, botRedisRepo, botAPI, dep.Logger)
+	botUC := usecase.NewBotUC(cfg, botPgRepo, botRedisRepo, dep.RedisPubSub, botAPI, dep.Logger)
 
 	// bot
 	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)
 
-	go func() {
-		botUC.SyncMainKeyboardWorker()
-	}()
+	// workers
+	go botUC.SyncMainKeyboardWorker()
+	go botUC.ListenExpiredMessageWorker()
 
 	return tgBot, nil
 }
@@ -94,7 +94,7 @@ func initDependencies(ctx context.Context, cfg *config.Config) (models.Dependenc
 		logger.Infof("PostgreSQL successful connection")
 	}
 
-	redisDB, _, err := redis.InitRedisClient(cfg)
+	redisDB, redisPubSub, err := redis.InitRedisClient(cfg)
 	if err != nil {
 		return models.Dependencies{}, err
 	} else {
@@ -102,9 +102,10 @@ func initDependencies(ctx context.Context, cfg *config.Config) (models.Dependenc
 	}
 
 	return models.Dependencies{
-		PgDB:   pgDB,
-		Redis:  redisDB,
-		Logger: logger}, nil
+		PgDB:        pgDB,
+		Redis:       redisDB,
+		RedisPubSub: redisPubSub,
+		Logger:      logger}, nil
 }
 
 func closeDependencies(dep models.Dependencies) error {
@@ -112,6 +113,12 @@ func closeDependencies(dep models.Dependencies) error {
 		return errors.Wrap(err, "PostgreSQL error close connection")
 	} else {
 		dep.Logger.Infof("PostgreSQL successful close connection")
+	}
+
+	if err := dep.RedisPubSub.Close(); err != nil {
+		return errors.Wrap(err, "Redis error close PubSub connection")
+	} else {
+		dep.Logger.Infof("Redis successful close PubSub connection")
 	}
 
 	if err := dep.Redis.Close(); err != nil {

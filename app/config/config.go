@@ -9,11 +9,12 @@ import (
 )
 
 type Config struct {
-	Postgres                   Postgres
-	Redis                      Redis
-	TgBot                      TgBot
-	AdminChatID                int64 `validate:"required"`
-	AwaitingDirectionNameDelay int   `validate:"required"`
+	Postgres                     Postgres
+	Redis                        Redis
+	TgBot                        TgBot
+	AdminChatID                  int64 `validate:"required"`
+	AwaitingDirectionNameDelay   int   `validate:"required"`
+	AwaitingParentDirectionDelay int   `validate:"required"`
 }
 
 type Postgres struct {

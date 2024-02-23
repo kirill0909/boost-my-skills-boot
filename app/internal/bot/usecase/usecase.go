@@ -23,6 +23,7 @@ type botUC struct {
 	cfg                  *config.Config
 	pgRepo               bot.PgRepository
 	rdb                  bot.RedisRepository
+	redisPubSub          *redis.PubSub
 	BotAPI               *tgbotapi.BotAPI
 	log                  *logger.Logger
 	lastKeyboardChecking int64
@@ -32,6 +33,7 @@ func NewBotUC(
 	cfg *config.Config,
 	pgRepo bot.PgRepository,
 	rdb bot.RedisRepository,
+	redisPubSub *redis.PubSub,
 	botAPI *tgbotapi.BotAPI,
 	log *logger.Logger,
 ) bot.Usecase {
@@ -39,6 +41,7 @@ func NewBotUC(
 		cfg:                  cfg,
 		pgRepo:               pgRepo,
 		rdb:                  rdb,
+		redisPubSub:          redisPubSub,
 		BotAPI:               botAPI,
 		log:                  log,
 		lastKeyboardChecking: time.Now().Unix(),
@@ -100,10 +103,18 @@ func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.
 	var statusID int
 	if len(directions) == 0 {
 		statusID = utils.AwaitingDirectionNameStatus
-		u.sendMessage(params.ChatID, "enter name of your FIRST direction")
+		sendMessageParams := models.SendMessageParams{
+			ChatID: params.ChatID,
+			Text:   "enter name of your direction"}
+		u.sendMessage(sendMessageParams)
 	} else {
 		statusID = utils.AwaitingParentDirecitonStatus
-		u.sendMessage(params.ChatID, "choose parent direciton", u.createDirectionsKeyboard(directions))
+		sendMessageParams := models.SendMessageParams{
+			ChatID:         params.ChatID,
+			Text:           "choose parent direciton",
+			Keyboard:       u.createDirectionsKeyboard(directions),
+			IsNeedToRemove: true}
+		u.sendMessage(sendMessageParams)
 	}
 
 	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: statusID}
@@ -166,8 +177,10 @@ func (u *botUC) CreateDirection(ctx context.Context, params models.CreateDirecti
 		return err
 	}
 
-	text := fmt.Sprintf("successfully created \"%s\" direction", direction)
-	u.sendMessage(params.ChatID, text)
+	sendMessageParams := models.SendMessageParams{
+		ChatID: params.ChatID,
+		Text:   fmt.Sprintf("successfully created \"%s\" direction", direction)}
+	u.sendMessage(sendMessageParams)
 
 	return nil
 }
@@ -187,12 +200,21 @@ func (u *botUC) SetParentDirection(ctx context.Context, params models.SetParentD
 	return nil
 }
 
-func (u *botUC) sendMessage(chatID int64, text string, keyboard ...tgbotapi.InlineKeyboardMarkup) {
-	msg := tgbotapi.NewMessage(chatID, text)
-	if len(keyboard) > 0 {
-		msg.ReplyMarkup = keyboard[0]
+func (u *botUC) sendMessage(params models.SendMessageParams) {
+	msg := tgbotapi.NewMessage(params.ChatID, params.Text)
+	if params.Keyboard.InlineKeyboard != nil {
+		msg.ReplyMarkup = params.Keyboard
 	}
-	if _, err := u.BotAPI.Send(msg); err != nil {
+
+	sendedMsg, err := u.BotAPI.Send(msg)
+	if err != nil {
 		u.log.Errorf(err.Error())
+	}
+
+	if params.IsNeedToRemove {
+		u.log.Infof("Set expired time for message: %d", sendedMsg.MessageID)
+		if err := u.rdb.SetExpirationTimeForMessage(context.Background(), sendedMsg.MessageID, params.ChatID); err != nil {
+			u.log.Errorf(err.Error())
+		}
 	}
 }

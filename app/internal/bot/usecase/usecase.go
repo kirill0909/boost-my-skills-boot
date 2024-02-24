@@ -223,12 +223,11 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAd
 		u.sendMessage(sendMessageParms)
 		return nil
 	} else if len(directions) == 0 && params.CallbackData != "" { // executed when the user has directions but has reached the lowest level
-		// set status for awating question
 		setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingQuestion}
 		if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
 			return err
 		}
-		// set direction id for info
+
 		setDirectionForInfoParams := models.SetDirectionForInfoParams{
 			ChatID: params.ChatID, DirectionID: int(getUserDirectionParams.ParentDirectionID.Int64)}
 		if err := u.rdb.SetDirectionForInfo(ctx, setDirectionForInfoParams); err != nil {
@@ -271,9 +270,18 @@ func (u *botUC) HandleAwaitingQuestion(ctx context.Context, params models.Handle
 		return err
 	}
 
-	// set info id to redis
-	// set status awaiting answer
-	u.log.Infof("infoID: %d", infoID)
+	setInfoIDParams := models.SetInfoIDParams{ChatID: params.ChatID, InfoID: infoID}
+	if err := u.rdb.SetInfoID(ctx, setInfoIDParams); err != nil {
+		return err
+	}
+
+	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingAnswer}
+	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
+		return err
+	}
+
+	sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "alright, enter your answer"}
+	u.sendMessage(sendMessageParams)
 
 	return nil
 }

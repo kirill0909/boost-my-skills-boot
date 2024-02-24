@@ -16,10 +16,12 @@ const (
 	AwaitingParentDirecitonStatus = 2
 	AwaitingAddInfoDirection      = 3
 	AwaitingQuestion              = 4
+	AwaitingAnswer                = 5
 
 	// prefix
 	AwaitingStatusPrefix        = "awaitingStatusPrefix"
 	ParentDirectionPrefix       = "parentDirectionPrefix"
 	ExpirationTimeMessagePrefix = "expirationTimeMessagePreifx"
 	DirectionForInfoPrefix      = "directionForInfoPrefix"
+	InfoPrefix                  = "infoPrefix"
 )

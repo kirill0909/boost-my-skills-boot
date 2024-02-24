@@ -25,4 +25,5 @@ type RedisRepository interface {
 	SetExpirationTimeForMessage(context.Context, int, int64) error
 	SetDirectionForInfo(context.Context, models.SetDirectionForInfoParams) error
 	GetDirectionForInfo(context.Context, int64) (string, error)
+	SetInfoID(context.Context, models.SetInfoIDParams) error
 }

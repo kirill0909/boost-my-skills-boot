@@ -24,8 +24,7 @@ func NewBotRedisRepo(redis *redis.Client, cfg *config.Config) bot.RedisRepositor
 
 func (r *botRedisRepo) SetAwaitingStatus(ctx context.Context, params models.SetAwaitingStatusParams) error {
 	key := fmt.Sprintf("%s_%d", utils.AwaitingStatusPrefix, params.ChatID)
-	delay := time.Duration(time.Second * time.Duration(r.cfg.AwaitingDirectionNameDelay))
-	if _, err := r.db.Set(ctx, key, params.StatusID, delay).Result(); err != nil {
+	if _, err := r.db.Set(ctx, key, params.StatusID, 0).Result(); err != nil {
 		return errors.Wrapf(err, "botRedisRepo.SetAwaitingStatus.Set.Result(). params(%+v)", params)
 	}
 
@@ -108,4 +107,13 @@ func (r *botRedisRepo) GetDirectionForInfo(ctx context.Context, chatID int64) (s
 	}
 
 	return directionID, nil
+}
+
+func (r *botRedisRepo) SetInfoID(ctx context.Context, params models.SetInfoIDParams) error {
+	key := fmt.Sprintf("%s_%d", utils.InfoPrefix, params.ChatID)
+	if _, err := r.db.Set(ctx, key, params.InfoID, 0).Result(); err != nil {
+		return errors.Wrapf(err, "botPGRepo,SetInfoID.Result(). params(%+v)", params)
+	}
+
+	return nil
 }

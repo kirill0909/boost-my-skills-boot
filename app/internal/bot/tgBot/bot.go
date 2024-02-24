@@ -97,6 +97,8 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
+			case statusID == utils.AwaitingAnswer:
+				t.log.Infof("Your answer: %s", update.Message.Text)
 			default:
 				t.sendMessage(update.Message.From.ID, "use keyboard to interact with bot")
 				continue

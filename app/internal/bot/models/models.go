@@ -94,3 +94,8 @@ type SetDirectionForInfoParams struct {
 	ChatID      int64
 	DirectionID int
 }
+
+type SetInfoIDParams struct {
+	ChatID int64
+	InfoID int
+}

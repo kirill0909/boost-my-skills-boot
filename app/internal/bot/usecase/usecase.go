@@ -200,30 +200,41 @@ func (u *botUC) SetParentDirection(ctx context.Context, params models.SetParentD
 	return nil
 }
 
-func (u *botUC) HandleAddInfoCommand(ctx context.Context, chatID int64) error {
-	// TODO:
-	// if callback data is not empty,
-	// convert it to direction id
-	// get all child directions
-	// send child dictions to user
-	getUserDirectionParams := models.GetUserDirectionParams{ChatID: chatID}
+func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAddInfoCommandParams) error {
+	var err error
+	var parentDirectionID int
+	var getUserDirectionParams models.GetUserDirectionParams
+	if params.CallbackData != "" {
+		parentDirectionID, err = strconv.Atoi(params.CallbackData)
+		if err != nil {
+			return errors.Wrapf(err, "botUC.HandleCreateDirectionCommand.Atoi(). params(%+v)", params)
+		}
+		getUserDirectionParams.ParentDirectionID = sql.NullInt64{Int64: int64(parentDirectionID), Valid: true}
+	}
+	getUserDirectionParams.ChatID = params.ChatID
+
 	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParams)
 	if err != nil {
 		return err
 	}
 
-	if len(directions) == 0 {
-		sendMessageParms := models.SendMessageParams{ChatID: chatID, Text: "To add information, create at least one direction"}
+	if len(directions) == 0 && params.CallbackData == "" {
+		sendMessageParms := models.SendMessageParams{ChatID: params.ChatID, Text: "To add information, create at least one direction"}
 		u.sendMessage(sendMessageParms)
+		return nil
+	} else if len(directions) == 0 && params.CallbackData != "" {
+		sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "enter your question"}
+		u.sendMessage(sendMessageParams)
+		return nil
 	}
 
-	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: chatID, StatusID: utils.AwaitingAddInfoDirection}
+	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingAddInfoDirection}
 	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
 		return err
 	}
 
 	sendMessageParams := models.SendMessageParams{
-		ChatID:         chatID,
+		ChatID:         params.ChatID,
 		Text:           "choose direction for add info",
 		Keyboard:       u.createDirectionsKeyboard(directions),
 		IsNeedToRemove: true}

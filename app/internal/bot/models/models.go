@@ -39,6 +39,11 @@ type HandleCreateDirectionCommandParams struct {
 	CallbackData string
 }
 
+type HandleAddInfoCommandParams struct {
+	ChatID       int64
+	CallbackData string
+}
+
 type SetAwaitingStatusParams struct {
 	StatusID int
 	ChatID   int64

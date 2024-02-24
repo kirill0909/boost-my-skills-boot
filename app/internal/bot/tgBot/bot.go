@@ -70,7 +70,8 @@ func (t *TgBot) Run() error {
 				}
 				continue
 			case utils.AddInfoCommand:
-				if err := t.tgUC.HandleAddInfoCommand(ctx, update.Message.Chat.ID); err != nil {
+				params := models.HandleAddInfoCommandParams{ChatID: update.Message.Chat.ID}
+				if err := t.tgUC.HandleAddInfoCommand(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "add info error")
 					continue
@@ -111,9 +112,17 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
+				continue
 			case statusID == utils.AwaitingAddInfoDirection:
-				//TODO: pass parent direction to usecase
-				t.log.Infof("%s", update.CallbackData())
+				params := models.HandleAddInfoCommandParams{
+					ChatID:       update.CallbackQuery.From.ID,
+					CallbackData: update.CallbackData()}
+				if err := t.tgUC.HandleAddInfoCommand(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
+				continue
 			}
 		}
 	}

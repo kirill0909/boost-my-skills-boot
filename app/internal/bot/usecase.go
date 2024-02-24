@@ -9,7 +9,7 @@ type Usecase interface {
 	// commands
 	HandleStartCommand(context.Context, models.HandleStartCommandParams) error
 	HandleCreateDirectionCommand(context.Context, models.HandleCreateDirectionCommandParams) error
-	HandleAddInfoCommand(context.Context, int64) error
+	HandleAddInfoCommand(context.Context, models.HandleAddInfoCommandParams) error
 
 	GetAwaitingStatus(context.Context, int64) (int, error)
 	CreateDirection(context.Context, models.CreateDirectionParams) error

@@ -20,5 +20,6 @@ const (
 	// prefix
 	AwaitingStatusPrefix        = "awaitingStatusPrefix"
 	ParentDirectionPrefix       = "parentDirectionPrefix"
-	ExpirationTimeMessagePrefix = "ExpirationTimeMessagePreifx"
+	ExpirationTimeMessagePrefix = "expirationTimeMessagePreifx"
+	DirectionForInfoPrefix      = "directionForInfoPrefix"
 )

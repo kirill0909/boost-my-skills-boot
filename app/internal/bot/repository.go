@@ -22,4 +22,5 @@ type RedisRepository interface {
 	SetParentDirection(context.Context, models.SetParentDirectionParams) error
 	GetParentDirection(context.Context, int64) (string, error)
 	SetExpirationTimeForMessage(context.Context, int, int64) error
+	SetDirectionForInfo(context.Context, models.SetDirectionForInfoParams) error
 }

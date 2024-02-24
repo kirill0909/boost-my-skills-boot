@@ -79,3 +79,8 @@ type SendMessageParams struct {
 	Keyboard       tgbotapi.InlineKeyboardMarkup
 	IsNeedToRemove bool
 }
+
+type SetDirectionForInfoParams struct {
+	ChatID      int64
+	DirectionID int
+}

@@ -89,3 +89,13 @@ func (r *botRedisRepo) SetExpirationTimeForMessage(ctx context.Context, messageI
 
 	return nil
 }
+
+func (r *botRedisRepo) SetDirectionForInfo(ctx context.Context, params models.SetDirectionForInfoParams) error {
+	key := fmt.Sprintf("%s_%d", utils.DirectionForInfoPrefix, params.ChatID)
+	delay := time.Duration(time.Second * time.Duration(r.cfg.AwaitingParentDirectionDelay))
+	if _, err := r.db.Set(ctx, key, params.DirectionID, delay).Result(); err != nil {
+		return errors.Wrapf(err, "botRedisRepo.SetDirectionForInfo.Result(). params(%+v)", params)
+	}
+
+	return nil
+}

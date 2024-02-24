@@ -12,6 +12,7 @@ type PgRepository interface {
 	GetUpdatedButtons(context.Context, int64) ([]models.GetUpdatedButtonsResult, error)
 	GetUserDirection(context.Context, models.GetUserDirectionParams) ([]models.UserDirection, error)
 	CreateDirection(context.Context, models.CreateDirectionParams) (string, error)
+	SaveQuestion(context.Context, models.SaveQuestionParams) (int, error)
 }
 
 type RedisRepository interface {
@@ -23,4 +24,5 @@ type RedisRepository interface {
 	GetParentDirection(context.Context, int64) (string, error)
 	SetExpirationTimeForMessage(context.Context, int, int64) error
 	SetDirectionForInfo(context.Context, models.SetDirectionForInfoParams) error
+	GetDirectionForInfo(context.Context, int64) (string, error)
 }

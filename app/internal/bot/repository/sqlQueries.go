@@ -59,4 +59,8 @@ WHERE
 	VALUES ($1, (SELECT id FROM users WHERE tg_chat_id = $2), $3)
 	RETURNING direction;
 	`
+
+	querySaveQuestion = `
+	INSERT INTO infos(question, direction_id) VALUES ($1, $2) RETURNING id;
+	`
 )

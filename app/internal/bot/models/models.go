@@ -5,6 +5,11 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+type SaveQuestionParams struct {
+	Question    string
+	DirectionID int
+}
+
 type GetActiveUsersResult struct {
 	ChatID  int64 `db:"tg_chat_id"`
 	IsAdmin bool  `db:"is_admin"`
@@ -71,6 +76,11 @@ type SetParentDirectionParams struct {
 	ChatID            int64
 	ParentDirectionID int
 	CallbackData      string
+}
+
+type HandleAwaitingQuestionParams struct {
+	ChatID   int64
+	Question string
 }
 
 type SendMessageParams struct {

@@ -146,3 +146,12 @@ func (r *botPGRepo) CreateDirection(ctx context.Context, params models.CreateDir
 
 	return direction, nil
 }
+
+func (r *botPGRepo) SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (int, error) {
+	var infoID int
+	if err := r.db.GetContext(ctx, &infoID, querySaveQuestion, params.Question, params.DirectionID); err != nil {
+		return 0, errors.Wrapf(err, "botPGRepo.SaveQuestion.querySaveQuestion. params(%+v)", params)
+	}
+
+	return infoID, nil
+}

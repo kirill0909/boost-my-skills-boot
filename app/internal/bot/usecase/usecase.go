@@ -254,6 +254,30 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAd
 	return nil
 }
 
+func (u *botUC) HandleAwaitingQuestion(ctx context.Context, params models.HandleAwaitingQuestionParams) error {
+	getDirectionForInfoResult, err := u.rdb.GetDirectionForInfo(ctx, params.ChatID)
+	if err != nil {
+		return err
+	}
+
+	directionID, err := strconv.Atoi(getDirectionForInfoResult)
+	if err != nil {
+		return errors.Wrapf(err, "botUC.HandleAwaitingQuestion.Atoi(%s).", getDirectionForInfoResult)
+	}
+
+	saveQuestionParams := models.SaveQuestionParams{Question: params.Question, DirectionID: directionID}
+	infoID, err := u.pgRepo.SaveQuestion(ctx, saveQuestionParams)
+	if err != nil {
+		return err
+	}
+
+	// set info id to redis
+	// set status awaiting answer
+	u.log.Infof("infoID: %d", infoID)
+
+	return nil
+}
+
 func (u *botUC) sendMessage(params models.SendMessageParams) {
 	msg := tgbotapi.NewMessage(params.ChatID, params.Text)
 	if params.Keyboard.InlineKeyboard != nil {

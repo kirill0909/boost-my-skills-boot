@@ -99,3 +99,13 @@ func (r *botRedisRepo) SetDirectionForInfo(ctx context.Context, params models.Se
 
 	return nil
 }
+
+func (r *botRedisRepo) GetDirectionForInfo(ctx context.Context, chatID int64) (string, error) {
+	key := fmt.Sprintf("%s_%d", utils.DirectionForInfoPrefix, chatID)
+	directionID, err := r.db.Get(ctx, key).Result()
+	if err != nil {
+		return "", errors.Wrapf(err, "botRedisRepo.GetDirectionForInfo.Result(). chatID: %d", chatID)
+	}
+
+	return directionID, nil
+}

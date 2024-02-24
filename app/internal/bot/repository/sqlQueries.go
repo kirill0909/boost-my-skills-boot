@@ -2,7 +2,7 @@ package repository
 
 const (
 	querySetStatusActive = `
-	UPDATE users SET active = TRUE, tg_chat_id = $1, tg_name = $3
+	UPDATE users SET active = TRUE, tg_chat_id = $1, tg_name = $3, updated_at = NOW()
 	WHERE tg_uuid = $2 AND active IS FALSE
 	`
 
@@ -62,5 +62,9 @@ WHERE
 
 	querySaveQuestion = `
 	INSERT INTO infos(question, direction_id) VALUES ($1, $2) RETURNING id;
+	`
+
+	querySaveAnswer = `
+	UPDATE infos SET answer = $1, updated_at = NOW() WHERE id = $2;
 	`
 )

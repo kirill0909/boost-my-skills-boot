@@ -13,6 +13,7 @@ type PgRepository interface {
 	GetUserDirection(context.Context, models.GetUserDirectionParams) ([]models.UserDirection, error)
 	CreateDirection(context.Context, models.CreateDirectionParams) (string, error)
 	SaveQuestion(context.Context, models.SaveQuestionParams) (int, error)
+	SaveAnswer(context.Context, models.SaveAnswerParams) error
 }
 
 type RedisRepository interface {
@@ -26,4 +27,6 @@ type RedisRepository interface {
 	SetDirectionForInfo(context.Context, models.SetDirectionForInfoParams) error
 	GetDirectionForInfo(context.Context, int64) (string, error)
 	SetInfoID(context.Context, models.SetInfoIDParams) error
+	GetInfoID(context.Context, int64) (string, error)
+	ResetInfoID(context.Context, int64) error
 }

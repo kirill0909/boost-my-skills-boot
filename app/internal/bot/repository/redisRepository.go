@@ -117,3 +117,22 @@ func (r *botRedisRepo) SetInfoID(ctx context.Context, params models.SetInfoIDPar
 
 	return nil
 }
+
+func (r *botRedisRepo) GetInfoID(ctx context.Context, chatID int64) (string, error) {
+	key := fmt.Sprintf("%s_%d", utils.InfoPrefix, chatID)
+	infoID, err := r.db.Get(ctx, key).Result()
+	if err != nil {
+		return "", errors.Wrapf(err, "botRedisRepo.GetInfoID.Result(). chatID: %d", chatID)
+	}
+
+	return infoID, nil
+}
+
+func (r *botRedisRepo) ResetInfoID(ctx context.Context, chatID int64) error {
+	key := fmt.Sprintf("%s_%d", utils.InfoPrefix, chatID)
+	if _, err := r.db.Del(ctx, key).Result(); err != nil {
+		return errors.Wrapf(err, "botRedisRepo.ResetInfoID.Result(). chatID: %d ", chatID)
+	}
+
+	return nil
+}

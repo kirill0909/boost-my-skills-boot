@@ -286,6 +286,36 @@ func (u *botUC) HandleAwaitingQuestion(ctx context.Context, params models.Handle
 	return nil
 }
 
+func (u *botUC) HandleAwaitingAnswer(ctx context.Context, params models.HandleAwaitingAnswerParams) error {
+	getInfoIDResult, err := u.rdb.GetInfoID(ctx, params.ChatID)
+	if err != nil {
+		return err
+	}
+
+	infoID, err := strconv.Atoi(getInfoIDResult)
+	if err != nil {
+		return errors.Wrapf(err, "botUC.HandleAwaitingAnswer.Atoi(%s)", getInfoIDResult)
+	}
+
+	saveAnswerParams := models.SaveAnswerParams{Answer: params.Answer, InfoID: infoID}
+	if err := u.pgRepo.SaveAnswer(ctx, saveAnswerParams); err != nil {
+		return err
+	}
+
+	sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "your answer successfully stored"}
+	u.sendMessage(sendMessageParams)
+
+	if err := u.rdb.ResetAwaitingStatus(ctx, params.ChatID); err != nil {
+		return err
+	}
+
+	if err := u.rdb.ResetInfoID(ctx, params.ChatID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (u *botUC) sendMessage(params models.SendMessageParams) {
 	msg := tgbotapi.NewMessage(params.ChatID, params.Text)
 	if params.Keyboard.InlineKeyboard != nil {

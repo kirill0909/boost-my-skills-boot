@@ -155,3 +155,11 @@ func (r *botPGRepo) SaveQuestion(ctx context.Context, params models.SaveQuestion
 
 	return infoID, nil
 }
+
+func (r *botPGRepo) SaveAnswer(ctx context.Context, params models.SaveAnswerParams) error {
+	if _, err := r.db.ExecContext(ctx, querySaveAnswer, params.Answer, params.InfoID); err != nil {
+		return errors.Wrapf(err, "botPGRepo.SaveAnswer.querySaveAnswer. params(%+v)", params)
+	}
+
+	return nil
+}

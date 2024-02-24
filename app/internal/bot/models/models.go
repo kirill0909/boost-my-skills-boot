@@ -10,6 +10,11 @@ type SaveQuestionParams struct {
 	DirectionID int
 }
 
+type SaveAnswerParams struct {
+	Answer string
+	InfoID int
+}
+
 type GetActiveUsersResult struct {
 	ChatID  int64 `db:"tg_chat_id"`
 	IsAdmin bool  `db:"is_admin"`
@@ -81,6 +86,11 @@ type SetParentDirectionParams struct {
 type HandleAwaitingQuestionParams struct {
 	ChatID   int64
 	Question string
+}
+
+type HandleAwaitingAnswerParams struct {
+	ChatID int64
+	Answer string
 }
 
 type SendMessageParams struct {

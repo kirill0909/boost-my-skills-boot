@@ -98,7 +98,13 @@ func (t *TgBot) Run() error {
 				}
 				continue
 			case statusID == utils.AwaitingAnswer:
-				t.log.Infof("Your answer: %s", update.Message.Text)
+				params := models.HandleAwaitingAnswerParams{ChatID: update.Message.Chat.ID, Answer: update.Message.Text}
+				if err := t.tgUC.HandleAwaitingAnswer(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
+				continue
 			default:
 				t.sendMessage(update.Message.From.ID, "use keyboard to interact with bot")
 				continue

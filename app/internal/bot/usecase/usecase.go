@@ -218,11 +218,11 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAd
 		return err
 	}
 
-	if len(directions) == 0 && params.CallbackData == "" {
+	if len(directions) == 0 && params.CallbackData == "" { // executed when the user does not have one direction
 		sendMessageParms := models.SendMessageParams{ChatID: params.ChatID, Text: "To add information, create at least one direction"}
 		u.sendMessage(sendMessageParms)
 		return nil
-	} else if len(directions) == 0 && params.CallbackData != "" {
+	} else if len(directions) == 0 && params.CallbackData != "" { // executed when the user has directions but has reached the lowest level
 		sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "enter your question"}
 		u.sendMessage(sendMessageParams)
 		return nil

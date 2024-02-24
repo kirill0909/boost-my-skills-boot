@@ -223,6 +223,10 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAd
 		u.sendMessage(sendMessageParms)
 		return nil
 	} else if len(directions) == 0 && params.CallbackData != "" { // executed when the user has directions but has reached the lowest level
+		setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingQuestion}
+		if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
+			return err
+		}
 		sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "enter your question"}
 		u.sendMessage(sendMessageParams)
 		return nil

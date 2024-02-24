@@ -88,8 +88,13 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
+				continue
+			case statusID == utils.AwaitingQuestion: // execute when user enter question
+				t.log.Infof("Yout question is: %s", update.Message.Text)
+				continue
 			default:
 				t.sendMessage(update.Message.From.ID, "use keyboard to interact with bot")
+				continue
 			}
 		}
 

@@ -53,7 +53,8 @@ func (r *botRedisRepo) GetAwaitingStatus(ctx context.Context, chatID int64) (str
 
 func (r *botRedisRepo) SetParentDirection(ctx context.Context, params models.SetParentDirectionParams) error {
 	key := fmt.Sprintf("%s_%d", utils.ParentDirectionPrefix, params.ChatID)
-	if _, err := r.db.Set(ctx, key, params.ParentDirectionID, 0).Result(); err != nil {
+	delay := time.Duration(time.Second * time.Duration(r.cfg.AwaitingParentDirectionDelay))
+	if _, err := r.db.Set(ctx, key, params.ParentDirectionID, delay).Result(); err != nil {
 		return errors.Wrapf(err, "botRedisRepo.SetParentDirection.Result(). params(%+v)", params)
 	}
 

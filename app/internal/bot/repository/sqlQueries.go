@@ -10,7 +10,7 @@ const (
 	SELECT
 	name AS name,
 	only_for_admin AS only_for_admin
-	FROM main_buttons
+	FROM main_buttons ORDER BY name;
 	`
 
 	queryGetActiveUsers = `
@@ -51,7 +51,7 @@ WHERE
 	CASE
 		WHEN $2::INTEGER IS NULL THEN (d.parent_direction_id IS NULL)
 		ELSE $2::INTEGER = d.parent_direction_id
-	END;
+	END ORDER BY direction;
 	`
 
 	queryCreateDirection = `
@@ -71,7 +71,7 @@ WHERE
 	SELECT
 		id AS id,
 		question AS text
-		FROM infos WHERE direction_id = $1;
+		FROM infos WHERE direction_id = $1 ORDER BY created_at;
 	`
 	queryGetAnswerByInfoID = `
 	SELECT answer FROM infos WHERE id = $1;

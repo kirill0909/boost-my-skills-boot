@@ -10,7 +10,7 @@ const (
 	StartCommand           = "start"
 	CreateDirectionCommand = "create_direction"
 	AddInfoCommand         = "add_info"
-	PrintInfoCommand       = "print_info"
+	PrintQuestionsCommand  = "print_questions"
 
 	// user states
 	AwaitingDirectionNameStatus   = 1
@@ -18,7 +18,7 @@ const (
 	AwaitingAddInfoDirection      = 3
 	AwaitingQuestion              = 4
 	AwaitingAnswer                = 5
-	AwaitingPrintInfoDirection    = 6
+	AwaitingPrintQuestions        = 6
 
 	// prefix
 	AwaitingStatusPrefix        = "awaitingStatusPrefix"

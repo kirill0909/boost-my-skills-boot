@@ -10,7 +10,7 @@ type Usecase interface {
 	HandleStartCommand(context.Context, models.HandleStartCommandParams) error
 	HandleCreateDirectionCommand(context.Context, models.HandleCreateDirectionCommandParams) error
 	HandleAddInfoCommand(context.Context, models.HandleAddInfoCommandParams) error
-	HandlePrintInfoCommand(context.Context, models.HandlePrintInfoCommandParams) error
+	HandlePrintQuestionsCommand(context.Context, models.HandlePrintQuestionsCommandParams) error
 
 	GetAwaitingStatus(context.Context, int64) (int, error)
 	CreateDirection(context.Context, models.CreateDirectionParams) error

@@ -316,7 +316,7 @@ func (u *botUC) HandleAwaitingAnswer(ctx context.Context, params models.HandleAw
 	return nil
 }
 
-func (u *botUC) HandlePrintInfoCommand(ctx context.Context, params models.HandlePrintInfoCommandParams) error {
+func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.HandlePrintQuestionsCommandParams) error {
 	var err error
 	var parentDirectionID int
 	var getUserDirectionParams models.GetUserDirectionParams
@@ -339,17 +339,31 @@ func (u *botUC) HandlePrintInfoCommand(ctx context.Context, params models.Handle
 		u.sendMessage(sendMessageParams)
 		return nil
 	} else if len(directions) == 0 && params.CallbackData != "" {
-		// print all info for this directions
+		questions, err := u.pgRepo.GetQuestionsByDirectionID(ctx, int(getUserDirectionParams.ParentDirectionID.Int64))
+		if err != nil {
+			return err
+		}
+		for _, v := range questions {
+			sendMessageParams := models.SendMessageParams{
+				ChatID:   params.ChatID,
+				Text:     v.Text,
+				Keyboard: u.createInfoKeyboard(v.ID)}
+
+			u.sendMessage(sendMessageParams)
+			time.Sleep(time.Millisecond * 500)
+		}
+
+		return nil
 	}
 
-	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingPrintInfoDirection}
+	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingPrintQuestions}
 	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
 		return err
 	}
 
 	sendMessageParams := models.SendMessageParams{
 		ChatID:         params.ChatID,
-		Text:           "choose direction for print info",
+		Text:           "choose direction for print questions",
 		Keyboard:       u.createDirectionsKeyboard(directions),
 		IsNeedToRemove: true}
 	u.sendMessage(sendMessageParams)

@@ -54,7 +54,7 @@ type HandleAddInfoCommandParams struct {
 	CallbackData string
 }
 
-type HandlePrintInfoCommandParams struct {
+type HandlePrintQuestionsCommandParams struct {
 	ChatID       int64
 	CallbackData string
 }
@@ -80,6 +80,11 @@ type UserDirection struct {
 	ParentDirectionID int    `db:"parent_directon_id"`
 	CreatedAt         int64  `db:"created_at"`
 	UpdatedAt         int64  `db:"updated_at"`
+}
+
+type Question struct {
+	ID   int    `db:"id"`
+	Text string `db:"text"`
 }
 
 type SetParentDirectionParams struct {

@@ -163,3 +163,24 @@ func (r *botPGRepo) SaveAnswer(ctx context.Context, params models.SaveAnswerPara
 
 	return nil
 }
+
+func (r *botPGRepo) GetQuestionsByDirectionID(ctx context.Context, directionID int) ([]models.Question, error) {
+	rows, err := r.db.QueryContext(ctx, queryGetQuestionsByDirectionID, directionID)
+	if err != nil {
+		err = errors.Wrapf(err, "botPGRepo.GetQuestionsByDirectionID.queryGetQuestionsByDirectionID. directionID: %d", directionID)
+		return []models.Question{}, err
+	}
+
+	questions := make([]models.Question, 0, 100)
+	var question models.Question
+	for rows.Next() {
+		if err := rows.Scan(&question.ID, &question.Text); err != nil {
+			err = errors.Wrapf(err, "botPGRepo.GetQuestionsByDirectionID.Scan(). directionID: %d", directionID)
+			return []models.Question{}, err
+		}
+
+		questions = append(questions, question)
+	}
+
+	return questions, nil
+}

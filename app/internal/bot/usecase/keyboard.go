@@ -41,7 +41,7 @@ func (u *botUC) createMainMenuKeyboard(isAdmin bool) (keyboard tgbotapi.ReplyKey
 	return
 }
 
-func (t *botUC) createDirectionsKeyboard(directions []models.UserDirection) (keyboard tgbotapi.InlineKeyboardMarkup) {
+func (u *botUC) createDirectionsKeyboard(directions []models.UserDirection) (keyboard tgbotapi.InlineKeyboardMarkup) {
 
 	var rows []tgbotapi.InlineKeyboardButton
 
@@ -56,4 +56,17 @@ func (t *botUC) createDirectionsKeyboard(directions []models.UserDirection) (key
 	}
 
 	return
+}
+
+func (u *botUC) createInfoKeyboard(questionID int) tgbotapi.InlineKeyboardMarkup {
+
+	var keyboard tgbotapi.InlineKeyboardMarkup
+	var rows []tgbotapi.InlineKeyboardButton
+
+	buttons := tgbotapi.NewInlineKeyboardButtonData("get an answer", fmt.Sprintf("%d", questionID))
+	rows = append(rows, buttons)
+
+	keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(rows...))
+
+	return keyboard
 }

@@ -67,4 +67,10 @@ WHERE
 	querySaveAnswer = `
 	UPDATE infos SET answer = $1, updated_at = NOW() WHERE id = $2;
 	`
+	queryGetQuestionsByDirectionID = `
+	SELECT
+		id AS id,
+		question AS text
+		FROM infos WHERE direction_id = $1;
+	`
 )

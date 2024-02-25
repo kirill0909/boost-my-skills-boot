@@ -223,7 +223,7 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAd
 		u.sendMessage(sendMessageParms)
 		return nil
 	} else if len(directions) == 0 && params.CallbackData != "" { // executed when the user has directions but has reached the lowest level
-		setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingQuestion}
+		setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingQuestionStatus}
 		if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
 			return err
 		}
@@ -238,7 +238,7 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAd
 		return nil
 	}
 
-	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingAddInfoDirection}
+	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingAddInfoDirectionStatus}
 	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
 		return err
 	}
@@ -275,7 +275,7 @@ func (u *botUC) HandleAwaitingQuestion(ctx context.Context, params models.Handle
 		return err
 	}
 
-	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingAnswer}
+	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingAnswerStatus}
 	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
 		return err
 	}
@@ -349,10 +349,15 @@ func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.H
 			time.Sleep(time.Millisecond * 500)
 		}
 
+		setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingPrintAnswerStatus}
+		if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
+			return err
+		}
+
 		return nil
 	}
 
-	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingPrintQuestions}
+	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingPrintQuestionsStatus}
 	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
 		return err
 	}
@@ -362,6 +367,24 @@ func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.H
 		Text:           "choose direction for print questions",
 		Keyboard:       u.createDirectionsKeyboard(directions),
 		IsNeedToRemove: true}
+	u.sendMessage(sendMessageParams)
+
+	return nil
+
+}
+
+func (u *botUC) HandleAwaitingPrintAnswer(ctx context.Context, params models.HandleAwaitingPrintAnswerParams) error {
+	infoID, err := strconv.Atoi(params.CallbackData)
+	if err != nil {
+		return errors.Wrapf(err, "botUC.HandleAwaitingPrintAnswer.Atoi(%s)", params.CallbackData)
+	}
+
+	answer, err := u.pgRepo.GetAnswerByInfoID(ctx, infoID)
+	if err != nil {
+		return err
+	}
+
+	sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: answer}
 	u.sendMessage(sendMessageParams)
 
 	return nil

@@ -184,3 +184,12 @@ func (r *botPGRepo) GetQuestionsByDirectionID(ctx context.Context, directionID i
 
 	return questions, nil
 }
+
+func (r *botPGRepo) GetAnswerByInfoID(ctx context.Context, infoID int) (string, error) {
+	var answer string
+	if err := r.db.GetContext(ctx, &answer, queryGetAnswerByInfoID, infoID); err != nil {
+		return "", errors.Wrapf(err, "botPGRepo.GetAnswerByInfoID.queryGetAnswerByInfoID. infoID: %d", infoID)
+	}
+
+	return answer, nil
+}

@@ -97,7 +97,7 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
-			case statusID == utils.AwaitingQuestion: // execute when user enter question
+			case statusID == utils.AwaitingQuestionStatus: // execute when user enter question
 				params := models.HandleAwaitingQuestionParams{ChatID: update.Message.Chat.ID, Question: update.Message.Text}
 				if err := t.tgUC.HandleAwaitingQuestion(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
@@ -105,7 +105,7 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
-			case statusID == utils.AwaitingAnswer:
+			case statusID == utils.AwaitingAnswerStatus:
 				params := models.HandleAwaitingAnswerParams{ChatID: update.Message.Chat.ID, Answer: update.Message.Text}
 				if err := t.tgUC.HandleAwaitingAnswer(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
@@ -139,7 +139,7 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
-			case statusID == utils.AwaitingAddInfoDirection:
+			case statusID == utils.AwaitingAddInfoDirectionStatus:
 				params := models.HandleAddInfoCommandParams{
 					ChatID:       update.CallbackQuery.From.ID,
 					CallbackData: update.CallbackData()}
@@ -149,13 +149,22 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
-			case statusID == utils.AwaitingPrintQuestions:
+			case statusID == utils.AwaitingPrintQuestionsStatus:
 				params := models.HandlePrintQuestionsCommandParams{ChatID: update.CallbackQuery.From.ID, CallbackData: update.CallbackData()}
 				if err := t.tgUC.HandlePrintQuestionsCommand(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
+				continue
+			case statusID == utils.AwaitingPrintAnswerStatus:
+				params := models.HandleAwaitingPrintAnswerParams{ChatID: update.CallbackQuery.From.ID, CallbackData: update.CallbackData()}
+				if err := t.tgUC.HandleAwaitingPrintAnswer(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
+				continue
 			}
 		}
 	}

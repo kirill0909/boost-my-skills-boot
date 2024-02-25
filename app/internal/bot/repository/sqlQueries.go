@@ -73,4 +73,7 @@ WHERE
 		question AS text
 		FROM infos WHERE direction_id = $1;
 	`
+	queryGetAnswerByInfoID = `
+	SELECT answer FROM infos WHERE id = $1;
+	`
 )

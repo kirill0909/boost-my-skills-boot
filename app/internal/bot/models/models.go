@@ -5,6 +5,11 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+type HandleAwaitingPrintAnswerParams struct {
+	ChatID       int64
+	CallbackData string
+}
+
 type SaveQuestionParams struct {
 	Question    string
 	DirectionID int

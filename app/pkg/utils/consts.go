@@ -13,12 +13,13 @@ const (
 	PrintQuestionsCommand  = "print_questions"
 
 	// user states
-	AwaitingDirectionNameStatus   = 1
-	AwaitingParentDirecitonStatus = 2
-	AwaitingAddInfoDirection      = 3
-	AwaitingQuestion              = 4
-	AwaitingAnswer                = 5
-	AwaitingPrintQuestions        = 6
+	AwaitingDirectionNameStatus    = 1
+	AwaitingParentDirecitonStatus  = 2
+	AwaitingAddInfoDirectionStatus = 3
+	AwaitingQuestionStatus         = 4
+	AwaitingAnswerStatus           = 5
+	AwaitingPrintQuestionsStatus   = 6
+	AwaitingPrintAnswerStatus      = 7
 
 	// prefix
 	AwaitingStatusPrefix        = "awaitingStatusPrefix"

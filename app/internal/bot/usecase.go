@@ -17,6 +17,7 @@ type Usecase interface {
 	SetParentDirection(context.Context, models.SetParentDirectionParams) error
 	HandleAwaitingQuestion(context.Context, models.HandleAwaitingQuestionParams) error
 	HandleAwaitingAnswer(context.Context, models.HandleAwaitingAnswerParams) error
+	HandleAwaitingPrintAnswer(context.Context, models.HandleAwaitingPrintAnswerParams) error
 
 	// workers
 	SyncMainKeyboardWorker()

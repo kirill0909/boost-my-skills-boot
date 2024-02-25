@@ -70,3 +70,20 @@ func (u *botUC) createInfoKeyboard(questionID int) tgbotapi.InlineKeyboardMarkup
 
 	return keyboard
 }
+
+func (u *botUC) hideKeyboard(chatID int64, messageID int) (err error) {
+	edit := tgbotapi.NewEditMessageReplyMarkup(
+		chatID,
+		messageID,
+		tgbotapi.InlineKeyboardMarkup{
+			InlineKeyboard: [][]tgbotapi.InlineKeyboardButton{},
+		},
+	)
+
+	if _, err = u.BotAPI.Send(edit); err != nil {
+		u.log.Errorf("botUC.hideKeyboard.Send(). %s", err.Error())
+		return
+	}
+
+	return
+}

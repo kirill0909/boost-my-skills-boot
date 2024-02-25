@@ -386,6 +386,7 @@ func (u *botUC) HandleAwaitingPrintAnswer(ctx context.Context, params models.Han
 
 	sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: answer}
 	u.sendMessage(sendMessageParams)
+	u.hideKeyboard(params.ChatID, params.MessageID)
 
 	return nil
 }

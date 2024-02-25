@@ -7,6 +7,7 @@ import (
 
 type HandleAwaitingPrintAnswerParams struct {
 	ChatID       int64
+	MessageID    int
 	CallbackData string
 }
 

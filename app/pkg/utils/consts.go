@@ -27,4 +27,8 @@ const (
 	ExpirationTimeMessagePrefix = "expirationTimeMessagePreifx"
 	DirectionForInfoPrefix      = "directionForInfoPrefix"
 	InfoPrefix                  = "infoPrefix"
+
+	// messages
+	SnipetBegin = "snipet begin"
+	SnipetEnd   = "snipet end"
 )

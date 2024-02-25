@@ -264,7 +264,7 @@ func (u *botUC) HandleAwaitingQuestion(ctx context.Context, params models.Handle
 		return errors.Wrapf(err, "botUC.HandleAwaitingQuestion.Atoi(%s).", getDirectionForInfoResult)
 	}
 
-	saveQuestionParams := models.SaveQuestionParams{Question: params.Question, DirectionID: directionID}
+	saveQuestionParams := models.SaveQuestionParams{Question: utils.FormatSnipets(params.Question), DirectionID: directionID}
 	infoID, err := u.pgRepo.SaveQuestion(ctx, saveQuestionParams)
 	if err != nil {
 		return err
@@ -297,7 +297,7 @@ func (u *botUC) HandleAwaitingAnswer(ctx context.Context, params models.HandleAw
 		return errors.Wrapf(err, "botUC.HandleAwaitingAnswer.Atoi(%s)", getInfoIDResult)
 	}
 
-	saveAnswerParams := models.SaveAnswerParams{Answer: params.Answer, InfoID: infoID}
+	saveAnswerParams := models.SaveAnswerParams{Answer: utils.FormatSnipets(params.Answer), InfoID: infoID}
 	if err := u.pgRepo.SaveAnswer(ctx, saveAnswerParams); err != nil {
 		return err
 	}
@@ -393,13 +393,14 @@ func (u *botUC) HandleAwaitingPrintAnswer(ctx context.Context, params models.Han
 
 func (u *botUC) sendMessage(params models.SendMessageParams) {
 	msg := tgbotapi.NewMessage(params.ChatID, params.Text)
+	msg.ParseMode = tgbotapi.ModeMarkdownV2
 	if params.Keyboard.InlineKeyboard != nil {
 		msg.ReplyMarkup = params.Keyboard
 	}
 
 	sendedMsg, err := u.BotAPI.Send(msg)
 	if err != nil {
-		u.log.Errorf(err.Error())
+		u.log.Errorf("botUC.sendMessage.Send(). %s", err.Error())
 	}
 
 	if params.IsNeedToRemove {

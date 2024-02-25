@@ -316,6 +316,47 @@ func (u *botUC) HandleAwaitingAnswer(ctx context.Context, params models.HandleAw
 	return nil
 }
 
+func (u *botUC) HandlePrintInfoCommand(ctx context.Context, params models.HandlePrintInfoCommandParams) error {
+	var err error
+	var parentDirectionID int
+	var getUserDirectionParams models.GetUserDirectionParams
+	if params.CallbackData != "" {
+		parentDirectionID, err = strconv.Atoi(params.CallbackData)
+		if err != nil {
+			return errors.Wrapf(err, "botUC.HandlePrintInfoCommand.Atoi(). params(%+v)", params)
+		}
+		getUserDirectionParams.ParentDirectionID = sql.NullInt64{Int64: int64(parentDirectionID), Valid: true}
+	}
+	getUserDirectionParams.ChatID = params.ChatID
+
+	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParams)
+	if err != nil {
+		return err
+	}
+
+	if len(directions) == 0 && params.CallbackData == "" {
+		sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "To print info create at least one direction and add info to it"}
+		u.sendMessage(sendMessageParams)
+		return nil
+	} else if len(directions) == 0 && params.CallbackData != "" {
+		// print all info for this directions
+	}
+
+	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingPrintInfoDirection}
+	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
+		return err
+	}
+
+	sendMessageParams := models.SendMessageParams{
+		ChatID:         params.ChatID,
+		Text:           "choose direction for print info",
+		Keyboard:       u.createDirectionsKeyboard(directions),
+		IsNeedToRemove: true}
+	u.sendMessage(sendMessageParams)
+
+	return nil
+}
+
 func (u *botUC) sendMessage(params models.SendMessageParams) {
 	msg := tgbotapi.NewMessage(params.ChatID, params.Text)
 	if params.Keyboard.InlineKeyboard != nil {

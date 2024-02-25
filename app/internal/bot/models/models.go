@@ -54,6 +54,11 @@ type HandleAddInfoCommandParams struct {
 	CallbackData string
 }
 
+type HandlePrintInfoCommandParams struct {
+	ChatID       int64
+	CallbackData string
+}
+
 type SetAwaitingStatusParams struct {
 	StatusID int
 	ChatID   int64

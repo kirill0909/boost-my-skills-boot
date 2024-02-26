@@ -1,1 +1,1 @@
-# boost-my-skills-boot
+# boost-my-skills-bot

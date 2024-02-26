@@ -2,302 +2,194 @@ package repository
 
 import (
 	"boost-my-skills-bot/internal/bot"
-	models "boost-my-skills-bot/internal/models/bot"
+	"boost-my-skills-bot/internal/bot/models"
 	"context"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
 
-type BotPGRepo struct {
+type botPGRepo struct {
 	db *sqlx.DB
 }
 
 func NewBotPGRepo(db *sqlx.DB) bot.PgRepository {
-	return &BotPGRepo{db: db}
+	return &botPGRepo{db: db}
 }
 
-func (r *BotPGRepo) GetUUID(ctx context.Context) (result string, err error) {
-	if err = r.db.GetContext(ctx, &result, queryGetUUID); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetUUID.queryGetUUID")
-		return
-	}
-
-	return
-}
-
-func (r *BotPGRepo) IsAdmin(ctx context.Context, params models.GetUUID) (result bool, err error) {
-	if err = r.db.GetContext(ctx, &result, queryIsAdmin, params.TgName, params.ChatID); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.IsAdmin.queryIsAdmin")
-		return
-	}
-
-	return
-}
-
-func (r *BotPGRepo) UserActivation(ctx context.Context, params models.UserActivation) (err error) {
-	result, err := r.db.ExecContext(ctx, queryUserActivation, params.TgName, params.ChatID, params.UUID)
-	err = errors.Wrap(err, "BotPGRepo.UserActivation.queryUserActivation")
+func (r *botPGRepo) GetMainButtons(ctx context.Context) ([]models.GetMainButtonsResult, error) {
+	rows, err := r.db.QueryContext(ctx, queryGetMainButtons)
 	if err != nil {
-		return
+		err = errors.Wrap(err, "BotPGRepo.GetMainButtons.queryGetMainButtons")
+		return []models.GetMainButtonsResult{}, err
 	}
 
-	affected, err := result.RowsAffected()
-	if err != nil {
-		err = errors.Wrap(err, "BotPGRepo.UserActivation.RowsAffected")
-		return
-	}
-
-	if affected != 1 {
-		err = fmt.Errorf("Wrong number of rows affected %d != 1", affected)
-		err = errors.Wrap(err, "BotPGRepo.UserActivation.affected")
-		return
-	}
-
-	return
-}
-
-func (r *BotPGRepo) SetUpDirection(ctx context.Context, params models.SetUpDirection) (err error) {
-	if _, err = r.db.ExecContext(ctx, querySetUpDirection, params.DirectionID, params.ChatID); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.SetUpDirection.querySetUpDirection")
-		return
-	}
-
-	return
-}
-
-func (r *BotPGRepo) GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (
-	result models.AskMeCallbackResult, err error) {
-	rows, err := r.db.QueryContext(ctx, queryGetRandomQuestion, params.ChatID, params.SubdirectionID, params.SubSubdirectionID)
-	err = errors.Wrap(err, "BotPGRepo.GetRandomQuestion.queryGetRandomQuestion")
-	if err != nil {
-		return
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		if err = rows.Scan(&result.QuestionID, &result.Question); err != nil {
-			err = errors.Wrap(err, "BotPGRepo.GetRandomQuestion.Scan")
-			return
+	defer func() {
+		if err := rows.Close(); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetMainButtons.Close()")
 		}
-	}
+	}()
 
-	if err = rows.Err(); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetRandomQuestion.Err")
-		return
-	}
-
-	return
-}
-
-func (r *BotPGRepo) GetAnswer(ctx context.Context, questionID int) (result string, err error) {
-	if err = r.db.GetContext(ctx, &result, queryGetAnswer, questionID); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetAnswer.queryGetAnswer")
-		return
-	}
-
-	return
-}
-
-func (r *BotPGRepo) SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (result int, err error) {
-	if err = r.db.GetContext(
-		ctx,
-		&result,
-		querySaveQuestion,
-		params.ChatID,
-		params.SubdirectionID,
-		params.SubSubdirectionID,
-		params.Question); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.SaveQuestion.querySaveQuestion")
-		return
-	}
-
-	return
-}
-
-func (r *BotPGRepo) SaveAnswer(ctx context.Context, params models.SaveAnswerParams) (err error) {
-	if _, err = r.db.ExecContext(ctx, querySaveAnswer, params.Answer, params.QuestionID); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.SaveAnswer.querySaveAnswer")
-		return
-	}
-
-	return
-}
-
-func (r *BotPGRepo) GetSubdirections(ctx context.Context, params models.GetSubdirectionsParams) (result []string, err error) {
-	rows, err := r.db.QueryContext(ctx, queryGetSubdirectons, params.ChatID)
-	if err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetSubdirections.queryGetSubdirectons")
-		return
-	}
-	defer rows.Close()
-
-	var res string
+	var buttons []models.GetMainButtonsResult
+	var button models.GetMainButtonsResult
 	for rows.Next() {
-		if err = rows.Scan(&res); err != nil {
-			err = errors.Wrap(err, "BotPGRepo.GetSubdirections.Scan")
-			return
+		if err := rows.Scan(&button.Name, &button.OnlyForAdmin); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetMainButtons.Scan")
+			return []models.GetMainButtonsResult{}, err
 		}
 
-		result = append(result, res)
+		buttons = append(buttons, button)
 	}
 
-	if err = rows.Err(); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetSubdirections.Err")
-		return
-	}
-
-	return
+	return buttons, nil
 }
 
-func (r *BotPGRepo) GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error) {
-	rows, err := r.db.QueryContext(ctx, queryGetSubSubdirectons, params.SubdirectionID, params.ChatID)
+func (r *botPGRepo) GetActiveUsers(ctx context.Context) ([]models.GetActiveUsersResult, error) {
+	rows, err := r.db.QueryContext(ctx, queryGetActiveUsers)
 	if err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetSubSubdirections.queryGetSubSubdirectons")
-		return
+		err = errors.Wrap(err, "BotPGRepo.GetActiveUsers.queryGetActiveUsers")
+		return []models.GetActiveUsersResult{}, err
 	}
-	defer rows.Close()
 
-	var res string
+	defer func() {
+		if err := rows.Close(); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetActiveUsers.Close()")
+		}
+	}()
+
+	var users []models.GetActiveUsersResult
+	var user models.GetActiveUsersResult
 	for rows.Next() {
-		if err = rows.Scan(&res); err != nil {
-			err = errors.Wrap(err, "BotPGRepo.GetSubSubdirections.Scan")
-			return
+		if err := rows.Scan(&user.ChatID, &user.IsAdmin); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetActiveUsers.Scan")
+			return []models.GetActiveUsersResult{}, err
 		}
 
-		result = append(result, res)
+		users = append(users, user)
 	}
 
-	if err = rows.Err(); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetSubSubdirections.Err")
-		return
-	}
-
-	return
+	return users, nil
 }
 
-func (r *BotPGRepo) GetDirectionsInfo(ctx context.Context) (result []models.DirectionInfo, err error) {
-	rows, err := r.db.QueryContext(ctx, queryGetDirectionsInfo)
+func (r *botPGRepo) GetUpdatedButtons(ctx context.Context, param int64) ([]models.GetUpdatedButtonsResult, error) {
+	rows, err := r.db.QueryContext(ctx, queryGetUpdatedButtons, param)
 	if err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetDirectionsInfo.queryGetDirectionsInfo")
+		err = errors.Wrap(err, "BotPGRepo.GetUpdatedButtons.queryGetUpdatedButtons")
+		return []models.GetUpdatedButtonsResult{}, err
 	}
-	defer rows.Close()
 
-	var res models.DirectionInfo
+	defer func() {
+		if err := rows.Close(); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetUpdatedButtons.Close()")
+		}
+	}()
 
+	var buttons []models.GetUpdatedButtonsResult
+	var button models.GetUpdatedButtonsResult
 	for rows.Next() {
-		if err = rows.Scan(
-			&res.DirectionID,
-			&res.DirectionName,
-		); err != nil {
-			err = errors.Wrap(err, "BotPGRepo.GetDirectionsInfo.Scan")
-			return
+		if err := rows.Scan(&button.Name, &button.OnlyForAdmin); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetUpdatedButtons.Scan")
+			return []models.GetUpdatedButtonsResult{}, err
 		}
 
-		result = append(result, res)
+		buttons = append(buttons, button)
 	}
 
-	if err = rows.Err(); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetDirectionsInfo.Err")
-		return
-	}
+	return buttons, nil
 
-	return
 }
 
-func (r *BotPGRepo) GetSubdirectionsInfo(ctx context.Context) (result []models.SubdirectionInfo, err error) {
-	rows, err := r.db.QueryContext(ctx, queryGetSubdirectionsInfo)
+func (r *botPGRepo) SetUserActive(ctx context.Context, params models.SetUserActiveParams) error {
+	res, err := r.db.ExecContext(ctx, querySetUserActive, params.ChatID, params.UUID, params.TgName)
 	if err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetSubdirectionsInfo.queryGetSubdirectionsInfo")
+		return errors.Wrapf(err, "BotPGRepo.SetUserActive.querySetUserActive. params(%+v)", params)
 	}
-	defer rows.Close()
 
-	var res models.SubdirectionInfo
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return errors.Wrapf(err, "BotPGRepo.SetUserActive.RowsAffected. params(%+v)", params)
 
+	}
+
+	if rowsAffected != 1 {
+		return fmt.Errorf("BotPGRepo.SetUserActive rowsAffected != 1. params(%+v)", params)
+	}
+
+	return nil
+}
+
+func (r *botPGRepo) GetUserDirection(ctx context.Context, params models.GetUserDirectionParams) ([]models.UserDirection, error) {
+	rows, err := r.db.QueryContext(ctx, queryGetUserDirection, params.ChatID, params.ParentDirectionID)
+	if err != nil {
+		err = errors.Wrapf(err, "BotPGRepo.GetUserDirection.queryGetUserDirection. params(%+v)", params)
+		return []models.UserDirection{}, err
+	}
+
+	directionList := make([]models.UserDirection, 0, 50)
+	var direction models.UserDirection
 	for rows.Next() {
-		if err = rows.Scan(
-			&res.DirectionID,
-			&res.SubdirectionID,
-			&res.SubdirectionName,
-		); err != nil {
-			err = errors.Wrap(err, "BotPGRepo.GetSubdirectionsInfo.Scan")
-			return
+		if err := rows.Scan(&direction.ID, &direction.Direction, &direction.ParentDirectionID, &direction.CreatedAt, &direction.UpdatedAt); err != nil {
+			err = errors.Wrapf(err, "BotPGRepo.GetUserDirection.queryGetUserDirection. params(%+v)", params)
+			return []models.UserDirection{}, err
+		}
+		directionList = append(directionList, direction)
+	}
+
+	return directionList, nil
+}
+
+func (r *botPGRepo) CreateDirection(ctx context.Context, params models.CreateDirectionParams) (string, error) {
+	var direction string
+	if err := r.db.GetContext(ctx, &direction, queryCreateDirection, params.DirectionName, params.ChatID, params.ParentDirectionID); err != nil {
+		return "", errors.Wrapf(err, "botPGRepo.CreateDirection.queryCreateDirection. params(%+v)", params)
+	}
+
+	return direction, nil
+}
+
+func (r *botPGRepo) SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (int, error) {
+	var infoID int
+	if err := r.db.GetContext(ctx, &infoID, querySaveQuestion, params.Question, params.DirectionID); err != nil {
+		return 0, errors.Wrapf(err, "botPGRepo.SaveQuestion.querySaveQuestion. params(%+v)", params)
+	}
+
+	return infoID, nil
+}
+
+func (r *botPGRepo) SaveAnswer(ctx context.Context, params models.SaveAnswerParams) error {
+	if _, err := r.db.ExecContext(ctx, querySaveAnswer, params.Answer, params.InfoID); err != nil {
+		return errors.Wrapf(err, "botPGRepo.SaveAnswer.querySaveAnswer. params(%+v)", params)
+	}
+
+	return nil
+}
+
+func (r *botPGRepo) GetQuestionsByDirectionID(ctx context.Context, directionID int) ([]models.Question, error) {
+	rows, err := r.db.QueryContext(ctx, queryGetQuestionsByDirectionID, directionID)
+	if err != nil {
+		err = errors.Wrapf(err, "botPGRepo.GetQuestionsByDirectionID.queryGetQuestionsByDirectionID. directionID: %d", directionID)
+		return []models.Question{}, err
+	}
+
+	questions := make([]models.Question, 0, 100)
+	var question models.Question
+	for rows.Next() {
+		if err := rows.Scan(&question.ID, &question.Text); err != nil {
+			err = errors.Wrapf(err, "botPGRepo.GetQuestionsByDirectionID.Scan(). directionID: %d", directionID)
+			return []models.Question{}, err
 		}
 
-		result = append(result, res)
+		questions = append(questions, question)
 	}
 
-	if err = rows.Err(); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetSubdirectionsInfo.Err")
-		return
-	}
-
-	return
+	return questions, nil
 }
 
-func (r *BotPGRepo) GetSubSubdirectionsInfo(ctx context.Context) (result []models.SubSubdirectionInfo, err error) {
-	rows, err := r.db.QueryContext(ctx, queryGetSubSubdirectionsInfo)
-	if err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetSubSubdirectionsInfo.queryGetSubSubdirectionsInfo")
-	}
-	defer rows.Close()
-
-	var res models.SubSubdirectionInfo
-
-	for rows.Next() {
-		if err = rows.Scan(
-			&res.DirectionID,
-			&res.SubdirectionID,
-			&res.SubSubdirectionID,
-			&res.SubSubdirectionName,
-		); err != nil {
-			err = errors.Wrap(err, "BotPGRepo.GetSubSubdirectionsInfo.Scan")
-			return
-		}
-
-		result = append(result, res)
+func (r *botPGRepo) GetAnswerByInfoID(ctx context.Context, infoID int) (string, error) {
+	var answer string
+	if err := r.db.GetContext(ctx, &answer, queryGetAnswerByInfoID, infoID); err != nil {
+		return "", errors.Wrapf(err, "botPGRepo.GetAnswerByInfoID.queryGetAnswerByInfoID. infoID: %d", infoID)
 	}
 
-	if err = rows.Err(); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetSubSubdirectionsInfo.Err")
-		return
-	}
-
-	return
-}
-
-func (r *BotPGRepo) GetDirectionIDByChatID(ctx context.Context, param int64) (result int, err error) {
-	if err = r.db.GetContext(ctx, &result, queryGetDirectionByChatID, param); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.GetDirectionIDByChatID.queryGetDirectionByChatID")
-		return
-	}
-
-	return
-}
-
-func (r *BotPGRepo) PrintQuestions(params models.PrintQuestionsParams) (result []models.PrintQuestionsResult, err error) {
-	rows, err := r.db.Query(queryPrintInfo, params.ChatID, params.SubdirectionID, params.SubSubdirectionID)
-	if err != nil {
-		err = errors.Wrapf(err, "BotPGRepo.PrintInfo.queryPrintInfo. chatID: %d", params.ChatID)
-		return
-	}
-
-	defer rows.Close()
-
-	var res models.PrintQuestionsResult
-	for rows.Next() {
-		if err = rows.Scan(&res.ID, &res.Question, &res.Answer); err != nil {
-			err = errors.Wrap(err, "BotPGRepo.PrintInfo.Scan")
-			return
-		}
-
-		result = append(result, res)
-	}
-
-	if err = rows.Err(); err != nil {
-		err = errors.Wrap(err, "BotPGRepo.PrintInfo.Err")
-		return
-	}
-
-	return
+	return answer, nil
 }

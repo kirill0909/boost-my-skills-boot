@@ -2,23 +2,20 @@ package main
 
 import (
 	"boost-my-skills-bot/config"
-	"context"
-	"log"
-
-	models "boost-my-skills-bot/internal/models/bot"
+	"boost-my-skills-bot/internal/bot/repository"
+	"boost-my-skills-bot/internal/bot/tgBot"
+	"boost-my-skills-bot/internal/bot/usecase"
+	"boost-my-skills-bot/internal/models"
 	"boost-my-skills-bot/pkg/storage/postgres"
+	"boost-my-skills-bot/pkg/storage/redis"
+	"context"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/kirill0909/logger"
+	"github.com/pkg/errors"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
-
-	"boost-my-skills-bot/internal/bot/repository"
-	"boost-my-skills-bot/internal/bot/usecase"
-
-	"boost-my-skills-bot/internal/bot/tgBot"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/jmoiron/sqlx"
 )
 
 func main() {
@@ -34,33 +31,29 @@ func main() {
 	log.Println("Config loaded")
 
 	ctx := context.Background()
-	psqlDB, err := postgres.InitPsqlDB(ctx, cfg)
+	dependencies, err := initDependencies(ctx, cfg)
 	if err != nil {
-		log.Printf("PostgreSQL error connection: %s", err.Error())
-		return
-	} else {
-		log.Println("PostgreSQL successful connection")
+		log.Println(err.Error())
 	}
-	defer func(psqlDB *sqlx.DB) {
-		if err := psqlDB.Close(); err != nil {
-			log.Printf("PostgreSQL error close connection: %s", err.Error())
-			return
-		} else {
-			log.Println("PostgreSQL successful close connection")
+
+	defer func(dependencies models.Dependencies) {
+		if err := closeDependencies(dependencies); err != nil {
+			dependencies.Logger.Errorf(err.Error())
 		}
+	}(dependencies)
 
-	}(psqlDB)
-
-	tgbot, err := mapHandler(ctx, cfg, psqlDB)
+	tgbot, err := maping(ctx, cfg, dependencies)
 	if err != nil {
-		log.Printf("Error map handler: %s", err.Error())
+		dependencies.Logger.Errorf("Error map handler: %s", err.Error())
 		return
 	}
 
-	if err := tgbot.Run(); err != nil {
-		log.Printf("Error bot run: %s", err.Error())
-		return
-	}
+	go func() {
+		if err := tgbot.Run(); err != nil {
+			dependencies.Logger.Errorf("Error bot run: %s", err.Error())
+			return
+		}
+	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
@@ -68,34 +61,71 @@ func main() {
 
 }
 
-func mapHandler(ctx context.Context, cfg *config.Config, db *sqlx.DB) (tgBot *tgbot.TgBot, err error) {
-
+func maping(ctx context.Context, cfg *config.Config, dep models.Dependencies) (tgBot *tgbot.TgBot, err error) {
 	botAPI, err := tgbotapi.NewBotAPI(cfg.TgBot.ApiKey)
 	if err != nil {
 		return
 	}
 
-	stateUsers := make(map[int64]models.AddInfoParams)
-	stateDirections := models.DirectionsData{}
-
 	// repository
-	botRepo := repository.NewBotPGRepo(db)
+	botPgRepo := repository.NewBotPGRepo(dep.PgDB)
+	botRedisRepo := repository.NewBotRedisRepo(dep.Redis, cfg)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botRepo, botAPI, stateUsers, &stateDirections)
+	botUC := usecase.NewBotUC(cfg, botPgRepo, botRedisRepo, dep.RedisPubSub, botAPI, dep.Logger)
 
 	// bot
-	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, stateUsers, &stateDirections)
+	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)
 
-	// map worker
-	go func() {
-		ticker := time.NewTicker(time.Duration(time.Second * 2))
-		for ; true; <-ticker.C {
-			if err = botUC.SyncDirectionsInfo(ctx); err != nil {
-				log.Println(err)
-			}
-		}
-	}()
+	// workers
+	go botUC.SyncMainKeyboardWorker()
+	go botUC.ListenExpiredMessageWorker()
 
 	return tgBot, nil
+}
+
+func initDependencies(ctx context.Context, cfg *config.Config) (models.Dependencies, error) {
+	logger := logger.InitLogger()
+
+	pgDB, err := postgres.InitPgDB(ctx, cfg)
+	if err != nil {
+		return models.Dependencies{}, err
+	} else {
+		logger.Infof("PostgreSQL successful connection")
+	}
+
+	redisDB, redisPubSub, err := redis.InitRedisClient(cfg)
+	if err != nil {
+		return models.Dependencies{}, err
+	} else {
+		logger.Infof("Redis successful connection")
+	}
+
+	return models.Dependencies{
+		PgDB:        pgDB,
+		Redis:       redisDB,
+		RedisPubSub: redisPubSub,
+		Logger:      logger}, nil
+}
+
+func closeDependencies(dep models.Dependencies) error {
+	if err := dep.PgDB.Close(); err != nil {
+		return errors.Wrap(err, "PostgreSQL error close connection")
+	} else {
+		dep.Logger.Infof("PostgreSQL successful close connection")
+	}
+
+	if err := dep.RedisPubSub.Close(); err != nil {
+		return errors.Wrap(err, "Redis error close PubSub connection")
+	} else {
+		dep.Logger.Infof("Redis successful close PubSub connection")
+	}
+
+	if err := dep.Redis.Close(); err != nil {
+		return errors.Wrap(err, "Redis err close connection")
+	} else {
+		dep.Logger.Infof("Redis successful close connection")
+	}
+
+	return nil
 }

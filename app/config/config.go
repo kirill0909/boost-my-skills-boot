@@ -9,11 +9,13 @@ import (
 )
 
 type Config struct {
-	Postgres           Postgres
-	TgBot              TgBot
-	CallbackType       CallbackType
-	StateMachineStatus StateMachineStatus
-	AdminChatID        int64
+	Postgres                     Postgres
+	Redis                        Redis
+	TgBot                        TgBot
+	AdminChatID                  int64 `validate:"required"`
+	AwaitingDirectionNameDelay   int   `validate:"required"`
+	AwaitingParentDirectionDelay int   `validate:"required"`
+	AwaitingAddInfoDirection     int   `validate:"required"`
 }
 
 type Postgres struct {
@@ -25,28 +27,27 @@ type Postgres struct {
 	SSLMode  string `validate:"required"`
 }
 
+type Redis struct {
+	Host               string `validate:"required"`
+	Port               string `validate:"required"`
+	UserName           string `validate:"required"`
+	Password           string `validate:"required"`
+	MinIdleConns       int    `validate:"required"`
+	PoolTimeout        int    `validate:"required"`
+	DB                 int
+	PoolSize           int
+	UseCertificates    bool
+	InsecureSkipVerify bool
+	CertificatesPaths  struct {
+		Cert string
+		Key  string
+		Ca   string
+	}
+}
+
 type TgBot struct {
 	ApiKey string `validate:"required"`
 	Prefix string `validate:"required"`
-}
-
-type CallbackType struct {
-	Direction                     int `validate:"required"`
-	GetAnAnswer                   int `validate:"required"`
-	SubdirectionAddInfo           int `validate:"required"`
-	SubSubdirectionAddInfo        int `validate:"required"`
-	SubdirectionAskMe             int `validate:"required"`
-	SubSubdirectionAskMe          int `validate:"required"`
-	SubdirectionPrintQuestions    int `validate:"required"`
-	SubSubdirectionPrintQuestions int `validate:"required"`
-}
-
-type StateMachineStatus struct {
-	Idle                    int `validate:"required"`
-	AwaitingQuestion        int `validate:"required"`
-	AwaitingAnswer          int `validate:"required"`
-	AwaitingSubdirection    int `validate:"required"`
-	AwaitingSubSubdirection int `validate:"required"`
 }
 
 func LoadConfig() (*viper.Viper, error) {

@@ -3,41 +3,36 @@ package tgbot
 import (
 	"boost-my-skills-bot/config"
 	"boost-my-skills-bot/internal/bot"
-	"log"
-	"strconv"
-	"strings"
-
-	models "boost-my-skills-bot/internal/models/bot"
-
+	"boost-my-skills-bot/internal/bot/models"
+	"boost-my-skills-bot/pkg/utils"
+	"context"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/kirill0909/logger"
 )
 
 type TgBot struct {
-	BotAPI          *tgbotapi.BotAPI
-	cfg             *config.Config
-	tgUC            bot.Usecase
-	stateUsers      map[int64]models.AddInfoParams
-	stateDirections *models.DirectionsData
+	BotAPI *tgbotapi.BotAPI
+	cfg    *config.Config
+	tgUC   bot.Usecase
+	log    *logger.Logger
 }
 
 func NewTgBot(
 	cfg *config.Config,
 	usecase bot.Usecase,
 	botAPI *tgbotapi.BotAPI,
-	stateUsers map[int64]models.AddInfoParams,
-	stateDirections *models.DirectionsData,
+	log *logger.Logger,
 ) *TgBot {
 	return &TgBot{
-		cfg:             cfg,
-		BotAPI:          botAPI,
-		tgUC:            usecase,
-		stateUsers:      stateUsers,
-		stateDirections: stateDirections,
+		cfg:    cfg,
+		BotAPI: botAPI,
+		tgUC:   usecase,
+		log:    log,
 	}
 }
 
 func (t *TgBot) Run() error {
-	log.Printf("Authorized on account %s", t.BotAPI.Self.UserName)
+	t.log.Infof("Authorized on account %s", t.BotAPI.Self.UserName)
 
 	updateConfig := tgbotapi.NewUpdate(0)
 	updateConfig.Timeout = 30
@@ -45,168 +40,150 @@ func (t *TgBot) Run() error {
 	updates := t.BotAPI.GetUpdatesChan(updateConfig)
 
 	for update := range updates {
+		ctx := context.Background()
+		statusID, err := t.tgUC.GetAwaitingStatus(ctx, update.FromChat().ID)
+		if err != nil {
+			t.log.Errorf(err.Error())
+			t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+			continue
+		}
+
+		// handle message
 		if update.Message != nil {
-
 			switch update.Message.Command() {
-			case startCommand:
-				params := models.UserActivation{
-					ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName, Text: update.Message.Text}
-				if err := t.handleStartCommand(params); err != nil {
-					log.Printf("bot.TgBot.handleStartCommand: %s", err.Error())
-					if strings.Contains(err.Error(), "Wrong number of rows affected") {
-						t.sendErrorMessage(update.Message.Chat.ID, errUUIDAlreadyExists)
-						continue
-					}
-					t.sendErrorMessage(update.Message.Chat.ID, errUserActivation)
+			case utils.StartCommand:
+				params := models.HandleStartCommandParams{
+					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
+				if err := t.tgUC.HandleStartCommand(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "account activation error")
 					continue
 				}
 				continue
-			case getUUIDCommand:
-				if err := t.handleGetUUIDCommand(
-					update.Message.Chat.ID,
-					models.GetUUID{ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}); err != nil {
-					log.Printf("bot.TgBot.handleGetUUIDCommand: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
+			case utils.CreateDirectionCommand:
+				params := models.HandleCreateDirectionCommandParams{
+					Text: update.Message.Text, ChatID: update.Message.Chat.ID}
+				if err := t.tgUC.HandleCreateDirectionCommand(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "create direction error")
 					continue
 				}
 				continue
-			case askMeCommend:
-				if err := t.handleAskMeCommand(update.Message.Chat.ID, models.AskMeParams{ChatID: update.Message.Chat.ID}); err != nil {
-					log.Printf("bot.TgBot.handleAskMeCommand: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
+			case utils.AddInfoCommand:
+				params := models.HandleAddInfoCommandParams{ChatID: update.Message.Chat.ID}
+				if err := t.tgUC.HandleAddInfoCommand(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "add info error")
 					continue
 				}
 				continue
-			case addInfoCommand:
-				if err := t.handleAddInfoCommand(update.Message.Chat.ID); err != nil {
-					log.Printf("bot.TgBot.handleAddInfoCommand: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
-					continue
-				}
-				continue
-			case printQuestionsCommand:
-				if err := t.handlePrintQuestionsCommand(update.Message.Chat.ID); err != nil {
-					log.Printf("bot.TgBot.handlePrintInfoCommand: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
+			case utils.PrintQuestionsCommand:
+				params := models.HandlePrintQuestionsCommandParams{ChatID: update.Message.Chat.ID}
+				if err := t.tgUC.HandlePrintQuestionsCommand(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "print info error")
 					continue
 				}
 				continue
 			}
 
-			questionParams, ok := t.stateUsers[update.Message.Chat.ID]
-			if !ok || questionParams.State == t.cfg.StateMachineStatus.Idle ||
-				questionParams.State == t.cfg.StateMachineStatus.AwaitingSubdirection ||
-				questionParams.State == t.cfg.StateMachineStatus.AwaitingSubSubdirection {
-				msg := tgbotapi.NewMessage(update.Message.Chat.ID, addQuestionMessage)
-				if _, err := t.BotAPI.Send(msg); err != nil {
-					log.Println(err)
+			// handle entered text
+			switch {
+			case statusID == utils.AwaitingDirectionNameStatus || statusID == utils.AwaitingParentDirecitonStatus: // execute when user enter direction name
+				params := models.CreateDirectionParams{ChatID: update.Message.Chat.ID, DirectionName: update.Message.Text}
+				if err := t.tgUC.CreateDirection(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
 				}
 				continue
-			}
-
-			switch questionParams.State {
-			case t.cfg.StateMachineStatus.AwaitingQuestion:
-				if err := t.handleEnteredQuestion(
-					update.Message.Chat.ID, update.Message.Text,
-					questionParams.SubdirectionID, questionParams.SubSubdirectionID); err != nil {
-					log.Printf("bot.TgBot.handleEnteredQuestion: %s", err.Error())
-					t.stateUsers[update.Message.Chat.ID] = models.AddInfoParams{State: t.cfg.StateMachineStatus.Idle}
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
+			case statusID == utils.AwaitingQuestionStatus: // execute when user enter question
+				params := models.HandleAwaitingQuestionParams{ChatID: update.Message.Chat.ID, Question: update.Message.Text}
+				if err := t.tgUC.HandleAwaitingQuestion(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
-			case t.cfg.StateMachineStatus.AwaitingAnswer:
-				if err := t.handleEnteredAnswer(update.Message.Chat.ID, update.Message.Text); err != nil {
-					log.Printf("bot.TgBot.handleEnteredAnswer: %s", err.Error())
-					t.stateUsers[update.Message.Chat.ID] = models.AddInfoParams{State: t.cfg.StateMachineStatus.Idle}
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
+				continue
+			case statusID == utils.AwaitingAnswerStatus:
+				params := models.HandleAwaitingAnswerParams{ChatID: update.Message.Chat.ID, Answer: update.Message.Text}
+				if err := t.tgUC.HandleAwaitingAnswer(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
+				continue
+			default:
+				t.sendMessage(update.Message.From.ID, "use keyboard to interact with bot")
+				continue
 			}
-
 		}
 
+		// handle callbacks
 		if update.CallbackQuery != nil {
-			callbackType, err := t.extractCallbackType(update.CallbackQuery.Data)
-			if err != nil {
-				log.Println(err)
+			switch {
+			case statusID == utils.AwaitingParentDirecitonStatus: // executes when user tap on direction name button
+				parentDirectionParams := models.SetParentDirectionParams{ChatID: update.CallbackQuery.From.ID, CallbackData: update.CallbackData()}
+				if err := t.tgUC.SetParentDirection(ctx, parentDirectionParams); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
+
+				createDirectionCommandParams := models.HandleCreateDirectionCommandParams{
+					ChatID:       update.CallbackQuery.From.ID,
+					CallbackData: update.CallbackData()}
+				if err := t.tgUC.HandleCreateDirectionCommand(ctx, createDirectionCommandParams); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
+				continue
+			case statusID == utils.AwaitingAddInfoDirectionStatus:
+				params := models.HandleAddInfoCommandParams{
+					ChatID:       update.CallbackQuery.From.ID,
+					CallbackData: update.CallbackData()}
+				if err := t.tgUC.HandleAddInfoCommand(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
+				continue
+			case statusID == utils.AwaitingPrintQuestionsStatus:
+				params := models.HandlePrintQuestionsCommandParams{ChatID: update.CallbackQuery.From.ID, CallbackData: update.CallbackData()}
+				if err := t.tgUC.HandlePrintQuestionsCommand(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
+				continue
+			case statusID == utils.AwaitingInfoActionsStatus:
+				params := models.HandleAwaitingPrintAnswerParams{
+					ChatID: update.CallbackQuery.From.ID, CallbackData: update.CallbackData(), MessageID: update.CallbackQuery.Message.MessageID}
+				if err := t.tgUC.HandleAwaitingPrintAnswer(ctx, params); err != nil {
+					t.log.Errorf(err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
 				continue
 			}
-
-			chatID := update.CallbackQuery.From.ID
-			messageID := update.CallbackQuery.Message.MessageID
-
-			switch callbackType {
-			case t.cfg.CallbackType.Direction:
-				if err := t.handleDirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
-					log.Printf("bot.TgBot.handleDirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
-					continue
-				}
-			case t.cfg.CallbackType.SubdirectionAddInfo:
-				if err := t.handleAddInfoSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
-					log.Printf("bot.TgBot.handleAddInfoSubdirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
-					continue
-				}
-			case t.cfg.CallbackType.SubSubdirectionAddInfo:
-				if err := t.handleAddInfoSubSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
-					log.Printf("bot.TgBot.handleAddInfoSubSubdirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
-					continue
-				}
-			case t.cfg.CallbackType.SubdirectionAskMe:
-				if err := t.handleAskMeSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
-					log.Printf("bot.TgBot.handleAskMeSubdirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
-					continue
-				}
-			case t.cfg.CallbackType.SubSubdirectionAskMe:
-				if err := t.handleAskMeSubSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
-					log.Printf("bot.TgBot.handleAskMeSubSubdirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
-					continue
-				}
-			case t.cfg.CallbackType.GetAnAnswer:
-				if err := t.handleGetAnAnswerCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
-					log.Printf("bot.TgBot.handleGetAnAnswerCallbackData: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
-					continue
-				}
-			case t.cfg.CallbackType.SubdirectionPrintQuestions:
-				if err := t.handlePrintQuestionsSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
-					log.Printf("bot.TgBot.handlePrintQuestionsSubdirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
-					continue
-				}
-			case t.cfg.CallbackType.SubSubdirectionPrintQuestions:
-				if err := t.handlePrintQuestionsSubSubdirectionCallbackData(chatID, messageID, update.CallbackQuery.Data); err != nil {
-					log.Printf("bot.TgBot.handlePrintQuestionsSubSubdirectionCallbackData: %s", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, errInternalServerError)
-					continue
-				}
-			}
-
 		}
 	}
+
 	return nil
-}
-
-func (t *TgBot) extractCallbackType(callbackData string) (result int, err error) {
-	splitedCallbackData := strings.Split(callbackData, " ")
-	lastElemCallbackData := splitedCallbackData[len(splitedCallbackData)-1]
-
-	callbackType, err := strconv.Atoi(lastElemCallbackData)
-	if err != nil {
-		return
-	}
-
-	return callbackType, nil
 }
 
 func (t *TgBot) sendErrorMessage(chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
 	_, err := t.BotAPI.Send(msg)
 	if err != nil {
-		log.Println(err)
+		t.log.Errorf(err.Error())
+	}
+}
+
+func (t *TgBot) sendMessage(chatID int64, text string) {
+	msg := tgbotapi.NewMessage(chatID, text)
+	if _, err := t.BotAPI.Send(msg); err != nil {
+		t.log.Errorf(err.Error())
 	}
 }

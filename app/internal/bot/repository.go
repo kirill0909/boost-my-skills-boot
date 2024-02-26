@@ -1,28 +1,34 @@
 package bot
 
 import (
-	models "boost-my-skills-bot/internal/models/bot"
+	"boost-my-skills-bot/internal/bot/models"
 	"context"
 )
 
 type PgRepository interface {
-	GetUUID(ctx context.Context) (result string, err error)
-	IsAdmin(ctx context.Context, params models.GetUUID) (result bool, err error)
-	UserActivation(ctx context.Context, params models.UserActivation) (err error)
+	SetUserActive(context.Context, models.SetUserActiveParams) error
+	GetMainButtons(context.Context) ([]models.GetMainButtonsResult, error)
+	GetActiveUsers(context.Context) ([]models.GetActiveUsersResult, error)
+	GetUpdatedButtons(context.Context, int64) ([]models.GetUpdatedButtonsResult, error)
+	GetUserDirection(context.Context, models.GetUserDirectionParams) ([]models.UserDirection, error)
+	CreateDirection(context.Context, models.CreateDirectionParams) (string, error)
+	SaveQuestion(context.Context, models.SaveQuestionParams) (int, error)
+	SaveAnswer(context.Context, models.SaveAnswerParams) error
+	GetQuestionsByDirectionID(context.Context, int) ([]models.Question, error)
+	GetAnswerByInfoID(context.Context, int) (string, error)
+}
 
-	GetAnswer(ctx context.Context, questionID int) (result string, err error)
-	SaveQuestion(ctx context.Context, params models.SaveQuestionParams) (result int, err error)
-	SaveAnswer(ctx context.Context, params models.SaveAnswerParams) (err error)
-	GetSubdirections(ctx context.Context, params models.GetSubdirectionsParams) (result []string, err error)
-	GetSubSubdirections(ctx context.Context, params models.GetSubSubdirectionsParams) (result []string, err error)
-	PrintQuestions(params models.PrintQuestionsParams) (result []models.PrintQuestionsResult, err error)
-
-	GetDirectionIDByChatID(ctx context.Context, param int64) (result int, err error)
-	SetUpDirection(ctx context.Context, params models.SetUpDirection) (err error)
-	GetRandomQuestion(ctx context.Context, params models.AksMeCallbackParams) (result models.AskMeCallbackResult, err error)
-
-	// worker
-	GetDirectionsInfo(ctx context.Context) (result []models.DirectionInfo, err error)
-	GetSubdirectionsInfo(ctx context.Context) (result []models.SubdirectionInfo, err error)
-	GetSubSubdirectionsInfo(ctx context.Context) (result []models.SubSubdirectionInfo, err error)
+type RedisRepository interface {
+	SetAwaitingStatus(context.Context, models.SetAwaitingStatusParams) error
+	ResetAwaitingStatus(context.Context, int64) error
+	ResetParentDirection(context.Context, int64) error
+	GetAwaitingStatus(context.Context, int64) (string, error)
+	SetParentDirection(context.Context, models.SetParentDirectionParams) error
+	GetParentDirection(context.Context, int64) (string, error)
+	SetExpirationTimeForMessage(context.Context, int, int64) error
+	SetDirectionForInfo(context.Context, models.SetDirectionForInfoParams) error
+	GetDirectionForInfo(context.Context, int64) (string, error)
+	SetInfoID(context.Context, models.SetInfoIDParams) error
+	GetInfoID(context.Context, int64) (string, error)
+	ResetInfoID(context.Context, int64) error
 }

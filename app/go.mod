@@ -1,17 +1,21 @@
 module boost-my-skills-bot
 
-go 1.20
+go 1.21
 
 require (
 	github.com/go-playground/validator/v10 v10.15.0
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/kirill0909/logger v0.0.0-20240105095309-2f5ceaeaa2f7
 	github.com/pkg/errors v0.9.1
+	github.com/redis/go-redis/v9 v9.5.0
 	github.com/spf13/viper v1.16.0
 )
 
 require (
+	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect

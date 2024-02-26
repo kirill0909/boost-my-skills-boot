@@ -1,115 +1,79 @@
 package repository
 
 const (
-	queryGetUUID = `
-		INSERT INTO users.user DEFAULT VALUES RETURNING tg_uuid
-  `
+	querySetStatusActive = `
+	UPDATE users SET active = TRUE, tg_chat_id = $1, tg_name = $3, updated_at = NOW()
+	WHERE tg_uuid = $2 AND active IS FALSE
+	`
 
-	queryIsAdmin = `
-  SELECT
- CASE
-     WHEN u.name = $1 AND tg_chat_id = $2 THEN TRUE
-     ELSE FALSE
- END AS result
- FROM users.user u WHERE u.id = 1
-  `
-
-	queryUserActivation = `
-  UPDATE users.user SET name = $1, tg_chat_id = $2, active = true WHERE tg_uuid = $3 AND active IS FALSE
-  `
-	querySetUpDirection = `
-  UPDATE users.user SET direction_id = $1 WHERE tg_chat_id = $2
-  `
-	queryGetRandomQuestion = `
+	queryGetMainButtons = `
 	SELECT
-   ui.id,
-   ui.question
-   FROM users.info ui
-   INNER JOIN users.user uu ON uu.direction_id = ui.direction_id
-   INNER JOIN users.sub_directions usd ON usd.id = ui.sub_direction_id
-   LEFT JOIN users.sub_sub_directions ussd ON ussd.sub_direction_id =  ui.sub_sub_direction_id
-   WHERE
-   uu.tg_chat_id = $1::BIGINT
-   AND usd.id = $2::INTEGER
-   AND ($3::INTEGER = 0 OR ui.sub_sub_direction_id = $3)
-   ORDER BY RANDOM()
-   LIMIT 1
+	name AS name,
+	only_for_admin AS only_for_admin
+	FROM main_buttons ORDER BY name;
 	`
 
-	queryGetSubdirectons = `
-	SELECT 
-	usd.sub_direction 
-	FROM users.sub_directions usd
- INNER JOIN users.user uu ON uu.direction_id = usd.direction_id
- WHERE uu.tg_chat_id = $1
- ORDER BY usd.sub_direction
-	`
-	queryGetSubSubdirectons = `
+	queryGetActiveUsers = `
 	SELECT
-  ussd.sub_sub_direction
-  FROM users.sub_sub_directions ussd
-  INNER JOIN users.sub_directions usd ON usd.id = ussd.direction_id
-  INNER JOIN users.user uu ON uu.direction_id = ussd.direction_id
-  WHERE
-  sub_direction_id = $1
-  AND uu.tg_chat_id = $2
-  ORDER BY sub_sub_direction
+	tg_chat_id AS tg_chat_id,
+	is_admin AS is_admin
+	FROM users WHERE active
 	`
 
-	queryGetAnswer = `
-	SELECT answer FROM users.info WHERE id = $1
+	queryGetUpdatedButtons = `
+	SELECT
+    name AS name,
+    only_for_admin AS only_for_admin
+FROM main_buttons
+            WHERE EXTRACT(EPOCH FROM created_at) > $1 OR
+                    EXTRACT(EPOCH FROM updated_at) > $1;
+	`
+
+	querySetUserActive = `
+	UPDATE users SET
+	active = TRUE
+	, tg_chat_id = $1
+	, tg_name = $3
+	, updated_at = NOW()
+	WHERE tg_uuid = $2 AND active IS FALSE
+	`
+	queryGetUserDirection = `
+	SELECT
+    d.id AS id,
+    d.direction AS direction,
+    COALESCE(d.parent_direction_id, 0) AS parent_directon_id,
+    CAST(EXTRACT(EPOCH FROM d.created_at) AS BIGINT) AS created_at,
+    CAST(COALESCE(EXTRACT (EPOCH FROM d.updated_at), 0) AS BIGINT) AS updated_at
+FROM directions d
+INNER JOIN users u ON u.id = d.user_id
+WHERE
+	u.tg_chat_id = $1 AND
+	CASE
+		WHEN $2::INTEGER IS NULL THEN (d.parent_direction_id IS NULL)
+		ELSE $2::INTEGER = d.parent_direction_id
+	END ORDER BY direction;
+	`
+
+	queryCreateDirection = `
+	INSERT INTO directions (direction, user_id, parent_direction_id)
+	VALUES ($1, (SELECT id FROM users WHERE tg_chat_id = $2), $3)
+	RETURNING direction;
 	`
 
 	querySaveQuestion = `
-	INSERT INTO users.info (direction_id, sub_direction_id, sub_sub_direction_id, question, answer)
- VALUES (
- (SELECT direction_id FROM users.user WHERE tg_chat_id = $1),
- $2,
- (CASE WHEN $3 = 0 THEN NULL ELSE $3 END), 
- $4,
- '') RETURNING id
+	INSERT INTO infos(question, direction_id) VALUES ($1, $2) RETURNING id;
 	`
 
 	querySaveAnswer = `
-	UPDATE users.info SET answer = $1, updated_at = NOW() WHERE id = $2
+	UPDATE infos SET answer = $1, updated_at = NOW() WHERE id = $2;
 	`
-	queryGetDirectionsInfo = `
+	queryGetQuestionsByDirectionID = `
 	SELECT
- ud.id AS direction_id,
- ud.direction AS direction_name
- FROM users.directions ud
- ORDER BY ud.direction
+		id AS id,
+		question AS text
+		FROM infos WHERE direction_id = $1 ORDER BY created_at;
 	`
-	queryGetSubdirectionsInfo = `
-	SELECT
-	usd.direction_id AS direction_id,
-  usd.id AS sub_direction_id,
-  usd.sub_direction AS sub_direction_name
-  FROM users.sub_directions usd
-  ORDER BY usd.sub_direction
-	`
-
-	queryGetSubSubdirectionsInfo = `
-	 SELECT
-	ussd.direction_id AS direction_id,
-	ussd.sub_direction_id AS sub_direction_id,
-  ussd.id AS sub_sub_direction_id,
-  ussd.sub_sub_direction AS sub_sub_direction_name
-  FROM users.sub_sub_directions ussd
-  ORDER BY ussd.sub_sub_direction
-	`
-
-	queryGetDirectionByChatID = `
-	SELECT direction_id FROM users.user WHERE tg_chat_id = $1
-	`
-
-	queryPrintInfo = `
-	SELECT
- ui.id AS id,
- ui.question AS question,
- ui.answer AS answer
- FROM users.info ui
- INNER JOIN users.user uu ON uu.tg_chat_id = $1
- WHERE ui.sub_direction_id = $2 AND ui.sub_sub_direction_id = $3
+	queryGetAnswerByInfoID = `
+	SELECT answer FROM infos WHERE id = $1;
 	`
 )

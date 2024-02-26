@@ -19,7 +19,7 @@ const (
 	AwaitingQuestionStatus         = 4
 	AwaitingAnswerStatus           = 5
 	AwaitingPrintQuestionsStatus   = 6
-	AwaitingPrintAnswerStatus      = 7
+	AwaitingInfoActionsStatus      = 7
 
 	// prefix
 	AwaitingStatusPrefix        = "awaitingStatusPrefix"

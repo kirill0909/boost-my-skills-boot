@@ -157,7 +157,7 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
-			case statusID == utils.AwaitingPrintAnswerStatus:
+			case statusID == utils.AwaitingInfoActionsStatus:
 				params := models.HandleAwaitingPrintAnswerParams{
 					ChatID: update.CallbackQuery.From.ID, CallbackData: update.CallbackData(), MessageID: update.CallbackQuery.Message.MessageID}
 				if err := t.tgUC.HandleAwaitingPrintAnswer(ctx, params); err != nil {

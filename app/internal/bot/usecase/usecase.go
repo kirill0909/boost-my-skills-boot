@@ -349,7 +349,7 @@ func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.H
 			time.Sleep(time.Millisecond * 500)
 		}
 
-		setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingPrintAnswerStatus}
+		setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingInfoActionsStatus}
 		if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
 			return err
 		}

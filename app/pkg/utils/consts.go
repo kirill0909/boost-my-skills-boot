@@ -28,7 +28,14 @@ const (
 	DirectionForInfoPrefix      = "directionForInfoPrefix"
 	InfoPrefix                  = "infoPrefix"
 
-	// messages
-	SnipetBegin = "snipet begin"
-	SnipetEnd   = "snipet end"
+	// snipets
+	// go
+	SnipetGoBegin = "snipet go begin"
+	// sql
+	SnipetSQLBegin = "snipet sql begin"
+	// bash
+	SnipetBashBegin = "snipet bash begin"
+	// rust
+	SnipetRustBegin = "snipet rust begin"
+	SnipetEnd       = "snipet end"
 )

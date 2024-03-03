@@ -9,7 +9,6 @@ COPY ./app .
 
 # Also copy the wait-for-db.sh script and make it executable
 COPY wait-for-db.sh /app/wait-for-db.sh
-RUN chmod +x /app/wait-for-db.sh
 
 # Build the application
 RUN go build -o /bin/main ./cmd/main.go
@@ -21,7 +20,7 @@ RUN apk add --no-cache bash
 
 # Copy necessary files
 COPY --from=builder /app/wait-for-db.sh /app/wait-for-db.sh
-COPY ./app/config/config.json /config/config.json  
+COPY ./app/config/config.json /config/config.json
 COPY --from=builder /bin/main /bin/main
 
 # Make the wait-for-db.sh script executable

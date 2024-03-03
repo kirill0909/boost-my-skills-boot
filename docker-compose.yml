@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   app:
@@ -33,6 +33,17 @@ services:
     networks:
       - my_internal_network
 
+  redis:
+    image: redis:latest
+    environment:
+      REDIS_USER: ${REDIS_USER}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: always
+    networks:
+      - my_internal_network
+
 volumes:
   pgdata:
     driver: local
@@ -40,4 +51,3 @@ volumes:
 networks:
   my_internal_network:
     driver: bridge
-  

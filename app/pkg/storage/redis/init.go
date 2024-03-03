@@ -1,15 +1,16 @@
 package redis
 
 import (
-	"boost-my-skills-bot/config"
+	"boost-my-skills-bot/app/config"
 	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/pkg/errors"
-	"github.com/redis/go-redis/v9"
 	"os"
 	"time"
+
+	"github.com/pkg/errors"
+	"github.com/redis/go-redis/v9"
 )
 
 func InitRedisClient(cfg *config.Config) (*redis.Client, *redis.PubSub, error) {

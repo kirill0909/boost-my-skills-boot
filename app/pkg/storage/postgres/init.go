@@ -1,9 +1,10 @@
 package postgres
 
 import (
-	"boost-my-skills-bot/config"
+	"boost-my-skills-bot/app/config"
 	"context"
 	"fmt"
+
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"

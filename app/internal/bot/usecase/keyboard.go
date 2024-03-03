@@ -1,9 +1,10 @@
 package usecase
 
 import (
-	"boost-my-skills-bot/internal/bot/models"
+	"boost-my-skills-bot/app/internal/bot/models"
 	"context"
 	"fmt"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 

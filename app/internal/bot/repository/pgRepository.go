@@ -1,10 +1,11 @@
 package repository
 
 import (
-	"boost-my-skills-bot/internal/bot"
-	"boost-my-skills-bot/internal/bot/models"
+	"boost-my-skills-bot/app/internal/bot"
+	"boost-my-skills-bot/app/internal/bot/models"
 	"context"
 	"fmt"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )

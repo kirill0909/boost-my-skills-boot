@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"boost-my-skills-bot/internal/bot/models"
-	"boost-my-skills-bot/pkg/utils"
+	"boost-my-skills-bot/app/internal/bot/models"
+	"boost-my-skills-bot/app/pkg/utils"
 	"context"
 	"regexp"
 	"strconv"

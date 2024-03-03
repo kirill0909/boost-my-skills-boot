@@ -1,11 +1,12 @@
 package tgbot
 
 import (
-	"boost-my-skills-bot/config"
-	"boost-my-skills-bot/internal/bot"
-	"boost-my-skills-bot/internal/bot/models"
-	"boost-my-skills-bot/pkg/utils"
+	"boost-my-skills-bot/app/config"
+	"boost-my-skills-bot/app/internal/bot"
+	"boost-my-skills-bot/app/internal/bot/models"
+	"boost-my-skills-bot/app/pkg/utils"
 	"context"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/kirill0909/logger"
 )

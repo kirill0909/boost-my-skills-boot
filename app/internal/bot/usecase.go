@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"boost-my-skills-bot/internal/bot/models"
+	"boost-my-skills-bot/app/internal/bot/models"
 	"context"
 )
 

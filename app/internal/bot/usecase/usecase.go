@@ -1,10 +1,10 @@
 package usecase
 
 import (
-	"boost-my-skills-bot/config"
-	"boost-my-skills-bot/internal/bot"
-	"boost-my-skills-bot/internal/bot/models"
-	"boost-my-skills-bot/pkg/utils"
+	"boost-my-skills-bot/app/config"
+	"boost-my-skills-bot/app/internal/bot"
+	"boost-my-skills-bot/app/internal/bot/models"
+	"boost-my-skills-bot/app/pkg/utils"
 	"context"
 	"database/sql"
 	"fmt"

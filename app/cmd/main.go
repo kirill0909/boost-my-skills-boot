@@ -1,21 +1,22 @@
 package main
 
 import (
-	"boost-my-skills-bot/config"
-	"boost-my-skills-bot/internal/bot/repository"
-	"boost-my-skills-bot/internal/bot/tgBot"
-	"boost-my-skills-bot/internal/bot/usecase"
-	"boost-my-skills-bot/internal/models"
-	"boost-my-skills-bot/pkg/storage/postgres"
-	"boost-my-skills-bot/pkg/storage/redis"
+	"boost-my-skills-bot/app/config"
+	"boost-my-skills-bot/app/internal/bot/repository"
+	tgbot "boost-my-skills-bot/app/internal/bot/tgBot"
+	"boost-my-skills-bot/app/internal/bot/usecase"
+	"boost-my-skills-bot/app/internal/models"
+	"boost-my-skills-bot/app/pkg/storage/postgres"
+	"boost-my-skills-bot/app/pkg/storage/redis"
 	"context"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/kirill0909/logger"
-	"github.com/pkg/errors"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"github.com/kirill0909/logger"
+	"github.com/pkg/errors"
 )
 
 func main() {
@@ -42,7 +43,7 @@ func main() {
 		}
 	}(dependencies)
 
-	tgbot, err := maping(ctx, cfg, dependencies)
+	tgbot, err := maping(cfg, dependencies)
 	if err != nil {
 		dependencies.Logger.Errorf("Error map handler: %s", err.Error())
 		return
@@ -61,7 +62,7 @@ func main() {
 
 }
 
-func maping(ctx context.Context, cfg *config.Config, dep models.Dependencies) (tgBot *tgbot.TgBot, err error) {
+func maping(cfg *config.Config, dep models.Dependencies) (tgBot *tgbot.TgBot, err error) {
 	botAPI, err := tgbotapi.NewBotAPI(cfg.TgBot.ApiKey)
 	if err != nil {
 		return

@@ -344,9 +344,9 @@ func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.H
 			return err
 		}
 		for _, v := range questions {
-			sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: v.Text, Keyboard: u.createInfoKeyboard(v.ID)}
+			sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: utils.FormatBadCharacters(v.Text), Keyboard: u.createInfoKeyboard(v.ID)}
 			u.sendMessage(sendMessageParams)
-			time.Sleep(time.Millisecond * 500)
+			time.Sleep(time.Millisecond * 50)
 		}
 
 		setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingInfoActionsStatus}
@@ -384,7 +384,7 @@ func (u *botUC) HandleAwaitingPrintAnswer(ctx context.Context, params models.Han
 		return err
 	}
 
-	sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: answer}
+	sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: utils.FormatBadCharacters(answer)}
 	u.sendMessage(sendMessageParams)
 	u.hideKeyboard(params.ChatID, params.MessageID)
 

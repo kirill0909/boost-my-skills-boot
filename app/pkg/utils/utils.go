@@ -22,3 +22,30 @@ func FormatSnipets(message string) string {
 
 	return message
 }
+
+func FormatBadCharacters(text string) string {
+	text = strings.ReplaceAll(text, "{", "\\{")
+	text = strings.ReplaceAll(text, "}", "\\}")
+	text = strings.ReplaceAll(text, "(", "\\(")
+	text = strings.ReplaceAll(text, ")", "\\)")
+	text = strings.ReplaceAll(text, "[", "\\[")
+	text = strings.ReplaceAll(text, "]", "\\]")
+	text = strings.ReplaceAll(text, "*", "\\*")
+	text = strings.ReplaceAll(text, "%", "\\%")
+	text = strings.ReplaceAll(text, "$", "\\$")
+	text = strings.ReplaceAll(text, "&", "\\&")
+	text = strings.ReplaceAll(text, "#", "\\#")
+	text = strings.ReplaceAll(text, ".", "\\.")
+	text = strings.ReplaceAll(text, ">", "\\>")
+	text = strings.ReplaceAll(text, "<", "\\<")
+	text = strings.ReplaceAll(text, "?", "\\?")
+	text = strings.ReplaceAll(text, "!", "\\!")
+	text = strings.ReplaceAll(text, "+", "\\+")
+	text = strings.ReplaceAll(text, "-", "\\-")
+	text = strings.ReplaceAll(text, "_", "\\_")
+	text = strings.ReplaceAll(text, ";", "\\;")
+	text = strings.ReplaceAll(text, "/", "\\/;")
+	text = strings.ReplaceAll(text, "@", "\\@;")
+
+	return text
+}

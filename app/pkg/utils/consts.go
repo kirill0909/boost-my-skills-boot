@@ -2,7 +2,7 @@ package utils
 
 const (
 	// regex layouts
-	DirectionNameLayout = "^[a-zA-Z0-9 ]+$"
+	DirectionNameLayout = "^[a-zA-Z0-9 /]+$"
 	MessageIDLayout     = "_MessageID_(\\d+)"
 	ChatIDLayout        = "_ChatID_(\\d+)"
 

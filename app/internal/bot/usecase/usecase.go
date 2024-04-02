@@ -358,6 +358,10 @@ func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.H
 		}
 
 		return nil
+	} else if len(directions) == 0 {
+		sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "To print directions create at least one direction and add info to it"}
+		u.sendMessage(sendMessageParams)
+		return nil
 	}
 
 	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingPrintQuestionsStatus}

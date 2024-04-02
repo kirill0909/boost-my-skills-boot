@@ -15,8 +15,6 @@ services:
       - DB_NAME=${DB_NAME}
     restart: always
     command: ["/app/wait-for-db.sh", "db", "5432", "/bin/main"]
-    networks:
-      - my_internal_network
 
   db:
     image: postgres:latest
@@ -30,8 +28,6 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     restart: always
-    networks:
-      - my_internal_network
 
   redis:
     image: redis:latest
@@ -41,13 +37,7 @@ services:
     ports:
       - "127.0.0.1:6379:6379"
     restart: always
-    networks:
-      - my_internal_network
 
 volumes:
   pgdata:
     driver: local
-
-networks:
-  my_internal_network:
-    driver: bridge

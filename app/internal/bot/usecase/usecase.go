@@ -179,7 +179,7 @@ func (u *botUC) CreateDirection(ctx context.Context, params models.CreateDirecti
 
 	sendMessageParams := models.SendMessageParams{
 		ChatID: params.ChatID,
-		Text:   fmt.Sprintf("successfully created \"%s\" direction", direction)}
+		Text:   fmt.Sprintf("successfully created \"%s\" direction", utils.FormatBadCharacters(direction))}
 	u.sendMessage(sendMessageParams)
 
 	return nil

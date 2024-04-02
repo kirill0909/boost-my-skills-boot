@@ -52,7 +52,7 @@ func (u *botUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 	splitedText := strings.Split(params.Text, " ")
 
 	if len(splitedText) != 2 {
-		return fmt.Errorf("TgBot.handleStartCommand. wrong len of splited text: %d != 2. params(%+v)", len(splitedText), params)
+		return fmt.Errorf("botUC.handleStartCommand. wrong len of splited text: %d != 2. params(%+v)", len(splitedText), params)
 	}
 
 	uuid := splitedText[1]

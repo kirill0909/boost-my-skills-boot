@@ -57,7 +57,7 @@ func (t *TgBot) Run() error {
 					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
 				if err := t.tgUC.HandleStartCommand(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, "account activation error")
+					t.sendErrorMessage(update.Message.Chat.ID, "Account activation error. Contact @kirillkorunov to get uuid for account actionvation")
 					continue
 				}
 				continue

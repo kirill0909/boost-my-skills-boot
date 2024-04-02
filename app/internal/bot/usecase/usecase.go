@@ -334,15 +334,18 @@ func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.H
 		return err
 	}
 
-	if len(directions) == 0 && params.CallbackData == "" {
-		sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "To print info create at least one direction and add info to it"}
-		u.sendMessage(sendMessageParams)
-		return nil
-	} else if len(directions) == 0 && params.CallbackData != "" {
+	if len(directions) == 0 && params.CallbackData != "" {
 		questions, err := u.pgRepo.GetQuestionsByDirectionID(ctx, int(getUserDirectionParams.ParentDirectionID.Int64))
 		if err != nil {
 			return err
 		}
+
+		if len(questions) == 0 {
+			sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "To print info create at least one direction and add info to it"}
+			u.sendMessage(sendMessageParams)
+			return nil
+		}
+
 		for _, v := range questions {
 			sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: utils.FormatBadCharacters(v.Text), Keyboard: u.createInfoKeyboard(v.ID)}
 			u.sendMessage(sendMessageParams)

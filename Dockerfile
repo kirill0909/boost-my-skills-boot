@@ -19,6 +19,8 @@ FROM alpine:3.9
 
 RUN apk add --no-cache bash
 
+RUN apk add curl
+
 # Copy necessary files from the builder stage
 COPY --from=builder /app/wait-for-db.sh /app/wait-for-db.sh
 COPY ./app/config/config.json /config/config.json
@@ -26,3 +28,5 @@ COPY --from=builder /app/main /bin/main
 
 # Make the wait-for-db.sh script executable
 RUN chmod +x /app/wait-for-db.sh
+
+EXPOSE 8080

@@ -4,6 +4,8 @@ services:
   app:
     build: .
     image: boost-my-skills-bot:0.1
+    ports:
+      - "127.0.0.1:8080:8080"
     depends_on:
       - db
     environment:
@@ -14,6 +16,12 @@ services:
       - DB_NAME=${DB_NAME}
     restart: always
     command: ["/app/wait-for-db.sh", "db", "5432", "/bin/main"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8080/ping"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 5s
 
   db:
     image: postgres:latest

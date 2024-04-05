@@ -6,6 +6,7 @@ import (
 	tgbot "boost-my-skills-bot/app/internal/bot/tgBot"
 	"boost-my-skills-bot/app/internal/bot/usecase"
 	"boost-my-skills-bot/app/internal/models"
+	"boost-my-skills-bot/app/internal/server"
 	"boost-my-skills-bot/app/pkg/storage/postgres"
 	"boost-my-skills-bot/app/pkg/storage/redis"
 	"context"
@@ -43,29 +44,28 @@ func main() {
 		}
 	}(dependencies)
 
-	tgbot, err := maping(cfg, dependencies)
+	srv, err := maping(cfg, dependencies)
 	if err != nil {
-		dependencies.Logger.Errorf("Error map handler: %s", err.Error())
+		dependencies.Logger.Errorf("error map handler: %s", err.Error())
 		return
 	}
-
-	go func() {
-		if err := tgbot.Run(); err != nil {
-			dependencies.Logger.Errorf("Error bot run: %s", err.Error())
-			return
-		}
-	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
 
+	if err := srv.Shutdown(); err != nil {
+		dependencies.Logger.Errorf("error server shudown: %s", err.Error())
+		return
+	}
+
+	dependencies.Logger.Infof("graceful shutdown server")
 }
 
-func maping(cfg *config.Config, dep models.Dependencies) (tgBot *tgbot.TgBot, err error) {
+func maping(cfg *config.Config, dep models.Dependencies) (*server.Server, error) {
 	botAPI, err := tgbotapi.NewBotAPI(cfg.TgBot.ApiKey)
 	if err != nil {
-		return
+		return nil, errors.Wrap(err, "maping.NewBotAPI()")
 	}
 
 	// repository
@@ -75,14 +75,27 @@ func maping(cfg *config.Config, dep models.Dependencies) (tgBot *tgbot.TgBot, er
 	// usecase
 	botUC := usecase.NewBotUC(cfg, botPgRepo, botRedisRepo, dep.RedisPubSub, botAPI, dep.Logger)
 
-	// bot
-	tgBot = tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)
+	// bot(adapter)
+	bot := tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)
+
+	go func(bot *tgbot.TgBot) {
+		if err := bot.Run(); err != nil {
+			dep.Logger.Fatalf("unable to run bot: %s", err.Error())
+		}
+	}(bot)
+
+	srv := server.NewServer(cfg.Server.Host, cfg.Server.Port, dep.Logger)
+	go func(srv *server.Server) {
+		if err := srv.Run(); err != nil {
+			dep.Logger.Fatalf("unable to run http server: %s", err.Error())
+		}
+	}(srv)
 
 	// workers
 	go botUC.SyncMainKeyboardWorker()
 	go botUC.ListenExpiredMessageWorker()
 
-	return tgBot, nil
+	return srv, nil
 }
 
 func initDependencies(ctx context.Context, cfg *config.Config) (models.Dependencies, error) {

@@ -9,6 +9,7 @@ import (
 )
 
 type Config struct {
+	Server                       Server
 	Postgres                     Postgres
 	Redis                        Redis
 	TgBot                        TgBot
@@ -16,6 +17,11 @@ type Config struct {
 	AwaitingDirectionNameDelay   int   `validate:"required"`
 	AwaitingParentDirectionDelay int   `validate:"required"`
 	AwaitingAddInfoDirection     int   `validate:"required"`
+}
+
+type Server struct {
+	Host string `validate:"required"`
+	Port string `validate:"required"`
 }
 
 type Postgres struct {

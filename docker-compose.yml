@@ -27,7 +27,7 @@ services:
     image: postgres:latest
     volumes:
       - ./app/dumps/bot_db_dump.sql:/docker-entrypoint-initdb.d/mydbdump.sql
-      - pgdata:/var/lib/postgresql/data
+      # - ./pgdata:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}

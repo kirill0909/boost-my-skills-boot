@@ -2,13 +2,20 @@ package models
 
 import (
 	"database/sql"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
+type CallbackInfo struct {
+	CallbackType int
+	DirectionID  int
+	InfoID       int
+}
+
 type HandleAwaitingPrintAnswerParams struct {
-	ChatID       int64
-	MessageID    int
-	CallbackData string
+	ChatID    int64
+	MessageID int
+	InfoID    int
 }
 
 type SaveQuestionParams struct {
@@ -50,19 +57,19 @@ type SetUserActiveParams struct {
 }
 
 type HandleCreateDirectionCommandParams struct {
-	Text         string
-	ChatID       int64
-	CallbackData string
+	Text              string
+	ChatID            int64
+	ParentDirectionID int
 }
 
 type HandleAddInfoCommandParams struct {
-	ChatID       int64
-	CallbackData string
+	ChatID            int64
+	ParentDirectionID int
 }
 
 type HandlePrintQuestionsCommandParams struct {
-	ChatID       int64
-	CallbackData string
+	ChatID            int64
+	ParentDirectionID int
 }
 
 type SetAwaitingStatusParams struct {
@@ -72,7 +79,7 @@ type SetAwaitingStatusParams struct {
 
 type GetUserDirectionParams struct {
 	ChatID            int64
-	ParentDirectionID sql.NullInt64
+	ParentDirectionID int
 }
 
 type GetMainButtonsResult struct {
@@ -96,7 +103,6 @@ type Question struct {
 type SetParentDirectionParams struct {
 	ChatID            int64
 	ParentDirectionID int
-	CallbackData      string
 }
 
 type HandleAwaitingQuestionParams struct {

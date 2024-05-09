@@ -49,7 +49,7 @@ INNER JOIN users u ON u.id = d.user_id
 WHERE
 	u.tg_chat_id = $1 AND
 	CASE
-		WHEN $2::INTEGER IS NULL THEN (d.parent_direction_id IS NULL)
+		WHEN $2::INTEGER = 0 THEN (d.parent_direction_id IS NULL)
 		ELSE $2::INTEGER = d.parent_direction_id
 	END ORDER BY direction;
 	`

@@ -9,12 +9,13 @@ import (
 type CallbackInfo struct {
 	CallbackType int
 	DirectionID  int
+	InfoID       int
 }
 
 type HandleAwaitingPrintAnswerParams struct {
-	ChatID       int64
-	MessageID    int
-	CallbackData string
+	ChatID    int64
+	MessageID int
+	InfoID    int
 }
 
 type SaveQuestionParams struct {
@@ -67,8 +68,9 @@ type HandleAddInfoCommandParams struct {
 }
 
 type HandlePrintQuestionsCommandParams struct {
-	ChatID       int64
-	CallbackData string
+	ChatID            int64
+	ParentDirectionID int
+	// CallbackData string
 }
 
 type SetAwaitingStatusParams struct {

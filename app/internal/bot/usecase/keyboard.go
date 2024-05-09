@@ -62,12 +62,13 @@ func (u *botUC) createDirectionsKeyboard(directions []models.UserDirection, call
 	return
 }
 
-func (u *botUC) createInfoKeyboard(questionID int) tgbotapi.InlineKeyboardMarkup {
+func (u *botUC) createInfoKeyboard(questionID int, callbackType int) tgbotapi.InlineKeyboardMarkup {
 
 	var keyboard tgbotapi.InlineKeyboardMarkup
 	var rows []tgbotapi.InlineKeyboardButton
+	callbackData := `{"infoID": %d, "callbackType": %d}`
 
-	buttons := tgbotapi.NewInlineKeyboardButtonData("get an answer", fmt.Sprintf("%d", questionID))
+	buttons := tgbotapi.NewInlineKeyboardButtonData("get an answer", fmt.Sprintf(callbackData, questionID, callbackType))
 	rows = append(rows, buttons)
 
 	keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(rows...))

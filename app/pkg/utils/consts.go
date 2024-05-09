@@ -14,12 +14,8 @@ const (
 
 	// user states
 	AwaitingDirectionNameStatus = 1
-	// AwaitingParentDirecitonStatus  = 2
-	AwaitingAddInfoDirectionStatus = 3
-	AwaitingQuestionStatus         = 4
-	AwaitingAnswerStatus           = 5
-	AwaitingPrintQuestionsStatus   = 6
-	AwaitingInfoActionsStatus      = 7
+	AwaitingQuestionStatus      = 2
+	AwaitingAnswerStatus        = 3
 
 	// prefix
 	AwaitingStatusPrefix        = "awaitingStatusPrefix"
@@ -31,6 +27,8 @@ const (
 	// callback types
 	AwaitingParentDirectionCallbackType  = 1
 	AwaitingAddInfoDirectionCallbackType = 2
+	AwaitingPrintQuestionsCallbackType   = 3
+	AwaitingInfoActionsCallbackType      = 4
 
 	// snipets
 	// go

@@ -189,6 +189,7 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAd
 		return err
 	}
 
+	// TODO: move every case to separete function
 	switch {
 	// executed when the user does not have one direction
 	case len(directions) == 0 && params.ParentDirectionID == 0:
@@ -285,24 +286,28 @@ func (u *botUC) HandleAwaitingAnswer(ctx context.Context, params models.HandleAw
 }
 
 func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.HandlePrintQuestionsCommandParams) error {
-	var err error
-	var parentDirectionID int
-	var getUserDirectionParams models.GetUserDirectionParams
-	if params.CallbackData != "" {
-		parentDirectionID, err = strconv.Atoi(params.CallbackData)
-		if err != nil {
-			return errors.Wrapf(err, "botUC.HandlePrintInfoCommand.Atoi(). params(%+v)", params)
-		}
-		getUserDirectionParams.ParentDirectionID = parentDirectionID
-	}
-	getUserDirectionParams.ChatID = params.ChatID
-
+	getUserDirectionParams := models.GetUserDirectionParams{ChatID: params.ChatID, ParentDirectionID: params.ParentDirectionID}
 	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParams)
 	if err != nil {
 		return err
 	}
 
-	if len(directions) == 0 && params.CallbackData != "" {
+	// TODO: move every case to separete function
+	switch {
+	// executed when user has not one direction
+	case len(directions) == 0 && params.ParentDirectionID == 0:
+		sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "Create at least one direction and add info to it"}
+		u.sendMessage(sendMessageParams)
+		// executed when user has directions but not reached low level
+	case (len(directions) != 0 && params.ParentDirectionID == 0) || (len(directions) != 0 && params.ParentDirectionID != 0):
+		sendMessageParams := models.SendMessageParams{
+			ChatID:         params.ChatID,
+			Text:           "choose direction for print questions",
+			Keyboard:       u.createDirectionsKeyboard(directions, utils.AwaitingPrintQuestionsCallbackType),
+			IsNeedToRemove: true}
+		u.sendMessage(sendMessageParams)
+		// executed when user has directions and reached low level
+	default:
 		questions, err := u.pgRepo.GetQuestionsByDirectionID(ctx, getUserDirectionParams.ParentDirectionID)
 		if err != nil {
 			return err
@@ -315,46 +320,20 @@ func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.H
 		}
 
 		for _, v := range questions {
-			sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: utils.FormatBadCharacters(v.Text), Keyboard: u.createInfoKeyboard(v.ID)}
+			sendMessageParams := models.SendMessageParams{
+				ChatID: params.ChatID,
+				Text:   utils.FormatBadCharacters(v.Text), Keyboard: u.createInfoKeyboard(v.ID, utils.AwaitingInfoActionsCallbackType)}
 			u.sendMessage(sendMessageParams)
 			time.Sleep(time.Millisecond * 50)
 		}
 
-		setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingInfoActionsStatus}
-		if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
-			return err
-		}
-
-		return nil
-	} else if len(directions) == 0 {
-		sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "To print directions create at least one direction and add info to it"}
-		u.sendMessage(sendMessageParams)
-		return nil
 	}
-
-	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingPrintQuestionsStatus}
-	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
-		return err
-	}
-
-	sendMessageParams := models.SendMessageParams{
-		ChatID:         params.ChatID,
-		Text:           "choose direction for print questions",
-		Keyboard:       u.createDirectionsKeyboard(directions, 1),
-		IsNeedToRemove: true}
-	u.sendMessage(sendMessageParams)
 
 	return nil
-
 }
 
 func (u *botUC) HandleAwaitingPrintAnswer(ctx context.Context, params models.HandleAwaitingPrintAnswerParams) error {
-	infoID, err := strconv.Atoi(params.CallbackData)
-	if err != nil {
-		return errors.Wrapf(err, "botUC.HandleAwaitingPrintAnswer.Atoi(%s)", params.CallbackData)
-	}
-
-	answer, err := u.pgRepo.GetAnswerByInfoID(ctx, infoID)
+	answer, err := u.pgRepo.GetAnswerByInfoID(ctx, params.InfoID)
 	if err != nil {
 		return err
 	}

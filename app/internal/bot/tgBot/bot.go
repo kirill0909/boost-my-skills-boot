@@ -159,17 +159,23 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
-			case statusID == utils.AwaitingPrintQuestionsStatus:
-				params := models.HandlePrintQuestionsCommandParams{ChatID: update.CallbackQuery.From.ID, CallbackData: update.CallbackData()}
+			case callbackInfo.CallbackType == utils.AwaitingPrintQuestionsCallbackType:
+				params := models.HandlePrintQuestionsCommandParams{
+					ChatID:            update.CallbackQuery.From.ID,
+					ParentDirectionID: callbackInfo.DirectionID,
+				}
 				if err := t.tgUC.HandlePrintQuestionsCommand(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
 				continue
-			case statusID == utils.AwaitingInfoActionsStatus:
+			case callbackInfo.CallbackType == utils.AwaitingInfoActionsCallbackType:
 				params := models.HandleAwaitingPrintAnswerParams{
-					ChatID: update.CallbackQuery.From.ID, CallbackData: update.CallbackData(), MessageID: update.CallbackQuery.Message.MessageID}
+					ChatID:    update.CallbackQuery.From.ID,
+					InfoID:    callbackInfo.InfoID,
+					MessageID: update.CallbackQuery.Message.MessageID,
+				}
 				if err := t.tgUC.HandleAwaitingPrintAnswer(ctx, params); err != nil {
 					t.log.Errorf(err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")

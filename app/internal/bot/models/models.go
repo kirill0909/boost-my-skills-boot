@@ -70,7 +70,6 @@ type HandleAddInfoCommandParams struct {
 type HandlePrintQuestionsCommandParams struct {
 	ChatID            int64
 	ParentDirectionID int
-	// CallbackData string
 }
 
 type SetAwaitingStatusParams struct {

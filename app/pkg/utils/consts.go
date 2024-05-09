@@ -13,8 +13,8 @@ const (
 	PrintQuestionsCommand  = "print_questions"
 
 	// user states
-	AwaitingDirectionNameStatus    = 1
-	AwaitingParentDirecitonStatus  = 2
+	AwaitingDirectionNameStatus = 1
+	// AwaitingParentDirecitonStatus  = 2
 	AwaitingAddInfoDirectionStatus = 3
 	AwaitingQuestionStatus         = 4
 	AwaitingAnswerStatus           = 5
@@ -27,6 +27,10 @@ const (
 	ExpirationTimeMessagePrefix = "expirationTimeMessagePreifx"
 	DirectionForInfoPrefix      = "directionForInfoPrefix"
 	InfoPrefix                  = "infoPrefix"
+
+	// callback types
+	AwaitingParentDirectionCallbackType  = 1
+	AwaitingAddInfoDirectionCallbackType = 2
 
 	// snipets
 	// go

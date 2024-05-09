@@ -83,43 +83,31 @@ func (u *botUC) HandleStartCommand(ctx context.Context, params models.HandleStar
 }
 
 func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.HandleCreateDirectionCommandParams) error {
-	var err error
-	var parentDirectionID int
-	var getUserDirectionParms models.GetUserDirectionParams
-	if params.CallbackData != "" {
-		parentDirectionID, err = strconv.Atoi(params.CallbackData)
-		if err != nil {
-			return errors.Wrapf(err, "botUC.HandleCreateDirectionCommand.Atoi(). params(%+v)", params)
-		}
-		getUserDirectionParms.ParentDirectionID = sql.NullInt64{Int64: int64(parentDirectionID), Valid: true}
+	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingDirectionNameStatus}
+	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
+		return err
 	}
-	getUserDirectionParms.ChatID = params.ChatID
+
+	getUserDirectionParms := models.GetUserDirectionParams{
+		ChatID:            params.ChatID,
+		ParentDirectionID: params.ParentDirectionID,
+	}
 
 	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParms)
 	if err != nil {
 		return err
 	}
 
-	var statusID int
 	if len(directions) == 0 {
-		statusID = utils.AwaitingDirectionNameStatus
-		sendMessageParams := models.SendMessageParams{
-			ChatID: params.ChatID,
-			Text:   "enter name of your direction"}
+		sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "enter name of your direction"}
 		u.sendMessage(sendMessageParams)
 	} else {
-		statusID = utils.AwaitingParentDirecitonStatus
 		sendMessageParams := models.SendMessageParams{
 			ChatID:         params.ChatID,
 			Text:           "choose parent direciton",
-			Keyboard:       u.createDirectionsKeyboard(directions),
+			Keyboard:       u.createDirectionsKeyboard(directions, utils.AwaitingParentDirectionCallbackType),
 			IsNeedToRemove: true}
 		u.sendMessage(sendMessageParams)
-	}
-
-	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: statusID}
-	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
-		return err
 	}
 
 	return nil
@@ -186,13 +174,6 @@ func (u *botUC) CreateDirection(ctx context.Context, params models.CreateDirecti
 }
 
 func (u *botUC) SetParentDirection(ctx context.Context, params models.SetParentDirectionParams) error {
-	parendDirectionID, err := strconv.Atoi(params.CallbackData)
-	if err != nil {
-		return errors.Wrapf(err, "botUC.SetParentDirection.Atoi(). params(%+v)", params)
-	}
-
-	params.ParentDirectionID = parendDirectionID
-
 	if err := u.rdb.SetParentDirection(ctx, params); err != nil {
 		return err
 	}
@@ -201,54 +182,41 @@ func (u *botUC) SetParentDirection(ctx context.Context, params models.SetParentD
 }
 
 func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAddInfoCommandParams) error {
-	var err error
-	var parentDirectionID int
-	var getUserDirectionParams models.GetUserDirectionParams
-	if params.CallbackData != "" {
-		parentDirectionID, err = strconv.Atoi(params.CallbackData)
-		if err != nil {
-			return errors.Wrapf(err, "botUC.HandleCreateDirectionCommand.Atoi(). params(%+v)", params)
-		}
-		getUserDirectionParams.ParentDirectionID = sql.NullInt64{Int64: int64(parentDirectionID), Valid: true}
-	}
-	getUserDirectionParams.ChatID = params.ChatID
+	getUserDirectionParams := models.GetUserDirectionParams{ChatID: params.ChatID, ParentDirectionID: params.ParentDirectionID}
 
 	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParams)
 	if err != nil {
 		return err
 	}
 
-	if len(directions) == 0 && params.CallbackData == "" { // executed when the user does not have one direction
+	switch {
+	// executed when the user does not have one direction
+	case len(directions) == 0 && params.ParentDirectionID == 0:
 		sendMessageParms := models.SendMessageParams{ChatID: params.ChatID, Text: "To add information, create at least one direction"}
 		u.sendMessage(sendMessageParms)
-		return nil
-	} else if len(directions) == 0 && params.CallbackData != "" { // executed when the user has directions but has reached the lowest level
+	// executed when the user has directions and has parrent directions OR has directions but has NOT parent directions
+	case (len(directions) != 0 && params.ParentDirectionID == 0) || (len(directions) != 0 && params.ParentDirectionID != 0):
+		sendMessageParams := models.SendMessageParams{
+			ChatID:         params.ChatID,
+			Text:           "choose direction for add info",
+			Keyboard:       u.createDirectionsKeyboard(directions, utils.AwaitingAddInfoDirectionCallbackType),
+			IsNeedToRemove: true}
+		u.sendMessage(sendMessageParams)
+	// executed when user reached low level
+	default:
 		setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingQuestionStatus}
 		if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
 			return err
 		}
 
 		setDirectionForInfoParams := models.SetDirectionForInfoParams{
-			ChatID: params.ChatID, DirectionID: int(getUserDirectionParams.ParentDirectionID.Int64)}
+			ChatID: params.ChatID, DirectionID: getUserDirectionParams.ParentDirectionID}
 		if err := u.rdb.SetDirectionForInfo(ctx, setDirectionForInfoParams); err != nil {
 			return err
 		}
 		sendMessageParams := models.SendMessageParams{ChatID: params.ChatID, Text: "enter your question"}
 		u.sendMessage(sendMessageParams)
-		return nil
 	}
-
-	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingAddInfoDirectionStatus}
-	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
-		return err
-	}
-
-	sendMessageParams := models.SendMessageParams{
-		ChatID:         params.ChatID,
-		Text:           "choose direction for add info",
-		Keyboard:       u.createDirectionsKeyboard(directions),
-		IsNeedToRemove: true}
-	u.sendMessage(sendMessageParams)
 
 	return nil
 }
@@ -325,7 +293,7 @@ func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.H
 		if err != nil {
 			return errors.Wrapf(err, "botUC.HandlePrintInfoCommand.Atoi(). params(%+v)", params)
 		}
-		getUserDirectionParams.ParentDirectionID = sql.NullInt64{Int64: int64(parentDirectionID), Valid: true}
+		getUserDirectionParams.ParentDirectionID = parentDirectionID
 	}
 	getUserDirectionParams.ChatID = params.ChatID
 
@@ -335,7 +303,7 @@ func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.H
 	}
 
 	if len(directions) == 0 && params.CallbackData != "" {
-		questions, err := u.pgRepo.GetQuestionsByDirectionID(ctx, int(getUserDirectionParams.ParentDirectionID.Int64))
+		questions, err := u.pgRepo.GetQuestionsByDirectionID(ctx, getUserDirectionParams.ParentDirectionID)
 		if err != nil {
 			return err
 		}
@@ -372,7 +340,7 @@ func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.H
 	sendMessageParams := models.SendMessageParams{
 		ChatID:         params.ChatID,
 		Text:           "choose direction for print questions",
-		Keyboard:       u.createDirectionsKeyboard(directions),
+		Keyboard:       u.createDirectionsKeyboard(directions, 1),
 		IsNeedToRemove: true}
 	u.sendMessage(sendMessageParams)
 

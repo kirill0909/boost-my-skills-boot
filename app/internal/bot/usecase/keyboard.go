@@ -42,12 +42,15 @@ func (u *botUC) createMainMenuKeyboard(isAdmin bool) (keyboard tgbotapi.ReplyKey
 	return
 }
 
-func (u *botUC) createDirectionsKeyboard(directions []models.UserDirection) (keyboard tgbotapi.InlineKeyboardMarkup) {
+func (u *botUC) createDirectionsKeyboard(directions []models.UserDirection, callbackType int) (keyboard tgbotapi.InlineKeyboardMarkup) {
 
 	var rows []tgbotapi.InlineKeyboardButton
+	callbackData := `{"directionID": %d, "callbackType": %d}`
 
 	for i := 0; i < len(directions); i++ {
-		buttons := tgbotapi.NewInlineKeyboardButtonData(directions[i].Direction, fmt.Sprintf("%d", directions[i].ID))
+		buttons := tgbotapi.NewInlineKeyboardButtonData(
+			directions[i].Direction,
+			fmt.Sprintf(callbackData, directions[i].ID, callbackType))
 		rows = append(rows, buttons)
 
 		if (i+1)%2 == 0 || i == len(directions)-1 {

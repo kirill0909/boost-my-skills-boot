@@ -23,6 +23,9 @@ type Server struct {
 	HTTP struct {
 		Port string `validate:"required"`
 	}
+	GRPC struct {
+		Port string `validate:"required"`
+	}
 	Host string `validate:"required"`
 }
 

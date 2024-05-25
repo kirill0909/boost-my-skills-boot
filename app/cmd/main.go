@@ -59,6 +59,8 @@ func main() {
 		return
 	}
 
+	srv.ShutdownGRPC()
+
 	dependencies.Logger.Infof("graceful shutdown server")
 }
 
@@ -84,12 +86,18 @@ func maping(cfg *config.Config, dep models.Dependencies) (*server.Server, error)
 		}
 	}(bot)
 
-	srv := server.NewServer(cfg.Server.Host, cfg.Server.HTTP.Port, dep.Logger)
+	srv := server.NewServer(cfg.Server.Host, cfg.Server.HTTP.Port, cfg.Server.GRPC.Port, dep.Logger)
 	go func(s server.HTTP) {
 		if err := srv.RunHTTP(); err != nil {
 			dep.Logger.Fatalf("unable to run http server: %s", err.Error())
 		}
 	}(srv.HTTP)
+
+	go func(s server.GRPC) {
+		if err := srv.RunGRPC(); err != nil {
+			dep.Logger.Fatalf("unable to run grpc server: %s", err.Error())
+		}
+	}(srv.GRPC)
 
 	// workers
 	go botUC.SyncMainKeyboardWorker()

@@ -54,7 +54,7 @@ func main() {
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
 
-	if err := srv.Shutdown(); err != nil {
+	if err := srv.ShutdownHTTP(); err != nil {
 		dependencies.Logger.Errorf("error server shudown: %s", err.Error())
 		return
 	}
@@ -84,12 +84,12 @@ func maping(cfg *config.Config, dep models.Dependencies) (*server.Server, error)
 		}
 	}(bot)
 
-	srv := server.NewServer(cfg.Server.Host, cfg.Server.Port, dep.Logger)
-	go func(srv *server.Server) {
-		if err := srv.Run(); err != nil {
+	srv := server.NewServer(cfg.Server.Host, cfg.Server.HTTP.Port, dep.Logger)
+	go func(s server.HTTP) {
+		if err := srv.RunHTTP(); err != nil {
 			dep.Logger.Fatalf("unable to run http server: %s", err.Error())
 		}
-	}(srv)
+	}(srv.HTTP)
 
 	// workers
 	go botUC.SyncMainKeyboardWorker()

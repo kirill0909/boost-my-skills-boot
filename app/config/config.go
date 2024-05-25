@@ -20,8 +20,10 @@ type Config struct {
 }
 
 type Server struct {
+	HTTP struct {
+		Port string `validate:"required"`
+	}
 	Host string `validate:"required"`
-	Port string `validate:"required"`
 }
 
 type Postgres struct {

@@ -21,12 +21,13 @@ type Config struct {
 
 type Server struct {
 	HTTP struct {
+		Host string `validate:"required"`
 		Port string `validate:"required"`
 	}
 	GRPC struct {
+		Host string `validate:"required"`
 		Port string `validate:"required"`
 	}
-	Host string `validate:"required"`
 }
 
 type Postgres struct {

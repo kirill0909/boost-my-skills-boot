@@ -4,7 +4,7 @@ option go_package = "github.com/kirill0909/boost-my-skills-boot/app/pkg/proto/bo
 
 package boost_bot_proto;
 
-service BostBot {
+service Statistics {
     rpc GetStatistics(GetStatisticsRequest) returns (GetStatisticsResponse) {}
 }
 

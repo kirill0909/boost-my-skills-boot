@@ -18,86 +18,86 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// BostBotClient is the client API for BostBot service.
+// StatisticsClient is the client API for Statistics service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type BostBotClient interface {
+type StatisticsClient interface {
 	GetStatistics(ctx context.Context, in *GetStatisticsRequest, opts ...grpc.CallOption) (*GetStatisticsResponse, error)
 }
 
-type bostBotClient struct {
+type statisticsClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewBostBotClient(cc grpc.ClientConnInterface) BostBotClient {
-	return &bostBotClient{cc}
+func NewStatisticsClient(cc grpc.ClientConnInterface) StatisticsClient {
+	return &statisticsClient{cc}
 }
 
-func (c *bostBotClient) GetStatistics(ctx context.Context, in *GetStatisticsRequest, opts ...grpc.CallOption) (*GetStatisticsResponse, error) {
+func (c *statisticsClient) GetStatistics(ctx context.Context, in *GetStatisticsRequest, opts ...grpc.CallOption) (*GetStatisticsResponse, error) {
 	out := new(GetStatisticsResponse)
-	err := c.cc.Invoke(ctx, "/boost_bot_proto.BostBot/GetStatistics", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/boost_bot_proto.Statistics/GetStatistics", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// BostBotServer is the server API for BostBot service.
-// All implementations must embed UnimplementedBostBotServer
+// StatisticsServer is the server API for Statistics service.
+// All implementations must embed UnimplementedStatisticsServer
 // for forward compatibility
-type BostBotServer interface {
+type StatisticsServer interface {
 	GetStatistics(context.Context, *GetStatisticsRequest) (*GetStatisticsResponse, error)
-	mustEmbedUnimplementedBostBotServer()
+	mustEmbedUnimplementedStatisticsServer()
 }
 
-// UnimplementedBostBotServer must be embedded to have forward compatible implementations.
-type UnimplementedBostBotServer struct {
+// UnimplementedStatisticsServer must be embedded to have forward compatible implementations.
+type UnimplementedStatisticsServer struct {
 }
 
-func (UnimplementedBostBotServer) GetStatistics(context.Context, *GetStatisticsRequest) (*GetStatisticsResponse, error) {
+func (UnimplementedStatisticsServer) GetStatistics(context.Context, *GetStatisticsRequest) (*GetStatisticsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetStatistics not implemented")
 }
-func (UnimplementedBostBotServer) mustEmbedUnimplementedBostBotServer() {}
+func (UnimplementedStatisticsServer) mustEmbedUnimplementedStatisticsServer() {}
 
-// UnsafeBostBotServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to BostBotServer will
+// UnsafeStatisticsServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to StatisticsServer will
 // result in compilation errors.
-type UnsafeBostBotServer interface {
-	mustEmbedUnimplementedBostBotServer()
+type UnsafeStatisticsServer interface {
+	mustEmbedUnimplementedStatisticsServer()
 }
 
-func RegisterBostBotServer(s grpc.ServiceRegistrar, srv BostBotServer) {
-	s.RegisterService(&BostBot_ServiceDesc, srv)
+func RegisterStatisticsServer(s grpc.ServiceRegistrar, srv StatisticsServer) {
+	s.RegisterService(&Statistics_ServiceDesc, srv)
 }
 
-func _BostBot_GetStatistics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Statistics_GetStatistics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetStatisticsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(BostBotServer).GetStatistics(ctx, in)
+		return srv.(StatisticsServer).GetStatistics(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/boost_bot_proto.BostBot/GetStatistics",
+		FullMethod: "/boost_bot_proto.Statistics/GetStatistics",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BostBotServer).GetStatistics(ctx, req.(*GetStatisticsRequest))
+		return srv.(StatisticsServer).GetStatistics(ctx, req.(*GetStatisticsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// BostBot_ServiceDesc is the grpc.ServiceDesc for BostBot service.
+// Statistics_ServiceDesc is the grpc.ServiceDesc for Statistics service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var BostBot_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "boost_bot_proto.BostBot",
-	HandlerType: (*BostBotServer)(nil),
+var Statistics_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "boost_bot_proto.Statistics",
+	HandlerType: (*StatisticsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetStatistics",
-			Handler:    _BostBot_GetStatistics_Handler,
+			Handler:    _Statistics_GetStatistics_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -6,6 +6,8 @@ import (
 
 	pb "boost-my-skills-bot/app/pkg/proto/github.com/kirill0909/boost-my-skills-boot/app/pkg/proto/boost_bot_proto"
 
+	statisticsAdapter "boost-my-skills-bot/app/internal/statistics/adapter"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/kirill0909/logger"
 	"github.com/pkg/errors"
@@ -15,33 +17,34 @@ import (
 type Server struct {
 	HTTP HTTP
 	GRPC GRPC
-	host string
 	log  *logger.Logger
 }
 
 type GRPC struct {
-	srv  *grpc.Server
-	port string
+	srv         *grpc.Server
+	statAdapter *statisticsAdapter.Statistics
+	host        string
+	port        string
 }
 
 type HTTP struct {
 	app  *fiber.App
+	host string
 	port string
 }
 
-func NewServer(host, HTTPport, GRPCPort string, logger *logger.Logger) *Server {
+func NewServer(HTTPHost, HTTPport, GRPCHost, GRPCPort string, logger *logger.Logger, statAdapter *statisticsAdapter.Statistics) *Server {
 	return &Server{
-		HTTP: HTTP{app: fiber.New(), port: HTTPport},
-		GRPC: GRPC{srv: grpc.NewServer(), port: GRPCPort},
-		host: host,
+		HTTP: HTTP{app: fiber.New(), host: HTTPHost, port: HTTPport},
+		GRPC: GRPC{srv: grpc.NewServer(), statAdapter: statAdapter, host: GRPCHost, port: GRPCPort},
 		log:  logger,
 	}
 }
 
 func (s *Server) RunGRPC() error {
-	pb.RegisterBostBotServer(s.GRPC.srv, pb.UnimplementedBostBotServer{})
+	pb.RegisterStatisticsServer(s.GRPC.srv, s.GRPC.statAdapter)
 
-	addr := fmt.Sprintf("%s:%s", s.host, s.GRPC.port)
+	addr := fmt.Sprintf("%s:%s", s.GRPC.host, s.GRPC.port)
 	listener, err := net.Listen("tcp", addr)
 	if err != nil {
 		return errors.Wrap(err, "Server.RunHTTP().Listen()")
@@ -61,7 +64,7 @@ func (s *Server) RunHTTP() error {
 		return c.SendString("pong")
 	})
 
-	addr := fmt.Sprintf("%s:%s", s.host, s.HTTP.port)
+	addr := fmt.Sprintf("%s:%s", s.HTTP.host, s.HTTP.port)
 	if err := s.HTTP.app.Listen(addr); err != nil {
 		return errors.Wrap(err, "Server.RunHTTP().Listen()")
 	}

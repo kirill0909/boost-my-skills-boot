@@ -7,6 +7,7 @@ import (
 	"boost-my-skills-bot/app/internal/bot/usecase"
 	"boost-my-skills-bot/app/internal/models"
 	"boost-my-skills-bot/app/internal/server"
+	statisticsAdapter "boost-my-skills-bot/app/internal/statistics/adapter"
 	"boost-my-skills-bot/app/pkg/storage/postgres"
 	"boost-my-skills-bot/app/pkg/storage/redis"
 	"context"
@@ -77,16 +78,17 @@ func maping(cfg *config.Config, dep models.Dependencies) (*server.Server, error)
 	// usecase
 	botUC := usecase.NewBotUC(cfg, botPgRepo, botRedisRepo, dep.RedisPubSub, botAPI, dep.Logger)
 
-	// bot(adapter)
-	bot := tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)
+	// adapters
+	botAdapter := tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)
+	statAdapter := statisticsAdapter.NewStatistics()
 
 	go func(bot *tgbot.TgBot) {
 		if err := bot.Run(); err != nil {
 			dep.Logger.Fatalf("unable to run bot: %s", err.Error())
 		}
-	}(bot)
+	}(botAdapter)
 
-	srv := server.NewServer(cfg.Server.Host, cfg.Server.HTTP.Port, cfg.Server.GRPC.Port, dep.Logger)
+	srv := server.NewServer(cfg.Server.HTTP.Host, cfg.Server.HTTP.Port, cfg.Server.GRPC.Host, cfg.Server.GRPC.Port, dep.Logger, statAdapter)
 	go func(s server.HTTP) {
 		if err := srv.RunHTTP(); err != nil {
 			dep.Logger.Fatalf("unable to run http server: %s", err.Error())

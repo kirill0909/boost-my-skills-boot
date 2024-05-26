@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v5.26.1
-// source: app/pkg/proto/boost-bot.proto
+// source: app/pkg/proto/statistics.proto
 
 package boost_bot_proto
 
@@ -101,5 +101,5 @@ var Statistics_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "app/pkg/proto/boost-bot.proto",
+	Metadata: "app/pkg/proto/statistics.proto",
 }

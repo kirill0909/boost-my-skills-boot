@@ -2,12 +2,14 @@ package main
 
 import (
 	"boost-my-skills-bot/app/config"
-	"boost-my-skills-bot/app/internal/bot/repository"
+	botRepository "boost-my-skills-bot/app/internal/bot/repository"
 	tgbot "boost-my-skills-bot/app/internal/bot/tgBot"
 	"boost-my-skills-bot/app/internal/bot/usecase"
 	"boost-my-skills-bot/app/internal/models"
 	"boost-my-skills-bot/app/internal/server"
 	statisticsAdapter "boost-my-skills-bot/app/internal/statistics/adapter"
+	statisticsRepository "boost-my-skills-bot/app/internal/statistics/repository"
+	statisticsUseCase "boost-my-skills-bot/app/internal/statistics/usecase"
 	"boost-my-skills-bot/app/pkg/storage/postgres"
 	"boost-my-skills-bot/app/pkg/storage/redis"
 	"context"
@@ -72,15 +74,17 @@ func maping(cfg *config.Config, dep models.Dependencies) (*server.Server, error)
 	}
 
 	// repository
-	botPgRepo := repository.NewBotPGRepo(dep.PgDB)
-	botRedisRepo := repository.NewBotRedisRepo(dep.Redis, cfg)
+	botPgRepo := botRepository.NewBotPGRepo(dep.PgDB)
+	botRedisRepo := botRepository.NewBotRedisRepo(dep.Redis, cfg)
+	statisticsPgRepo := statisticsRepository.NewStatisticsPgRepo(dep.PgDB)
 
 	// usecase
 	botUC := usecase.NewBotUC(cfg, botPgRepo, botRedisRepo, dep.RedisPubSub, botAPI, dep.Logger)
+	statisticsUC := statisticsUseCase.NewStatisticsUsecase(statisticsPgRepo)
 
 	// adapters
 	botAdapter := tgbot.NewTgBot(cfg, botUC, botAPI, dep.Logger)
-	statAdapter := statisticsAdapter.NewStatistics()
+	statAdapter := statisticsAdapter.NewStatistics(statisticsUC, dep.Logger)
 
 	go func(bot *tgbot.TgBot) {
 		if err := bot.Run(); err != nil {

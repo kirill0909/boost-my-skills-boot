@@ -8,6 +8,8 @@ import (
 
 	statisticsAdapter "boost-my-skills-bot/app/internal/statistics/adapter"
 
+	"boost-my-skills-bot/app/internal/middleware"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/kirill0909/logger"
 	"github.com/pkg/errors"
@@ -33,10 +35,10 @@ type HTTP struct {
 	port string
 }
 
-func NewServer(HTTPHost, HTTPport, GRPCHost, GRPCPort string, logger *logger.Logger, statAdapter *statisticsAdapter.Statistics) *Server {
+func NewServer(HTTPHost, HTTPport, GRPCHost, GRPCPort string, logger *logger.Logger, statAdapter *statisticsAdapter.Statistics, grpcApiKey string) *Server {
 	return &Server{
 		HTTP: HTTP{app: fiber.New(), host: HTTPHost, port: HTTPport},
-		GRPC: GRPC{srv: grpc.NewServer(), statAdapter: statAdapter, host: GRPCHost, port: GRPCPort},
+		GRPC: GRPC{srv: grpc.NewServer(grpc.UnaryInterceptor(middleware.UnaryInterceptor(grpcApiKey))), statAdapter: statAdapter, host: GRPCHost, port: GRPCPort},
 		log:  logger,
 	}
 }

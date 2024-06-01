@@ -92,7 +92,7 @@ func maping(cfg *config.Config, dep models.Dependencies) (*server.Server, error)
 		}
 	}(botAdapter)
 
-	srv := server.NewServer(cfg.Server.HTTP.Host, cfg.Server.HTTP.Port, cfg.Server.GRPC.Host, cfg.Server.GRPC.Port, dep.Logger, statAdapter)
+	srv := server.NewServer(cfg.Server.HTTP.Host, cfg.Server.HTTP.Port, cfg.Server.GRPC.Host, cfg.Server.GRPC.Port, dep.Logger, statAdapter, cfg.GRPCApiKey)
 	go func(s server.HTTP) {
 		if err := srv.RunHTTP(); err != nil {
 			dep.Logger.Fatalf("unable to run http server: %s", err.Error())

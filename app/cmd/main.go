@@ -88,9 +88,9 @@ func maping(cfg *config.Config, dep models.Dependencies, log *slog.Logger) (*ser
 	botUC := usecase.NewBotUC(cfg, botPgRepo, botRedisRepo, dep.RedisPubSub, botAPI, log)
 	statisticsUC := statisticsUseCase.NewStatisticsUsecase(statisticsPgRepo)
 
-	// adapters
+	// adapter
 	botAdapter := tgbot.NewTgBot(cfg, botUC, botAPI, log)
-	statAdapter := statisticsAdapter.NewStatistics(statisticsUC, log)
+	statisticsAdapter := statisticsAdapter.NewStatistics(statisticsUC, log)
 
 	go func(bot *tgbot.TgBot) {
 		if err := bot.Run(); err != nil {
@@ -99,7 +99,7 @@ func maping(cfg *config.Config, dep models.Dependencies, log *slog.Logger) (*ser
 		}
 	}(botAdapter)
 
-	srv := server.NewServer(cfg.Server.HTTP.Host, cfg.Server.HTTP.Port, cfg.Server.GRPC.Host, cfg.Server.GRPC.Port, log, statAdapter, cfg.GRPCApiKey)
+	srv := server.NewServer(cfg.Server.HTTP.Host, cfg.Server.HTTP.Port, cfg.Server.GRPC.Host, cfg.Server.GRPC.Port, log, statisticsAdapter, cfg.GRPCApiKey)
 	go func(s server.HTTP) {
 		if err := srv.RunHTTP(); err != nil {
 			log.Error("mapgin.RunHTTP(). unable to run http server", "error", err.Error())

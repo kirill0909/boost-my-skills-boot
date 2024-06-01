@@ -6,7 +6,7 @@ services:
     image: boost-my-skills-bot:0.1
     ports:
       - "127.0.0.1:8080:8080"
-      - "5001:5001"
+      - "127.0.0.1:5001:5001"
     depends_on:
       - db
     environment:

@@ -42,7 +42,7 @@ func main() {
 	ctx := context.Background()
 	dependencies, err := initDependencies(ctx, cfg, log)
 	if err != nil {
-		log.Error("main.initDependencies", "error", err.Error())
+		log.Error("main.initDependencies()", "error", err.Error())
 		return
 	}
 

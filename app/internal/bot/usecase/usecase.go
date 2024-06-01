@@ -8,13 +8,13 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/kirill0909/logger"
 	"github.com/pkg/errors"
 	"github.com/redis/go-redis/v9"
 )
@@ -25,7 +25,7 @@ type botUC struct {
 	rdb                  bot.RedisRepository
 	redisPubSub          *redis.PubSub
 	BotAPI               *tgbotapi.BotAPI
-	log                  *logger.Logger
+	log                  *slog.Logger
 	lastKeyboardChecking int64
 }
 
@@ -35,7 +35,7 @@ func NewBotUC(
 	rdb bot.RedisRepository,
 	redisPubSub *redis.PubSub,
 	botAPI *tgbotapi.BotAPI,
-	log *logger.Logger,
+	log *slog.Logger,
 ) bot.Usecase {
 	return &botUC{
 		cfg:                  cfg,
@@ -354,12 +354,12 @@ func (u *botUC) sendMessage(params models.SendMessageParams) {
 
 	sendedMsg, err := u.BotAPI.Send(msg)
 	if err != nil {
-		u.log.Errorf("botUC.sendMessage.Send(). %s", err.Error())
+		u.log.Error("botUC.sendMessage.Send()", "error", err.Error())
 	}
 
 	if params.IsNeedToRemove {
 		if err := u.rdb.SetExpirationTimeForMessage(context.Background(), sendedMsg.MessageID, params.ChatID); err != nil {
-			u.log.Errorf(err.Error())
+			u.log.Error("botUC.sendMessage.SetExpirationTimeForMessage()", "error", err.Error())
 		}
 	}
 }

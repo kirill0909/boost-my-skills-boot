@@ -14,14 +14,14 @@ import (
 )
 
 func (u *botUC) SyncMainKeyboardWorker() {
-	u.log.Infof("SyncMainKeyboardWorker is started")
+	u.log.Info("botUC.SyncMainKeyboardWorker() is started", "info", "SyncMainKeyboardWorker is started")
 	ctx := context.Background()
 	ticker := time.NewTicker(time.Second * 10)
 
 	for ; true; <-ticker.C {
 		getUpdatedButtonsResult, err := u.pgRepo.GetUpdatedButtons(ctx, u.lastKeyboardChecking)
 		if err != nil {
-			u.log.Errorf(err.Error())
+			u.log.Error("botUC.SyncMainKeyboardWorker.GetUpdatedButtons()", "error", err.Error())
 			continue
 		}
 		u.lastKeyboardChecking = time.Now().Unix()
@@ -32,7 +32,7 @@ func (u *botUC) SyncMainKeyboardWorker() {
 
 		users, err := u.pgRepo.GetActiveUsers(ctx)
 		if err != nil {
-			u.log.Errorf(err.Error())
+			u.log.Error("botUC.SyncMainKeyboardWorker.GetActiveUsers()", "error", err.Error())
 			continue
 		}
 
@@ -40,11 +40,11 @@ func (u *botUC) SyncMainKeyboardWorker() {
 			switch updatedButton.OnlyForAdmin {
 			case true:
 				if err := u.handleOnlyForAdminCaes(users); err != nil {
-					u.log.Errorf(err.Error())
+					u.log.Error("botUC.SyncMainKeyboardWorker.handleOnlyForAdminCaes()", "error", err.Error())
 				}
 			case false:
 				if err := u.handleOnlyForUserCase(users); err != nil {
-					u.log.Errorf(err.Error())
+					u.log.Error("botUC.SyncMainKeyboardWorker.handleOnlyForUserCase()", "error", err.Error())
 				}
 			}
 		}
@@ -78,11 +78,11 @@ func (u *botUC) handleOnlyForUserCase(users []models.GetActiveUsersResult) error
 }
 
 func (u *botUC) ListenExpiredMessageWorker() {
-	u.log.Infof("ListenExpirationMessageWorker is started")
+	u.log.Info("botUC.ListenExpirationMessageWorker()", "info", "ListenExpirationMessageWorker is started")
 	for msg := range u.redisPubSub.Channel() {
 		if strings.HasPrefix(msg.Payload, utils.ExpirationTimeMessagePrefix) {
 			if err := u.removeMessage(msg.Payload); err != nil {
-				u.log.Errorf(err.Error())
+				u.log.Info("botUC.ListenExpirationMessageWorker()", "error", err.Error())
 			}
 		}
 	}

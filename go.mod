@@ -8,7 +8,6 @@ require (
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/jackc/pgx/v4 v4.18.1
 	github.com/jmoiron/sqlx v1.3.5
-	github.com/kirill0909/logger v0.0.0-20240405185706-c657628a3d9d
 	github.com/pkg/errors v0.9.1
 	github.com/redis/go-redis/v9 v9.5.1
 	github.com/spf13/viper v1.18.2

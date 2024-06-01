@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log/slog"
 	"net"
 
 	pb "boost-my-skills-bot/app/pkg/proto/github.com/kirill0909/boost-my-skills-boot/app/pkg/proto/boost_bot_proto"
@@ -11,7 +12,6 @@ import (
 	"boost-my-skills-bot/app/internal/middleware"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/kirill0909/logger"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 )
@@ -19,7 +19,7 @@ import (
 type Server struct {
 	HTTP HTTP
 	GRPC GRPC
-	log  *logger.Logger
+	log  *slog.Logger
 }
 
 type GRPC struct {
@@ -35,11 +35,11 @@ type HTTP struct {
 	port string
 }
 
-func NewServer(HTTPHost, HTTPport, GRPCHost, GRPCPort string, logger *logger.Logger, statAdapter *statisticsAdapter.Statistics, grpcApiKey string) *Server {
+func NewServer(HTTPHost, HTTPport, GRPCHost, GRPCPort string, log *slog.Logger, statAdapter *statisticsAdapter.Statistics, grpcApiKey string) *Server {
 	return &Server{
 		HTTP: HTTP{app: fiber.New(), host: HTTPHost, port: HTTPport},
-		GRPC: GRPC{srv: grpc.NewServer(grpc.UnaryInterceptor(middleware.UnaryInterceptor(grpcApiKey))), statAdapter: statAdapter, host: GRPCHost, port: GRPCPort},
-		log:  logger,
+		GRPC: GRPC{srv: grpc.NewServer(grpc.UnaryInterceptor(middleware.UnaryInterceptor(grpcApiKey, log))), statAdapter: statAdapter, host: GRPCHost, port: GRPCPort},
+		log:  log,
 	}
 }
 
@@ -62,7 +62,7 @@ func (s *Server) RunGRPC() error {
 func (s *Server) RunHTTP() error {
 
 	s.HTTP.app.Get("/ping", func(c *fiber.Ctx) error {
-		s.log.Infof("path: %s | status: %d", string(c.Context().RequestURI()), fiber.StatusOK)
+		s.log.Info("Server.RunHTTP.Get()", "info", fmt.Sprintf("path: %s | status: %d", string(c.Context().RequestURI()), fiber.StatusOK))
 		return c.SendString("pong")
 	})
 

@@ -5,17 +5,16 @@ import (
 	"boost-my-skills-bot/app/internal/statistics/models"
 	pb "boost-my-skills-bot/app/pkg/proto/github.com/kirill0909/boost-my-skills-boot/app/pkg/proto/boost_bot_proto"
 	"context"
-
-	"github.com/kirill0909/logger"
+	"log/slog"
 )
 
 type Statistics struct {
 	uc  statistics.UseCase
-	log *logger.Logger
+	log *slog.Logger
 	pb.UnimplementedStatisticsServer
 }
 
-func NewStatistics(uc statistics.UseCase, log *logger.Logger) *Statistics {
+func NewStatistics(uc statistics.UseCase, log *slog.Logger) *Statistics {
 	return &Statistics{uc: uc, log: log}
 }
 
@@ -24,7 +23,7 @@ func (a *Statistics) GetStatistics(ctx context.Context, req *pb.GetStatisticsReq
 
 	res, err := a.uc.GetStatistics(ctx, params)
 	if err != nil {
-		a.log.Errorf(err.Error())
+		a.log.Error("Statistics.GetStatistics()", "error", err.Error())
 		return &pb.GetStatisticsResponse{}, err
 	}
 

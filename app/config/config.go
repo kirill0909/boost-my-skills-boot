@@ -13,15 +13,22 @@ type Config struct {
 	Postgres                     Postgres
 	Redis                        Redis
 	TgBot                        TgBot
-	AdminChatID                  int64 `validate:"required"`
-	AwaitingDirectionNameDelay   int   `validate:"required"`
-	AwaitingParentDirectionDelay int   `validate:"required"`
-	AwaitingAddInfoDirection     int   `validate:"required"`
+	AdminChatID                  int64  `validate:"required"`
+	AwaitingDirectionNameDelay   int    `validate:"required"`
+	AwaitingParentDirectionDelay int    `validate:"required"`
+	AwaitingAddInfoDirection     int    `validate:"required"`
+	GRPCApiKey                   string `validate:"required"`
 }
 
 type Server struct {
-	Host string `validate:"required"`
-	Port string `validate:"required"`
+	HTTP struct {
+		Host string `validate:"required"`
+		Port string `validate:"required"`
+	}
+	GRPC struct {
+		Host string `validate:"required"`
+		Port string `validate:"required"`
+	}
 }
 
 type Postgres struct {

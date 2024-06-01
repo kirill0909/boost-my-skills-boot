@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "github.com/kirill0909/boost-my-skills-boot/app/pkg/proto/boost_bot_proto";
+
+package boost_bot_proto;
+
+service Statistics {
+    rpc GetStatistics(GetStatisticsRequest) returns (GetStatisticsResponse) {}
+}
+
+message GetStatisticsRequest {
+    int64 dateFrom = 1;
+    int64 dateTo = 2;
+}
+
+message GetStatisticsResponse {
+    int64 infosAdded = 1;
+}

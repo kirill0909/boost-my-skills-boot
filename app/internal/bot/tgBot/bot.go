@@ -7,23 +7,24 @@ import (
 	"boost-my-skills-bot/app/pkg/utils"
 	"context"
 	"encoding/json"
+	"fmt"
+	"log/slog"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/kirill0909/logger"
 )
 
 type TgBot struct {
 	BotAPI *tgbotapi.BotAPI
 	cfg    *config.Config
 	tgUC   bot.Usecase
-	log    *logger.Logger
+	log    *slog.Logger
 }
 
 func NewTgBot(
 	cfg *config.Config,
 	usecase bot.Usecase,
 	botAPI *tgbotapi.BotAPI,
-	log *logger.Logger,
+	log *slog.Logger,
 ) *TgBot {
 	return &TgBot{
 		cfg:    cfg,
@@ -34,7 +35,7 @@ func NewTgBot(
 }
 
 func (t *TgBot) Run() error {
-	t.log.Infof("Authorized on account %s", t.BotAPI.Self.UserName)
+	t.log.Info("TgBot.Run()", "info", fmt.Sprintf("Authorized on account %s", t.BotAPI.Self.UserName))
 
 	updateConfig := tgbotapi.NewUpdate(0)
 	updateConfig.Timeout = 30
@@ -45,7 +46,7 @@ func (t *TgBot) Run() error {
 		ctx := context.Background()
 		statusID, err := t.tgUC.GetAwaitingStatus(ctx, update.FromChat().ID)
 		if err != nil {
-			t.log.Errorf(err.Error())
+			t.log.Error("TgBot.Run.GetAwaitingStatus()", "error", err.Error())
 			t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 			continue
 		}
@@ -57,7 +58,7 @@ func (t *TgBot) Run() error {
 				params := models.HandleStartCommandParams{
 					Text: update.Message.Text, ChatID: update.Message.Chat.ID, TgName: update.Message.Chat.UserName}
 				if err := t.tgUC.HandleStartCommand(ctx, params); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.HandleStartCommand()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "Account activation error. Contact @kirillkorunov to get uuid for account actionvation")
 					continue
 				}
@@ -66,7 +67,7 @@ func (t *TgBot) Run() error {
 				params := models.HandleCreateDirectionCommandParams{
 					Text: update.Message.Text, ChatID: update.Message.Chat.ID}
 				if err := t.tgUC.HandleCreateDirectionCommand(ctx, params); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.HandleCreateDirectionCommand()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "create direction error")
 					continue
 				}
@@ -74,7 +75,7 @@ func (t *TgBot) Run() error {
 			case utils.AddInfoCommand:
 				params := models.HandleAddInfoCommandParams{ChatID: update.Message.Chat.ID}
 				if err := t.tgUC.HandleAddInfoCommand(ctx, params); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.HandleAddInfoCommand()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "add info error")
 					continue
 				}
@@ -82,7 +83,7 @@ func (t *TgBot) Run() error {
 			case utils.PrintQuestionsCommand:
 				params := models.HandlePrintQuestionsCommandParams{ChatID: update.Message.Chat.ID}
 				if err := t.tgUC.HandlePrintQuestionsCommand(ctx, params); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.HandlePrintQuestionsCommand()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "print info error")
 					continue
 				}
@@ -94,7 +95,7 @@ func (t *TgBot) Run() error {
 			case statusID == utils.AwaitingDirectionNameStatus: // execute when user enter direction name
 				params := models.CreateDirectionParams{ChatID: update.Message.Chat.ID, DirectionName: update.Message.Text}
 				if err := t.tgUC.CreateDirection(ctx, params); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.CreateDirection()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
@@ -102,7 +103,7 @@ func (t *TgBot) Run() error {
 			case statusID == utils.AwaitingQuestionStatus: // execute when user enter question
 				params := models.HandleAwaitingQuestionParams{ChatID: update.Message.Chat.ID, Question: update.Message.Text}
 				if err := t.tgUC.HandleAwaitingQuestion(ctx, params); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.HandleAwaitingQuestion()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
@@ -110,7 +111,7 @@ func (t *TgBot) Run() error {
 			case statusID == utils.AwaitingAnswerStatus: // execute when user enter answer
 				params := models.HandleAwaitingAnswerParams{ChatID: update.Message.Chat.ID, Answer: update.Message.Text}
 				if err := t.tgUC.HandleAwaitingAnswer(ctx, params); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.HandleAwaitingAnswer()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
@@ -125,7 +126,7 @@ func (t *TgBot) Run() error {
 		if update.CallbackQuery != nil {
 			callbackInfo, err := t.extractCallbackInfo(update.CallbackData())
 			if err != nil {
-				t.log.Errorf(err.Error())
+				t.log.Error("TgBot.Run.extractCallbackInfo()", "error", err.Error())
 				t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 				continue
 			}
@@ -133,7 +134,7 @@ func (t *TgBot) Run() error {
 			case callbackInfo.CallbackType == utils.AwaitingParentDirectionCallbackType: // executes when user tap on direction name button
 				parentDirectionParams := models.SetParentDirectionParams{ChatID: update.CallbackQuery.From.ID, ParentDirectionID: callbackInfo.DirectionID}
 				if err := t.tgUC.SetParentDirection(ctx, parentDirectionParams); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.SetParentDirection()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
@@ -143,7 +144,7 @@ func (t *TgBot) Run() error {
 					ParentDirectionID: callbackInfo.DirectionID,
 				}
 				if err := t.tgUC.HandleCreateDirectionCommand(ctx, createDirectionCommandParams); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.HandleCreateDirectionCommand()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
@@ -154,7 +155,7 @@ func (t *TgBot) Run() error {
 					ParentDirectionID: callbackInfo.DirectionID,
 				}
 				if err := t.tgUC.HandleAddInfoCommand(ctx, params); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.HandleAddInfoCommand()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
@@ -165,7 +166,7 @@ func (t *TgBot) Run() error {
 					ParentDirectionID: callbackInfo.DirectionID,
 				}
 				if err := t.tgUC.HandlePrintQuestionsCommand(ctx, params); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.HandlePrintQuestionsCommand()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
@@ -177,7 +178,7 @@ func (t *TgBot) Run() error {
 					MessageID: update.CallbackQuery.Message.MessageID,
 				}
 				if err := t.tgUC.HandleAwaitingPrintAnswer(ctx, params); err != nil {
-					t.log.Errorf(err.Error())
+					t.log.Error("TgBot.Run.HandleAwaitingPrintAnswer()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
@@ -202,13 +203,13 @@ func (t *TgBot) sendErrorMessage(chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
 	_, err := t.BotAPI.Send(msg)
 	if err != nil {
-		t.log.Errorf(err.Error())
+		t.log.Error("TgBot.sendErrorMessage()", "error", err.Error())
 	}
 }
 
 func (t *TgBot) sendMessage(chatID int64, text string) {
 	msg := tgbotapi.NewMessage(chatID, text)
 	if _, err := t.BotAPI.Send(msg); err != nil {
-		t.log.Errorf(err.Error())
+		t.log.Error("TgBot.sendMessage()", "error", err.Error())
 	}
 }

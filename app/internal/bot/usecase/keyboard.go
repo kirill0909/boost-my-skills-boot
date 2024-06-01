@@ -13,7 +13,7 @@ func (u *botUC) createMainMenuKeyboard(isAdmin bool) (keyboard tgbotapi.ReplyKey
 	ctx := context.Background()
 	buttons, err := u.pgRepo.GetMainButtons(ctx)
 	if err != nil {
-		u.log.Errorf(err.Error())
+		u.log.Error("botUC.createMainMenuKeyboard()", "error", err.Error())
 	}
 
 	var keyboardButtons []tgbotapi.KeyboardButton
@@ -86,7 +86,7 @@ func (u *botUC) hideKeyboard(chatID int64, messageID int) (err error) {
 	)
 
 	if _, err = u.BotAPI.Send(edit); err != nil {
-		u.log.Errorf("botUC.hideKeyboard.Send(). %s", err.Error())
+		u.log.Error("botUC.hideKeyboard.Send()", "error", err.Error())
 		return
 	}
 

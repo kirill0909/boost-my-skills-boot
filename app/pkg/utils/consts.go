@@ -11,6 +11,7 @@ const (
 	CreateDirectionCommand = "create_direction"
 	AddInfoCommand         = "add_info"
 	PrintQuestionsCommand  = "print_questions"
+	GetUUIDCommand         = "get_uuid"
 
 	// user states
 	AwaitingDirectionNameStatus = 1

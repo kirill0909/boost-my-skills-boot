@@ -222,6 +222,10 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAd
 	return nil
 }
 
+func (u *botUC) HandleGetUUIDCommand(context.Context) error {
+	return nil
+}
+
 func (u *botUC) HandleAwaitingQuestion(ctx context.Context, params models.HandleAwaitingQuestionParams) error {
 	getDirectionForInfoResult, err := u.rdb.GetDirectionForInfo(ctx, params.ChatID)
 	if err != nil {

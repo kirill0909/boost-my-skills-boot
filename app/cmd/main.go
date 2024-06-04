@@ -2,14 +2,14 @@ package main
 
 import (
 	"boost-my-skills-bot/app/config"
-	botRepository "boost-my-skills-bot/app/internal/bot/repository"
-	tgbot "boost-my-skills-bot/app/internal/bot/tgBot"
-	"boost-my-skills-bot/app/internal/bot/usecase"
+	adapterBot "boost-my-skills-bot/app/internal/bot/adapter"
+	repositoryBot "boost-my-skills-bot/app/internal/bot/repository"
+	useCaseBot "boost-my-skills-bot/app/internal/bot/usecase"
 	"boost-my-skills-bot/app/internal/models"
 	"boost-my-skills-bot/app/internal/server"
-	statisticsAdapter "boost-my-skills-bot/app/internal/statistics/adapter"
-	statisticsRepository "boost-my-skills-bot/app/internal/statistics/repository"
-	statisticsUseCase "boost-my-skills-bot/app/internal/statistics/usecase"
+	adapterStatistics "boost-my-skills-bot/app/internal/statistics/adapter"
+	repositoryStatistics "boost-my-skills-bot/app/internal/statistics/repository"
+	useCaseStatistics "boost-my-skills-bot/app/internal/statistics/usecase"
 	"boost-my-skills-bot/app/pkg/logger"
 	"boost-my-skills-bot/app/pkg/storage/postgres"
 	"boost-my-skills-bot/app/pkg/storage/redis"
@@ -80,19 +80,19 @@ func maping(cfg *config.Config, dep models.Dependencies, log *slog.Logger) (*ser
 	}
 
 	// repository
-	botPgRepo := botRepository.NewBotPGRepo(dep.PgDB)
-	botRedisRepo := botRepository.NewBotRedisRepo(dep.Redis, cfg)
-	statisticsPgRepo := statisticsRepository.NewStatisticsPgRepo(dep.PgDB)
+	botPgRepo := repositoryBot.NewBotPGRepo(dep.PgDB)
+	botRedisRepo := repositoryBot.NewBotRedisRepo(dep.Redis, cfg)
+	statisticsPgRepo := repositoryStatistics.NewStatisticsPgRepo(dep.PgDB)
 
 	// usecase
-	botUC := usecase.NewBotUC(cfg, botPgRepo, botRedisRepo, dep.RedisPubSub, botAPI, log)
-	statisticsUC := statisticsUseCase.NewStatisticsUsecase(statisticsPgRepo)
+	botUC := useCaseBot.NewBotUC(cfg, botPgRepo, botRedisRepo, dep.RedisPubSub, botAPI, log)
+	statisticsUC := useCaseStatistics.NewStatisticsUsecase(statisticsPgRepo)
 
 	// adapter
-	botAdapter := tgbot.NewTgBot(cfg, botUC, botAPI, log)
-	statisticsAdapter := statisticsAdapter.NewStatistics(statisticsUC, log)
+	botAdapter := adapterBot.NewTgBot(cfg, botUC, botAPI, log)
+	statisticsAdapter := adapterStatistics.NewStatistics(statisticsUC, log)
 
-	go func(bot *tgbot.TgBot) {
+	go func(bot *adapterBot.TgBot) {
 		if err := bot.Run(); err != nil {
 			log.Error("maping.Run(). unable to run bot", "error", err.Error())
 			return

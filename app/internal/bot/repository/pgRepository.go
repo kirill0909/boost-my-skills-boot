@@ -194,3 +194,12 @@ func (r *botPGRepo) GetAnswerByInfoID(ctx context.Context, infoID int) (string, 
 
 	return answer, nil
 }
+
+func (r *botPGRepo) CreateInActiveUser(ctx context.Context) (string, error) {
+	var result string
+	if err := r.db.GetContext(ctx, &result, queryCreateInActiveUser); err != nil {
+		return "", errors.Wrap(err, "botPGRepo.CreateInActiveUser.queryCreateInActiveUser")
+	}
+
+	return result, nil
+}

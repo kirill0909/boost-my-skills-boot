@@ -30,4 +30,4 @@ COPY --from=builder /app/main /bin/main
 RUN chmod +x /app/wait-for-db.sh
 
 EXPOSE 8080
-EXPOSE 5001
+EXPOSE 9000

@@ -88,6 +88,13 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
+			case utils.GetInviteLinkCommand:
+				if err := t.tgUC.HandleGetInviteLinkCommand(ctx, update.Message.Chat.ID); err != nil {
+					t.log.Error("TgBot.Run.HandleGetUUIDCommand()", "error", err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "error getting uuid")
+					continue
+				}
+				continue
 			}
 
 			// handle entered text

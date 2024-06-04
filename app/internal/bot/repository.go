@@ -16,6 +16,7 @@ type PgRepository interface {
 	SaveAnswer(context.Context, models.SaveAnswerParams) error
 	GetQuestionsByDirectionID(context.Context, int) ([]models.Question, error)
 	GetAnswerByInfoID(context.Context, int) (string, error)
+	CreateInActiveUser(context.Context) (string, error)
 }
 
 type RedisRepository interface {

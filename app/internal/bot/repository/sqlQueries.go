@@ -76,4 +76,8 @@ WHERE
 	queryGetAnswerByInfoID = `
 	SELECT answer FROM infos WHERE id = $1;
 	`
+
+	queryCreateInActiveUser = `
+	INSERT INTO users(active, created_at) VALUES(false, NOW()) RETURNING tg_uuid;
+	`
 )

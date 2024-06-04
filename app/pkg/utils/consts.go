@@ -11,7 +11,7 @@ const (
 	CreateDirectionCommand = "create_direction"
 	AddInfoCommand         = "add_info"
 	PrintQuestionsCommand  = "print_questions"
-	GetUUIDCommand         = "get_uuid"
+	GetInviteLinkCommand   = "get_invite_link"
 
 	// user states
 	AwaitingDirectionNameStatus = 1

@@ -222,7 +222,17 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAd
 	return nil
 }
 
-func (u *botUC) HandleGetUUIDCommand(context.Context) error {
+func (u *botUC) HandleGetInviteLinkCommand(ctx context.Context, chatID int64) error {
+	uuid, err := u.pgRepo.CreateInActiveUser(ctx)
+	if err != nil {
+		return err
+	}
+
+	link := fmt.Sprintf(u.cfg.TgBot.Prefix, uuid)
+
+	sendMssageParams := models.SendMessageParams{ChatID: chatID, Text: utils.FormatBadCharacters(link)}
+	u.sendMessage(sendMssageParams)
+
 	return nil
 }
 

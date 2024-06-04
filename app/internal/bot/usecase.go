@@ -11,7 +11,7 @@ type Usecase interface {
 	HandleCreateDirectionCommand(context.Context, models.HandleCreateDirectionCommandParams) error
 	HandleAddInfoCommand(context.Context, models.HandleAddInfoCommandParams) error
 	HandlePrintQuestionsCommand(context.Context, models.HandlePrintQuestionsCommandParams) error
-	HandleGetUUIDCommand(context.Context) error
+	HandleGetInviteLinkCommand(context.Context, int64) error
 
 	GetAwaitingStatus(context.Context, int64) (int, error)
 	CreateDirection(context.Context, models.CreateDirectionParams) error

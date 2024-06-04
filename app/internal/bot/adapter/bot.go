@@ -87,9 +87,9 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, "print info error")
 					continue
 				}
-			case utils.GetUUIDCommand:
-				t.log.Info("TgBot.Run()", "info", "get uuid command")
-				if err := t.tgUC.HandleGetUUIDCommand(ctx); err != nil {
+				continue
+			case utils.GetInviteLinkCommand:
+				if err := t.tgUC.HandleGetInviteLinkCommand(ctx, update.Message.Chat.ID); err != nil {
 					t.log.Error("TgBot.Run.HandleGetUUIDCommand()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "error getting uuid")
 					continue

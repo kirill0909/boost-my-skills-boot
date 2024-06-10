@@ -3,3 +3,6 @@ proto-gen:
 
 run:
 	docker-compose up --build
+
+zero-downtime-run:
+	docker-compose up -d --no-deps --build app

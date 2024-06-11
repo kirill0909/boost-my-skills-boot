@@ -115,7 +115,7 @@ func maping(cfg *config.Config, dep models.Dependencies, log *slog.Logger) (*ser
 	}(srv.GRPC)
 
 	// workers
-	go botUC.SyncMainKeyboardWorker()
+	// go botUC.SyncMainKeyboardWorker()
 	go botUC.ListenExpiredMessageWorker()
 
 	return srv, nil

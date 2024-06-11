@@ -12,3 +12,6 @@ run-migrate:
 
 down-migrate:
 	./migrator.sh down
+
+run-dump:
+	./dumper.sh

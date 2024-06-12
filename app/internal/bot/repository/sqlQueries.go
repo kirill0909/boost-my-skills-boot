@@ -80,4 +80,17 @@ WHERE
 	queryCreateInActiveUser = `
 	INSERT INTO users(active, created_at) VALUES(false, NOW()) RETURNING tg_uuid;
 	`
+
+	queryGetUserInfo = `
+	SELECT
+		id AS id,
+   		tg_name AS tg_name,
+     	tg_chat_id AS tg_chat_id,
+      	tg_uuid AS tg_uuid,
+       	active AS is_active,
+        is_admin AS is_admin,
+        created_at AS created_at,
+        updated_at AS updated_at
+    FROM users WHERE tg_chat_id = $1;
+	`
 )

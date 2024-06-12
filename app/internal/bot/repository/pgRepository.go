@@ -203,3 +203,13 @@ func (r *botPGRepo) CreateInActiveUser(ctx context.Context) (string, error) {
 
 	return result, nil
 }
+
+func (r *botPGRepo) GetUserInfo(ctx context.Context, chatID int64) (models.UserInfo, error) {
+	var result models.UserInfo
+	if err := r.db.GetContext(ctx, &result, queryGetUserInfo, chatID); err != nil {
+		err = errors.Wrapf(err, "botPGRepo.GetUserInfo.queryGetUserInfo chatID: %d", chatID)
+		return models.UserInfo{}, err
+	}
+
+	return result, nil
+}

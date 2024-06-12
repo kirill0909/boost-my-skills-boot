@@ -2,9 +2,21 @@ package models
 
 import (
 	"database/sql"
+	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
+
+type UserInfo struct {
+	ID        int          `db:"id"`
+	TgChatID  int64        `db:"tg_chat_id"`
+	TgName    string       `db:"tg_name"`
+	TgUUID    string       `db:"tg_uuid"`
+	IsActive  bool         `db:"is_active"`
+	IsAdmin   bool         `db:"is_admin"`
+	CreatedAt time.Time    `db:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at"`
+}
 
 type CallbackInfo struct {
 	CallbackType int

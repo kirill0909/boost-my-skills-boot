@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"boost-my-skills-bot/app/internal/bot/models"
+	"boost-my-skills-bot/app/pkg/utils"
 	"context"
 	"fmt"
 
@@ -68,10 +69,31 @@ func (u *botUC) createInfoKeyboard(questionID int, callbackType int) tgbotapi.In
 	var rows []tgbotapi.InlineKeyboardButton
 	callbackData := `{"infoID": %d, "callbackType": %d}`
 
-	buttons := tgbotapi.NewInlineKeyboardButtonData("get an answer", fmt.Sprintf(callbackData, questionID, callbackType))
-	rows = append(rows, buttons)
+	button := tgbotapi.NewInlineKeyboardButtonData("get an answer", fmt.Sprintf(callbackData, questionID, callbackType))
+	rows = append(rows, button)
 
 	keyboard.InlineKeyboard = append(keyboard.InlineKeyboard, tgbotapi.NewInlineKeyboardRow(rows...))
+
+	return keyboard
+}
+
+func (u *botUC) createServiceKeyboard() tgbotapi.InlineKeyboardMarkup {
+
+	var keyboard tgbotapi.InlineKeyboardMarkup
+	getInviteLinkButtonCallbackData := `{"callbackType": %d}`
+	actionsWithMainKeyboardCallbackData := `{"callbackType": %d}`
+	actionsWithUsersCallbackData := `{"callbackType": %d}`
+
+	keyboard.InlineKeyboard = append(
+		keyboard.InlineKeyboard,
+		tgbotapi.NewInlineKeyboardRow( // first row
+			tgbotapi.NewInlineKeyboardButtonData("get invite link", fmt.Sprintf(getInviteLinkButtonCallbackData, utils.GetInviteLinkCallbackType)),
+		),
+		tgbotapi.NewInlineKeyboardRow( // second row
+			tgbotapi.NewInlineKeyboardButtonData("keyboard", fmt.Sprintf(actionsWithMainKeyboardCallbackData, utils.ActionsWithMainKeyboardCallbackType)),
+			tgbotapi.NewInlineKeyboardButtonData("users", fmt.Sprintf(actionsWithUsersCallbackData, utils.ActionsWithUsersCallbackType)),
+		),
+	)
 
 	return keyboard
 }

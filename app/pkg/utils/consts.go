@@ -12,6 +12,8 @@ const (
 	AddInfoCommand         = "add_info"
 	PrintQuestionsCommand  = "print_questions"
 	GetInviteLinkCommand   = "get_invite_link"
+	// new commands
+	ServiceCommand = "service"
 
 	// user states
 	AwaitingDirectionNameStatus = 1
@@ -30,7 +32,12 @@ const (
 	AwaitingAddInfoDirectionCallbackType = 2
 	AwaitingPrintQuestionsCallbackType   = 3
 	AwaitingInfoActionsCallbackType      = 4
+	// new callbacks
+	GetInviteLinkCallbackType           = 5
+	ActionsWithMainKeyboardCallbackType = 6
+	ActionsWithUsersCallbackType        = 7
 
+	// TODO: Remove
 	// snipets
 	// go
 	SnipetGoBegin = "snipet go begin"

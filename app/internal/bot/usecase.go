@@ -12,6 +12,8 @@ type Usecase interface {
 	HandleAddInfoCommand(context.Context, models.HandleAddInfoCommandParams) error
 	HandlePrintQuestionsCommand(context.Context, models.HandlePrintQuestionsCommandParams) error
 	HandleGetInviteLinkCommand(context.Context, int64) error
+	// new commands
+	HandleServiceCommand(context.Context, int64) error
 
 	GetAwaitingStatus(context.Context, int64) (int, error)
 	CreateDirection(context.Context, models.CreateDirectionParams) error

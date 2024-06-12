@@ -17,6 +17,7 @@ type PgRepository interface {
 	GetQuestionsByDirectionID(context.Context, int) ([]models.Question, error)
 	GetAnswerByInfoID(context.Context, int) (string, error)
 	CreateInActiveUser(context.Context) (string, error)
+	GetUserInfo(context.Context, int64) (models.UserInfo, error)
 }
 
 type RedisRepository interface {

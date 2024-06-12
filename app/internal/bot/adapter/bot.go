@@ -94,6 +94,14 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, "error getting uuid")
 					continue
 				}
+			// new commands
+			case utils.ServiceCommand:
+				if err := t.tgUC.HandleServiceCommand(ctx, update.Message.Chat.ID); err != nil {
+					t.log.Error("TgBot.Run.HandleServiceCommand()", "error", err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "service command processing error")
+					continue
+				}
+
 				continue
 			}
 
@@ -189,6 +197,16 @@ func (t *TgBot) Run() error {
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
 					continue
 				}
+				continue
+			// new callbacks
+			case callbackInfo.CallbackType == utils.GetInviteLinkCallbackType:
+				t.log.Info("GetInviteLinkCallbackType")
+				continue
+			case callbackInfo.CallbackType == utils.ActionsWithMainKeyboardCallbackType:
+				t.log.Info("ActionsWithMainKeyboardCallbackType")
+				continue
+			case callbackInfo.CallbackType == utils.ActionsWithUsersCallbackType:
+				t.log.Info("ActionsWithUsersCallbackType")
 				continue
 			}
 		}

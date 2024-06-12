@@ -2,7 +2,9 @@ version: "3.8"
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: boost-my-skills-bot:0.1
     ports:
       - "127.0.0.1:8080:8080"

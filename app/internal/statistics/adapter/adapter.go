@@ -23,7 +23,6 @@ func (a *Statistics) GetStatistics(ctx context.Context, req *pb.GetStatisticsReq
 
 	res, err := a.uc.GetStatistics(ctx, params)
 	if err != nil {
-		a.log.Error("Statistics.GetStatistics()", "error", err.Error())
 		return &pb.GetStatisticsResponse{}, err
 	}
 

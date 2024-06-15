@@ -18,6 +18,34 @@ func NewBotPGRepo(db *sqlx.DB) bot.PgRepository {
 	return &botPGRepo{db: db}
 }
 
+func (r *botPGRepo) GetMainKeyboard(ctx context.Context) ([]models.GetMainKeyboardResult, error) {
+	rows, err := r.db.QueryContext(ctx, queryGetMainKeyboards)
+	if err != nil {
+		err = errors.Wrap(err, "BotPGRepo.GetMainKeyboard.queryGetMainKeyboards")
+		return []models.GetMainKeyboardResult{}, err
+	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetMainKeyboard.Close()")
+		}
+	}()
+
+	var buttons []models.GetMainKeyboardResult
+	var button models.GetMainKeyboardResult
+	for rows.Next() {
+		if err := rows.Scan(&button.ID, &button.Name, &button.OnlyForAdmin, &button.CreatedAt, &button.UpdatedAt); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetMainKeyboard.Scan")
+			return []models.GetMainKeyboardResult{}, err
+		}
+
+		buttons = append(buttons, button)
+	}
+
+	return buttons, nil
+}
+
+// TODO: Remove
 func (r *botPGRepo) GetMainButtons(ctx context.Context) ([]models.GetMainButtonsResult, error) {
 	rows, err := r.db.QueryContext(ctx, queryGetMainButtons)
 	if err != nil {

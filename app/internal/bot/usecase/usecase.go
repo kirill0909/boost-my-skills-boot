@@ -11,7 +11,6 @@ import (
 	"log/slog"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -48,41 +47,7 @@ func NewBotUC(
 	}
 }
 
-func (u *botUC) HandleStartCommand(ctx context.Context, params models.HandleStartCommandParams) error {
-	splitedText := strings.Split(params.Text, " ")
-
-	if len(splitedText) != 2 {
-		return fmt.Errorf("botUC.handleStartCommand. wrong len of splited text: %d != 2. params(%+v)", len(splitedText), params)
-	}
-
-	uuid := splitedText[1]
-	setUserActiveParams := models.SetUserActiveParams{
-		TgName: params.TgName,
-		ChatID: params.ChatID,
-		UUID:   uuid}
-
-	if err := u.pgRepo.SetUserActive(ctx, setUserActiveParams); err != nil {
-		return err
-	}
-
-	var isAdmin bool
-	msg := tgbotapi.NewMessage(params.ChatID, "your account has been successfully activated")
-	if params.ChatID == u.cfg.AdminChatID {
-		isAdmin = true
-		msg.ReplyMarkup = u.createMainMenuKeyboard(isAdmin)
-	} else {
-		isAdmin = false
-		msg.ReplyMarkup = u.createMainMenuKeyboard(isAdmin)
-	}
-
-	if _, err := u.BotAPI.Send(msg); err != nil {
-		return errors.Wrapf(err, "BotUC.HandleStartCommand.Send")
-	}
-
-	return nil
-}
-
-func (u *botUC) HandleCreateDirectionCommand(ctx context.Context, params models.HandleCreateDirectionCommandParams) error {
+func (u *botUC) HandleCreateDirection(ctx context.Context, params models.HandleCreateDirectionParams) error {
 	setAwaitingStatusParams := models.SetAwaitingStatusParams{ChatID: params.ChatID, StatusID: utils.AwaitingDirectionNameStatus}
 	if err := u.rdb.SetAwaitingStatus(ctx, setAwaitingStatusParams); err != nil {
 		return err
@@ -181,7 +146,7 @@ func (u *botUC) SetParentDirection(ctx context.Context, params models.SetParentD
 	return nil
 }
 
-func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAddInfoCommandParams) error {
+func (u *botUC) HandleAddInfo(ctx context.Context, params models.HandleAddInfoParams) error {
 	getUserDirectionParams := models.GetUserDirectionParams{ChatID: params.ChatID, ParentDirectionID: params.ParentDirectionID}
 
 	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParams)
@@ -222,7 +187,7 @@ func (u *botUC) HandleAddInfoCommand(ctx context.Context, params models.HandleAd
 	return nil
 }
 
-func (u *botUC) HandleGetInviteLinkCommand(ctx context.Context, chatID int64) error {
+func (u *botUC) HandleGetInviteLink(ctx context.Context, chatID int64) error {
 	uuid, err := u.pgRepo.CreateInActiveUser(ctx)
 	if err != nil {
 		return err
@@ -299,7 +264,7 @@ func (u *botUC) HandleAwaitingAnswer(ctx context.Context, params models.HandleAw
 	return nil
 }
 
-func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.HandlePrintQuestionsCommandParams) error {
+func (u *botUC) HandlePrintQuestions(ctx context.Context, params models.HandlePrintQuestionsParams) error {
 	getUserDirectionParams := models.GetUserDirectionParams{ChatID: params.ChatID, ParentDirectionID: params.ParentDirectionID}
 	directions, err := u.pgRepo.GetUserDirection(ctx, getUserDirectionParams)
 	if err != nil {
@@ -369,11 +334,21 @@ func (u *botUC) sendMessage(params models.SendMessageParams) {
 	sendedMsg, err := u.BotAPI.Send(msg)
 	if err != nil {
 		u.log.Error("botUC.sendMessage.Send()", "error", err.Error())
+		return
 	}
 
 	if params.IsNeedToRemove {
 		if err := u.rdb.SetExpirationTimeForMessage(context.Background(), sendedMsg.MessageID, params.ChatID); err != nil {
 			u.log.Error("botUC.sendMessage.SetExpirationTimeForMessage()", "error", err.Error())
 		}
+	}
+}
+
+func (u *botUC) editMessage(params models.EditMessageParams) {
+	msg := tgbotapi.NewEditMessageTextAndMarkup(params.ChatID, params.MessageID, params.Text, params.Keyboard)
+	_, err := u.BotAPI.Send(msg)
+	if err != nil {
+		u.log.Error("botUC.editMessage.Send()", "error", err.Error())
+		return
 	}
 }

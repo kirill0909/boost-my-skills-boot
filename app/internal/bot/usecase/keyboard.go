@@ -94,6 +94,29 @@ func (u *botUC) createServiceKeyboard() tgbotapi.InlineKeyboardMarkup {
 	return keyboard
 }
 
+func (u botUC) createActionsWithMainKeyboard() tgbotapi.InlineKeyboardMarkup {
+
+	var keyboard tgbotapi.InlineKeyboardMarkup
+	renameMainKeyboardActionCallbackData := `{"callbackType": %d}`
+	removeMainKeyboardActionCallbackData := `{"callbackType": %d}`
+	addForUserMainKeyboardActionCallbackData := `{"callbackType": %d}`
+	addForAdminMainKeyboardActionCallbackData := `{"callbackType": %d}`
+
+	keyboard.InlineKeyboard = append(
+		keyboard.InlineKeyboard,
+		tgbotapi.NewInlineKeyboardRow( // first row
+			tgbotapi.NewInlineKeyboardButtonData("rename", fmt.Sprintf(renameMainKeyboardActionCallbackData, utils.RenameMainKeyboardActionCallbackType)),
+			tgbotapi.NewInlineKeyboardButtonData("remove", fmt.Sprintf(removeMainKeyboardActionCallbackData, utils.RemoveMainKeyboardActionCallbackType)),
+		),
+		tgbotapi.NewInlineKeyboardRow( // second row
+			tgbotapi.NewInlineKeyboardButtonData("add for user", fmt.Sprintf(addForUserMainKeyboardActionCallbackData, utils.AddForUserMainKeyboardActionCallbackType)),
+			tgbotapi.NewInlineKeyboardButtonData("add for admin", fmt.Sprintf(addForAdminMainKeyboardActionCallbackData, utils.AddForAdminMainKeyboardActionCallbackType)),
+		),
+	)
+
+	return keyboard
+}
+
 func (u *botUC) hideKeyboard(chatID int64, messageID int) (err error) {
 	edit := tgbotapi.NewEditMessageReplyMarkup(
 		chatID,

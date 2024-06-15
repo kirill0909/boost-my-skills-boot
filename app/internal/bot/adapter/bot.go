@@ -51,8 +51,8 @@ func (t *TgBot) Run() error {
 			continue
 		}
 
-		// handle message
 		if update.Message != nil {
+			// handle commands
 			switch update.Message.Command() {
 			case utils.StartCommand:
 				params := models.HandleStartCommandParams{
@@ -63,38 +63,6 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
-			case utils.CreateDirectionCommand:
-				params := models.HandleCreateDirectionCommandParams{
-					Text: update.Message.Text, ChatID: update.Message.Chat.ID}
-				if err := t.tgUC.HandleCreateDirectionCommand(ctx, params); err != nil {
-					t.log.Error("TgBot.Run.HandleCreateDirectionCommand()", "error", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, "create direction error")
-					continue
-				}
-				continue
-			case utils.AddInfoCommand:
-				params := models.HandleAddInfoCommandParams{ChatID: update.Message.Chat.ID}
-				if err := t.tgUC.HandleAddInfoCommand(ctx, params); err != nil {
-					t.log.Error("TgBot.Run.HandleAddInfoCommand()", "error", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, "add info error")
-					continue
-				}
-				continue
-			case utils.PrintQuestionsCommand:
-				params := models.HandlePrintQuestionsCommandParams{ChatID: update.Message.Chat.ID}
-				if err := t.tgUC.HandlePrintQuestionsCommand(ctx, params); err != nil {
-					t.log.Error("TgBot.Run.HandlePrintQuestionsCommand()", "error", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, "print info error")
-					continue
-				}
-				continue
-			case utils.GetInviteLinkCommand:
-				if err := t.tgUC.HandleGetInviteLinkCommand(ctx, update.Message.Chat.ID); err != nil {
-					t.log.Error("TgBot.Run.HandleGetUUIDCommand()", "error", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, "error getting uuid")
-					continue
-				}
-			// new commands
 			case utils.ServiceCommand:
 				if err := t.tgUC.HandleServiceCommand(ctx, update.Message.Chat.ID); err != nil {
 					t.log.Error("TgBot.Run.HandleServiceCommand()", "error", err.Error())
@@ -146,64 +114,81 @@ func (t *TgBot) Run() error {
 				continue
 			}
 			switch {
-			case callbackInfo.CallbackType == utils.AwaitingParentDirectionCallbackType: // executes when user tap on direction name button
-				parentDirectionParams := models.SetParentDirectionParams{ChatID: update.CallbackQuery.From.ID, ParentDirectionID: callbackInfo.DirectionID}
-				if err := t.tgUC.SetParentDirection(ctx, parentDirectionParams); err != nil {
-					t.log.Error("TgBot.Run.SetParentDirection()", "error", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
-					continue
-				}
+			// case callbackInfo.CallbackType == utils.AwaitingParentDirectionCallbackType: // executes when user tap on direction name button
+			// 	parentDirectionParams := models.SetParentDirectionParams{ChatID: update.CallbackQuery.From.ID, ParentDirectionID: callbackInfo.DirectionID}
+			// 	if err := t.tgUC.SetParentDirection(ctx, parentDirectionParams); err != nil {
+			// 		t.log.Error("TgBot.Run.SetParentDirection()", "error", err.Error())
+			// 		t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+			// 		continue
+			// 	}
 
-				createDirectionCommandParams := models.HandleCreateDirectionCommandParams{
-					ChatID:            update.CallbackQuery.From.ID,
-					ParentDirectionID: callbackInfo.DirectionID,
-				}
-				if err := t.tgUC.HandleCreateDirectionCommand(ctx, createDirectionCommandParams); err != nil {
-					t.log.Error("TgBot.Run.HandleCreateDirectionCommand()", "error", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
-					continue
-				}
-				continue
-			case callbackInfo.CallbackType == utils.AwaitingAddInfoDirectionCallbackType:
-				params := models.HandleAddInfoCommandParams{
-					ChatID:            update.CallbackQuery.From.ID,
-					ParentDirectionID: callbackInfo.DirectionID,
-				}
-				if err := t.tgUC.HandleAddInfoCommand(ctx, params); err != nil {
-					t.log.Error("TgBot.Run.HandleAddInfoCommand()", "error", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
-					continue
-				}
-				continue
-			case callbackInfo.CallbackType == utils.AwaitingPrintQuestionsCallbackType:
-				params := models.HandlePrintQuestionsCommandParams{
-					ChatID:            update.CallbackQuery.From.ID,
-					ParentDirectionID: callbackInfo.DirectionID,
-				}
-				if err := t.tgUC.HandlePrintQuestionsCommand(ctx, params); err != nil {
-					t.log.Error("TgBot.Run.HandlePrintQuestionsCommand()", "error", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
-					continue
-				}
-				continue
-			case callbackInfo.CallbackType == utils.AwaitingPrintAnswerCallbackType:
-				params := models.HandleAwaitingPrintAnswerParams{
-					ChatID:    update.CallbackQuery.From.ID,
-					InfoID:    callbackInfo.InfoID,
-					MessageID: update.CallbackQuery.Message.MessageID,
-				}
-				if err := t.tgUC.HandleAwaitingPrintAnswer(ctx, params); err != nil {
-					t.log.Error("TgBot.Run.HandleAwaitingPrintAnswer()", "error", err.Error())
-					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
-					continue
-				}
-				continue
+			// 	createDirectionCommandParams := models.HandleCreateDirectionParams{
+			// 		ChatID:            update.CallbackQuery.From.ID,
+			// 		ParentDirectionID: callbackInfo.DirectionID,
+			// 	}
+			// 	if err := t.tgUC.HandleCreateDirection(ctx, createDirectionCommandParams); err != nil {
+			// 		t.log.Error("TgBot.Run.HandleCreateDirection()", "error", err.Error())
+			// 		t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+			// 		continue
+			// 	}
+			// 	continue
+			// case callbackInfo.CallbackType == utils.AwaitingAddInfoDirectionCallbackType:
+			// 	params := models.HandleAddInfoParams{
+			// 		ChatID:            update.CallbackQuery.From.ID,
+			// 		ParentDirectionID: callbackInfo.DirectionID,
+			// 	}
+			// 	if err := t.tgUC.HandleAddInfo(ctx, params); err != nil {
+			// 		t.log.Error("TgBot.Run.HandleAddInfo()", "error", err.Error())
+			// 		t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+			// 		continue
+			// 	}
+			// 	continue
+			// case callbackInfo.CallbackType == utils.AwaitingPrintQuestionsCallbackType:
+			// 	params := models.HandlePrintQuestionsParams{
+			// 		ChatID:            update.CallbackQuery.From.ID,
+			// 		ParentDirectionID: callbackInfo.DirectionID,
+			// 	}
+			// 	if err := t.tgUC.HandlePrintQuestions(ctx, params); err != nil {
+			// 		t.log.Error("TgBot.Run.HandlePrintQuestions()", "error", err.Error())
+			// 		t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+			// 		continue
+			// 	}
+			// 	continue
+			// case callbackInfo.CallbackType == utils.AwaitingPrintAnswerCallbackType:
+			// 	params := models.HandleAwaitingPrintAnswerParams{
+			// 		ChatID:    update.CallbackQuery.From.ID,
+			// 		InfoID:    callbackInfo.InfoID,
+			// 		MessageID: update.CallbackQuery.Message.MessageID,
+			// 	}
+			// 	if err := t.tgUC.HandleAwaitingPrintAnswer(ctx, params); err != nil {
+			// 		t.log.Error("TgBot.Run.HandleAwaitingPrintAnswer()", "error", err.Error())
+			// 		t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+			// 		continue
+			// 	}
+			// 	continue
 			// new callbacks
 			case callbackInfo.CallbackType == utils.ActionsWithMainKeyboardCallbackType:
-				t.log.Info("ActionsWithMainKeyboardCallbackType")
+				params := models.HandleActionsWithMainKeyboardCallback{ChatID: update.CallbackQuery.From.ID, MessageID: update.CallbackQuery.Message.MessageID}
+				if err := t.tgUC.HandleActionsWithMainKeyboardCallback(ctx, params); err != nil {
+					t.log.Error("TgBot.Run.HandleActionsWithMainKeyboardCallback()", "error", err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
 				continue
 			case callbackInfo.CallbackType == utils.ActionsWithUsersCallbackType:
 				t.log.Info("ActionsWithUsersCallbackType")
+				continue
+			case callbackInfo.CallbackType == utils.RenameMainKeyboardActionCallbackType:
+				t.log.Info("RenameMainKeyboardActionCallbackType")
+				continue
+			case callbackInfo.CallbackType == utils.RemoveMainKeyboardActionCallbackType:
+				t.log.Info("RemoveMainKeyboardActionCallbackType")
+				continue
+			case callbackInfo.CallbackType == utils.AddForUserMainKeyboardActionCallbackType:
+				t.log.Info("AddForUserMainKeyboardActionCallbackType")
+				continue
+			case callbackInfo.CallbackType == utils.AddForAdminMainKeyboardActionCallbackType:
+				t.log.Info("AddForAdminMainKeyboardActionCallbackType")
 				continue
 			}
 		}

@@ -3,8 +3,6 @@ package models
 import (
 	"database/sql"
 	"time"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
 type UserInfo struct {
@@ -56,30 +54,24 @@ type CreateDirectionParams struct {
 	DirectionName     string
 }
 
-type HandleStartCommandParams struct {
-	Text   string
-	ChatID int64
-	TgName string
-}
-
 type SetUserActiveParams struct {
 	TgName string
 	ChatID int64
 	UUID   string
 }
 
-type HandleCreateDirectionCommandParams struct {
+type HandleCreateDirectionParams struct {
 	Text              string
 	ChatID            int64
 	ParentDirectionID int
 }
 
-type HandleAddInfoCommandParams struct {
+type HandleAddInfoParams struct {
 	ChatID            int64
 	ParentDirectionID int
 }
 
-type HandlePrintQuestionsCommandParams struct {
+type HandlePrintQuestionsParams struct {
 	ChatID            int64
 	ParentDirectionID int
 }
@@ -125,13 +117,6 @@ type HandleAwaitingQuestionParams struct {
 type HandleAwaitingAnswerParams struct {
 	ChatID int64
 	Answer string
-}
-
-type SendMessageParams struct {
-	ChatID         int64
-	Text           string
-	Keyboard       tgbotapi.InlineKeyboardMarkup
-	IsNeedToRemove bool
 }
 
 type SetDirectionForInfoParams struct {

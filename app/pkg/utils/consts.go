@@ -33,8 +33,12 @@ const (
 	AwaitingPrintQuestionsCallbackType   = 3
 	AwaitingPrintAnswerCallbackType      = 4
 	// new callbacks
-	ActionsWithMainKeyboardCallbackType = 5
-	ActionsWithUsersCallbackType        = 6
+	ActionsWithMainKeyboardCallbackType       = 5
+	ActionsWithUsersCallbackType              = 6
+	RenameMainKeyboardActionCallbackType      = 7
+	AddForUserMainKeyboardActionCallbackType  = 8
+	AddForAdminMainKeyboardActionCallbackType = 9
+	RemoveMainKeyboardActionCallbackType      = 10
 
 	// TODO: Remove
 	// snipets

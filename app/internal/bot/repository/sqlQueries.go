@@ -6,6 +6,17 @@ const (
 	WHERE tg_uuid = $2 AND active IS FALSE
 	`
 
+	queryGetMainKeyboards = `
+	SELECT
+	id AS id,
+	name AS name,
+	only_for_admin AS only_for_admin,
+	created_at AS created_at,
+	updated_at AS updated_at
+	FROM main_buttons ORDER BY id;
+	`
+
+	// TODO: Remove
 	queryGetMainButtons = `
 	SELECT
 	name AS name,

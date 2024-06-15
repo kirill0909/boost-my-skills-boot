@@ -199,9 +199,6 @@ func (t *TgBot) Run() error {
 				}
 				continue
 			// new callbacks
-			case callbackInfo.CallbackType == utils.GetInviteLinkCallbackType:
-				t.log.Info("GetInviteLinkCallbackType")
-				continue
 			case callbackInfo.CallbackType == utils.ActionsWithMainKeyboardCallbackType:
 				t.log.Info("ActionsWithMainKeyboardCallbackType")
 				continue

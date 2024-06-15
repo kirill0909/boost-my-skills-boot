@@ -33,9 +33,8 @@ const (
 	AwaitingPrintQuestionsCallbackType   = 3
 	AwaitingInfoActionsCallbackType      = 4
 	// new callbacks
-	GetInviteLinkCallbackType           = 5
-	ActionsWithMainKeyboardCallbackType = 6
-	ActionsWithUsersCallbackType        = 7
+	ActionsWithMainKeyboardCallbackType = 5
+	ActionsWithUsersCallbackType        = 6
 
 	// TODO: Remove
 	// snipets

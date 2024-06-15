@@ -80,16 +80,12 @@ func (u *botUC) createInfoKeyboard(questionID int, callbackType int) tgbotapi.In
 func (u *botUC) createServiceKeyboard() tgbotapi.InlineKeyboardMarkup {
 
 	var keyboard tgbotapi.InlineKeyboardMarkup
-	getInviteLinkButtonCallbackData := `{"callbackType": %d}`
 	actionsWithMainKeyboardCallbackData := `{"callbackType": %d}`
 	actionsWithUsersCallbackData := `{"callbackType": %d}`
 
 	keyboard.InlineKeyboard = append(
 		keyboard.InlineKeyboard,
 		tgbotapi.NewInlineKeyboardRow( // first row
-			tgbotapi.NewInlineKeyboardButtonData("get invite link", fmt.Sprintf(getInviteLinkButtonCallbackData, utils.GetInviteLinkCallbackType)),
-		),
-		tgbotapi.NewInlineKeyboardRow( // second row
 			tgbotapi.NewInlineKeyboardButtonData("keyboard", fmt.Sprintf(actionsWithMainKeyboardCallbackData, utils.ActionsWithMainKeyboardCallbackType)),
 			tgbotapi.NewInlineKeyboardButtonData("users", fmt.Sprintf(actionsWithUsersCallbackData, utils.ActionsWithUsersCallbackType)),
 		),

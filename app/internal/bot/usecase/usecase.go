@@ -336,7 +336,7 @@ func (u *botUC) HandlePrintQuestionsCommand(ctx context.Context, params models.H
 		for _, v := range questions {
 			sendMessageParams := models.SendMessageParams{
 				ChatID: params.ChatID,
-				Text:   utils.FormatBadCharacters(v.Text), Keyboard: u.createInfoKeyboard(v.ID, utils.AwaitingInfoActionsCallbackType)}
+				Text:   utils.FormatBadCharacters(v.Text), Keyboard: u.createInfoKeyboard(v.ID, utils.AwaitingPrintAnswerCallbackType)}
 			u.sendMessage(sendMessageParams)
 			time.Sleep(time.Millisecond * 50)
 		}

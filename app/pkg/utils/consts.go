@@ -31,7 +31,7 @@ const (
 	AwaitingParentDirectionCallbackType  = 1
 	AwaitingAddInfoDirectionCallbackType = 2
 	AwaitingPrintQuestionsCallbackType   = 3
-	AwaitingInfoActionsCallbackType      = 4
+	AwaitingPrintAnswerCallbackType      = 4
 	// new callbacks
 	ActionsWithMainKeyboardCallbackType = 5
 	ActionsWithUsersCallbackType        = 6

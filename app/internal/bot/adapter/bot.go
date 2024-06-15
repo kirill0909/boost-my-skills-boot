@@ -186,7 +186,7 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
-			case callbackInfo.CallbackType == utils.AwaitingInfoActionsCallbackType:
+			case callbackInfo.CallbackType == utils.AwaitingPrintAnswerCallbackType:
 				params := models.HandleAwaitingPrintAnswerParams{
 					ChatID:    update.CallbackQuery.From.ID,
 					InfoID:    callbackInfo.InfoID,

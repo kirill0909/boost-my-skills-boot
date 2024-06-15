@@ -4,10 +4,10 @@ proto-gen:
 	protoc --go_out=app/pkg/proto --go-grpc_out=app/pkg/proto app/pkg/proto/*.proto
 
 run:
-	docker-compose up -d --build
+	docker-compose up -d --build && docker image prune -f
 
 run-zero-downtime:
-	docker-compose up -d --no-deps --build app
+	docker-compose up -d --no-deps --build app && docker image prune -f
 
 run-migrate:
 	./migrator.sh up

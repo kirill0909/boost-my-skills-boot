@@ -5,6 +5,12 @@ FROM golang:1.22.0-alpine AS builder
 # Set up the working directory inside the container
 WORKDIR /app
 
+# Copy go.mod and go.sum to create separate cached layer
+COPY go.mod go.sum ./
+
+# Download go dependencies
+RUN go mod download
+
 # Copy all files from the local directory to the working directory
 COPY . .
 

@@ -2,15 +2,19 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
-
-	"boost-my-skills-bot/app/pkg/utils"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+)
+
+const (
+	invalidApiKey          = "invalid api key"
+	requestFailed          = "request failed"
+	unauthenticatedRequest = "unauthenticated request"
+	requestSuccess         = "request success"
 )
 
 func UnaryInterceptor(grpcApiKey string, log *slog.Logger) grpc.UnaryServerInterceptor {
@@ -19,11 +23,22 @@ func UnaryInterceptor(grpcApiKey string, log *slog.Logger) grpc.UnaryServerInter
 
 		apiKey := md["api-key"]
 		if len(apiKey) == 0 || apiKey[0] != grpcApiKey {
-			log.Error("UnaryInterceptor()", "error", fmt.Sprintf("rpc  method: %s, error: %s", info.FullMethod, utils.InvalidApiKey))
-			return nil, status.Errorf(codes.Unauthenticated, utils.InvalidApiKey)
+			log.Error(unauthenticatedRequest,
+				"errorPatch", "UnaryInterceptor()",
+				"method", info.FullMethod,
+				"status", codes.Unauthenticated,
+				"errorDetails", invalidApiKey)
+			return nil, status.Errorf(codes.Unauthenticated, invalidApiKey)
 		}
 
-		log.Info("UnaryInterceptor()", "info", info.FullMethod)
-		return handler(ctx, req)
+		res, err := handler(ctx, req)
+		if err != nil {
+			st, _ := status.FromError(err)
+			log.Error(requestFailed, "method", info.FullMethod, "status", st.Code(), "errorDetails", err.Error())
+			return nil, status.Error(st.Code(), requestFailed)
+		}
+
+		log.Info(requestSuccess, "method", info.FullMethod)
+		return res, nil
 	}
 }

@@ -7,7 +7,7 @@ import (
 
 type PgRepository interface {
 	SetUserActive(context.Context, models.SetUserActiveParams) error
-	GetMainButtons(context.Context) ([]models.GetMainButtonsResult, error)
+	GetMainButtons(context.Context) ([]models.GetMainButtonsResult, error) // TODO: Remove
 	GetActiveUsers(context.Context) ([]models.GetActiveUsersResult, error)
 	GetUpdatedButtons(context.Context, int64) ([]models.GetUpdatedButtonsResult, error)
 	GetUserDirection(context.Context, models.GetUserDirectionParams) ([]models.UserDirection, error)
@@ -17,6 +17,10 @@ type PgRepository interface {
 	GetQuestionsByDirectionID(context.Context, int) ([]models.Question, error)
 	GetAnswerByInfoID(context.Context, int) (string, error)
 	CreateInActiveUser(context.Context) (string, error)
+
+	AddNewButtonToMainKeyboard(context.Context, models.AddNewButtonToMainKeyboardParams) error
+	GetMainKeyboard(context.Context) ([]models.GetMainKeyboardResult, error)
+	GetUserInfo(context.Context, int64) (models.UserInfo, error)
 }
 
 type RedisRepository interface {

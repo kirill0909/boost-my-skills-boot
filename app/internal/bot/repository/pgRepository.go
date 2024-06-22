@@ -18,6 +18,34 @@ func NewBotPGRepo(db *sqlx.DB) bot.PgRepository {
 	return &botPGRepo{db: db}
 }
 
+func (r *botPGRepo) GetMainKeyboard(ctx context.Context) ([]models.GetMainKeyboardResult, error) {
+	rows, err := r.db.QueryContext(ctx, queryGetMainKeyboards)
+	if err != nil {
+		err = errors.Wrap(err, "BotPGRepo.GetMainKeyboard.queryGetMainKeyboards")
+		return []models.GetMainKeyboardResult{}, err
+	}
+
+	defer func() {
+		if err := rows.Close(); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetMainKeyboard.Close()")
+		}
+	}()
+
+	var buttons []models.GetMainKeyboardResult
+	var button models.GetMainKeyboardResult
+	for rows.Next() {
+		if err := rows.Scan(&button.ID, &button.Name, &button.OnlyForAdmin, &button.CreatedAt, &button.UpdatedAt); err != nil {
+			err = errors.Wrap(err, "BotPGRepo.GetMainKeyboard.Scan")
+			return []models.GetMainKeyboardResult{}, err
+		}
+
+		buttons = append(buttons, button)
+	}
+
+	return buttons, nil
+}
+
+// TODO: Remove
 func (r *botPGRepo) GetMainButtons(ctx context.Context) ([]models.GetMainButtonsResult, error) {
 	rows, err := r.db.QueryContext(ctx, queryGetMainButtons)
 	if err != nil {
@@ -202,4 +230,33 @@ func (r *botPGRepo) CreateInActiveUser(ctx context.Context) (string, error) {
 	}
 
 	return result, nil
+}
+
+func (r *botPGRepo) GetUserInfo(ctx context.Context, chatID int64) (models.UserInfo, error) {
+	var result models.UserInfo
+	if err := r.db.GetContext(ctx, &result, queryGetUserInfo, chatID); err != nil {
+		err = errors.Wrapf(err, "botPGRepo.GetUserInfo.queryGetUserInfo chatID: %d", chatID)
+		return models.UserInfo{}, err
+	}
+
+	return result, nil
+}
+
+func (r *botPGRepo) AddNewButtonToMainKeyboard(ctx context.Context, params models.AddNewButtonToMainKeyboardParams) error {
+	result, err := r.db.ExecContext(ctx, queryAddNewButtonToMainKeyboard, params.ButtonName, params.OnlyForAdmin)
+	if err != nil {
+		return errors.Wrapf(err, "botPGRepo.AddNewButtonToMainKeyboard.queryAddNewButtonToMainKeyboard. params(%+v)", params)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return errors.Wrapf(err, "botPGRepo.AddNewButtonToMainKeyboard.RowsAffected. params(%+v)", params)
+	}
+
+	if rowsAffected != 1 {
+		err := fmt.Errorf("wrong number of rows affected %d != 1", rowsAffected)
+		return errors.Wrapf(err, "botPGRepo.AddNewButtonToMainKeyboard. params(%+v)", params)
+	}
+
+	return nil
 }

@@ -12,11 +12,15 @@ const (
 	AddInfoCommand         = "add_info"
 	PrintQuestionsCommand  = "print_questions"
 	GetInviteLinkCommand   = "get_invite_link"
+	// new commands
+	ServiceCommand = "service"
 
 	// user states
 	AwaitingDirectionNameStatus = 1
 	AwaitingQuestionStatus      = 2
 	AwaitingAnswerStatus        = 3
+	// new status
+	AwaitingNewMainButtonNameForUserStatus = 4
 
 	// prefix
 	AwaitingStatusPrefix        = "awaitingStatusPrefix"
@@ -29,8 +33,17 @@ const (
 	AwaitingParentDirectionCallbackType  = 1
 	AwaitingAddInfoDirectionCallbackType = 2
 	AwaitingPrintQuestionsCallbackType   = 3
-	AwaitingInfoActionsCallbackType      = 4
+	AwaitingPrintAnswerCallbackType      = 4
+	// new callbacks
+	ActionsWithMainKeyboardCallbackType       = 5
+	ActionsWithUsersCallbackType              = 6
+	RenameMainKeyboardActionCallbackType      = 7
+	AddForUserMainKeyboardActionCallbackType  = 8
+	AddForAdminMainKeyboardActionCallbackType = 9
+	RemoveMainKeyboardActionCallbackType      = 10
+	ComeBackToServiceButtonsCallbackType      = 11
 
+	// TODO: Remove
 	// snipets
 	// go
 	SnipetGoBegin = "snipet go begin"

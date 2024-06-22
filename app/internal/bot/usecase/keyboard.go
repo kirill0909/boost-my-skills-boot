@@ -101,6 +101,7 @@ func (u botUC) createActionsWithMainKeyboard() tgbotapi.InlineKeyboardMarkup {
 	removeMainKeyboardActionCallbackData := `{"callbackType": %d}`
 	addForUserMainKeyboardActionCallbackData := `{"callbackType": %d}`
 	addForAdminMainKeyboardActionCallbackData := `{"callbackType": %d}`
+	comeBackToServiceButtonsCallbackData := `{"callbackType": %d}`
 
 	keyboard.InlineKeyboard = append(
 		keyboard.InlineKeyboard,
@@ -111,6 +112,24 @@ func (u botUC) createActionsWithMainKeyboard() tgbotapi.InlineKeyboardMarkup {
 		tgbotapi.NewInlineKeyboardRow( // second row
 			tgbotapi.NewInlineKeyboardButtonData("add for user", fmt.Sprintf(addForUserMainKeyboardActionCallbackData, utils.AddForUserMainKeyboardActionCallbackType)),
 			tgbotapi.NewInlineKeyboardButtonData("add for admin", fmt.Sprintf(addForAdminMainKeyboardActionCallbackData, utils.AddForAdminMainKeyboardActionCallbackType)),
+		),
+		tgbotapi.NewInlineKeyboardRow( // third row
+			tgbotapi.NewInlineKeyboardButtonData("↩️come back", fmt.Sprintf(comeBackToServiceButtonsCallbackData, utils.ComeBackToServiceButtonsCallbackType)),
+		),
+	)
+
+	return keyboard
+}
+
+func (u botUC) createComeBackToServiceButtonsKeyboard() tgbotapi.InlineKeyboardMarkup {
+
+	var keyboard tgbotapi.InlineKeyboardMarkup
+	comeBackToServiceButtonsCallbackData := `{"callbackType": %d}`
+
+	keyboard.InlineKeyboard = append(
+		keyboard.InlineKeyboard,
+		tgbotapi.NewInlineKeyboardRow( // first row
+			tgbotapi.NewInlineKeyboardButtonData("↩️come back", fmt.Sprintf(comeBackToServiceButtonsCallbackData, utils.ComeBackToServiceButtonsCallbackType)),
 		),
 	)
 

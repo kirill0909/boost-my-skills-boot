@@ -19,6 +19,8 @@ const (
 	AwaitingDirectionNameStatus = 1
 	AwaitingQuestionStatus      = 2
 	AwaitingAnswerStatus        = 3
+	// new status
+	AwaitingNewMainButtonNameForUserStatus = 4
 
 	// prefix
 	AwaitingStatusPrefix        = "awaitingStatusPrefix"
@@ -39,6 +41,7 @@ const (
 	AddForUserMainKeyboardActionCallbackType  = 8
 	AddForAdminMainKeyboardActionCallbackType = 9
 	RemoveMainKeyboardActionCallbackType      = 10
+	ComeBackToServiceButtonsCallbackType      = 11
 
 	// TODO: Remove
 	// snipets

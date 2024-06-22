@@ -99,6 +99,14 @@ func (t *TgBot) Run() error {
 					continue
 				}
 				continue
+			case statusID == utils.AwaitingNewMainButtonNameForUserStatus:
+				params := models.HandleAwaitingNewMainButtonNameParams{ChatID: update.Message.Chat.ID, ButtonName: update.Message.Text}
+				if err := t.tgUC.HandleAwaitingNewMainButtonName(ctx, params); err != nil {
+					t.log.Error("TgBot.Run.HandleAwaitingNewMainButtonName()", "error", err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
+				continue
 			default:
 				t.sendMessage(update.Message.From.ID, "use keyboard to interact with bot")
 				continue
@@ -168,7 +176,7 @@ func (t *TgBot) Run() error {
 			// 	continue
 			// new callbacks
 			case callbackInfo.CallbackType == utils.ActionsWithMainKeyboardCallbackType:
-				params := models.HandleActionsWithMainKeyboardCallback{ChatID: update.CallbackQuery.From.ID, MessageID: update.CallbackQuery.Message.MessageID}
+				params := models.HandleActionsWithMainKeyboardCallbackParams{ChatID: update.CallbackQuery.From.ID, MessageID: update.CallbackQuery.Message.MessageID}
 				if err := t.tgUC.HandleActionsWithMainKeyboardCallback(ctx, params); err != nil {
 					t.log.Error("TgBot.Run.HandleActionsWithMainKeyboardCallback()", "error", err.Error())
 					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
@@ -185,7 +193,15 @@ func (t *TgBot) Run() error {
 				t.log.Info("RemoveMainKeyboardActionCallbackType")
 				continue
 			case callbackInfo.CallbackType == utils.AddForUserMainKeyboardActionCallbackType:
-				t.log.Info("AddForUserMainKeyboardActionCallbackType")
+				params := models.HandleAddForUserMainKeyboardActionCallbackParams{ChatID: update.CallbackQuery.From.ID, MessageID: update.CallbackQuery.Message.MessageID}
+				if err := t.tgUC.HandleAddForUserMainKeyboardActionCallback(ctx, params); err != nil {
+					t.log.Error("TgBot.Run.HandleAddForUserMainKeyboardActionCallback()", "error", err.Error())
+					t.sendErrorMessage(update.Message.Chat.ID, "internal server error")
+					continue
+				}
+			case callbackInfo.CallbackType == utils.ComeBackToServiceButtonsCallbackType:
+				params := models.HandleComeBackeToServiceButtonsCallbackParams{ChatID: update.CallbackQuery.From.ID, MessageID: update.CallbackQuery.Message.MessageID}
+				t.tgUC.HandleComeBackeToServiceButtonsCallback(ctx, params)
 				continue
 			case callbackInfo.CallbackType == utils.AddForAdminMainKeyboardActionCallbackType:
 				t.log.Info("AddForAdminMainKeyboardActionCallbackType")

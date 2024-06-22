@@ -70,7 +70,7 @@ func (u *botUC) HandleCreateDirection(ctx context.Context, params models.HandleC
 		sendMessageParams := models.SendMessageParams{
 			ChatID:         params.ChatID,
 			Text:           "choose parent direciton",
-			Keyboard:       u.createDirectionsKeyboard(directions, utils.AwaitingParentDirectionCallbackType),
+			InlineKeyboard: u.createDirectionsKeyboard(directions, utils.AwaitingParentDirectionCallbackType),
 			IsNeedToRemove: true}
 		u.sendMessage(sendMessageParams)
 	}
@@ -165,7 +165,7 @@ func (u *botUC) HandleAddInfo(ctx context.Context, params models.HandleAddInfoPa
 		sendMessageParams := models.SendMessageParams{
 			ChatID:         params.ChatID,
 			Text:           "choose direction for add info",
-			Keyboard:       u.createDirectionsKeyboard(directions, utils.AwaitingAddInfoDirectionCallbackType),
+			InlineKeyboard: u.createDirectionsKeyboard(directions, utils.AwaitingAddInfoDirectionCallbackType),
 			IsNeedToRemove: true}
 		u.sendMessage(sendMessageParams)
 	// executed when user reached low level
@@ -282,7 +282,7 @@ func (u *botUC) HandlePrintQuestions(ctx context.Context, params models.HandlePr
 		sendMessageParams := models.SendMessageParams{
 			ChatID:         params.ChatID,
 			Text:           "choose direction for print questions",
-			Keyboard:       u.createDirectionsKeyboard(directions, utils.AwaitingPrintQuestionsCallbackType),
+			InlineKeyboard: u.createDirectionsKeyboard(directions, utils.AwaitingPrintQuestionsCallbackType),
 			IsNeedToRemove: true}
 		u.sendMessage(sendMessageParams)
 		// executed when user has directions and reached low level
@@ -301,7 +301,7 @@ func (u *botUC) HandlePrintQuestions(ctx context.Context, params models.HandlePr
 		for _, v := range questions {
 			sendMessageParams := models.SendMessageParams{
 				ChatID: params.ChatID,
-				Text:   utils.FormatBadCharacters(v.Text), Keyboard: u.createInfoKeyboard(v.ID, utils.AwaitingPrintAnswerCallbackType)}
+				Text:   utils.FormatBadCharacters(v.Text), InlineKeyboard: u.createInfoKeyboard(v.ID, utils.AwaitingPrintAnswerCallbackType)}
 			u.sendMessage(sendMessageParams)
 			time.Sleep(time.Millisecond * 50)
 		}
@@ -324,11 +324,45 @@ func (u *botUC) HandleAwaitingPrintAnswer(ctx context.Context, params models.Han
 	return nil
 }
 
+func (u *botUC) HandleAwaitingNewMainButtonName(ctx context.Context, params models.HandleAwaitingNewMainButtonNameParams) error {
+	if len(params.ButtonName) == 0 {
+		err := fmt.Errorf("name of main button should be more then 0")
+		return errors.Wrapf(err, "botUC.HandleAwaitingNewMainButtonName.len(). params(%+v)", params)
+	}
+
+	buttonName := fmt.Sprintf("/%s", params.ButtonName)
+	addNewButtonToMainKeyboardParams := models.AddNewButtonToMainKeyboardParams{ButtonName: buttonName, OnlyForAdmin: params.OnlyForAdmin}
+	if err := u.pgRepo.AddNewButtonToMainKeyboard(ctx, addNewButtonToMainKeyboardParams); err != nil {
+		return err
+	}
+
+	if err := u.rdb.ResetAwaitingStatus(ctx, params.ChatID); err != nil {
+		return err
+	}
+
+	activeUsers, err := u.pgRepo.GetActiveUsers(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, user := range activeUsers {
+		sendMessageParams := models.SendMessageParams{
+			ChatID: user.ChatID, Text: "main keyboard was updated", ReplyKeyboard: u.createMainMenuKeyboard(user.IsAdmin)}
+		u.sendMessage(sendMessageParams)
+	}
+
+	return nil
+}
+
 func (u *botUC) sendMessage(params models.SendMessageParams) {
 	msg := tgbotapi.NewMessage(params.ChatID, params.Text)
 	msg.ParseMode = tgbotapi.ModeMarkdownV2
-	if params.Keyboard.InlineKeyboard != nil {
-		msg.ReplyMarkup = params.Keyboard
+	if params.InlineKeyboard.InlineKeyboard != nil {
+		msg.ReplyMarkup = params.InlineKeyboard
+	}
+
+	if params.ReplyKeyboard.Keyboard != nil {
+		msg.ReplyMarkup = params.ReplyKeyboard
 	}
 
 	sendedMsg, err := u.BotAPI.Send(msg)
@@ -345,6 +379,10 @@ func (u *botUC) sendMessage(params models.SendMessageParams) {
 }
 
 func (u *botUC) editMessage(params models.EditMessageParams) {
+	if params.Keyboard.InlineKeyboard == nil {
+		params.Keyboard = tgbotapi.NewInlineKeyboardMarkup([]tgbotapi.InlineKeyboardButton{})
+	}
+
 	msg := tgbotapi.NewEditMessageTextAndMarkup(params.ChatID, params.MessageID, params.Text, params.Keyboard)
 	_, err := u.BotAPI.Send(msg)
 	if err != nil {

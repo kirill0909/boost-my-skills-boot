@@ -18,7 +18,8 @@ type GetMainKeyboardResult struct {
 type SendMessageParams struct {
 	ChatID         int64
 	Text           string
-	Keyboard       tgbotapi.InlineKeyboardMarkup
+	InlineKeyboard tgbotapi.InlineKeyboardMarkup
+	ReplyKeyboard  tgbotapi.ReplyKeyboardMarkup
 	IsNeedToRemove bool
 }
 
@@ -27,4 +28,15 @@ type EditMessageParams struct {
 	MessageID int
 	Text      string
 	Keyboard  tgbotapi.InlineKeyboardMarkup
+}
+
+type HandleAwaitingNewMainButtonNameParams struct {
+	ChatID       int64
+	ButtonName   string
+	OnlyForAdmin bool
+}
+
+type AddNewButtonToMainKeyboardParams struct {
+	ButtonName   string
+	OnlyForAdmin bool
 }

@@ -241,3 +241,22 @@ func (r *botPGRepo) GetUserInfo(ctx context.Context, chatID int64) (models.UserI
 
 	return result, nil
 }
+
+func (r *botPGRepo) AddNewButtonToMainKeyboard(ctx context.Context, params models.AddNewButtonToMainKeyboardParams) error {
+	result, err := r.db.ExecContext(ctx, queryAddNewButtonToMainKeyboard, params.ButtonName, params.OnlyForAdmin)
+	if err != nil {
+		return errors.Wrapf(err, "botPGRepo.AddNewButtonToMainKeyboard.queryAddNewButtonToMainKeyboard. params(%+v)", params)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return errors.Wrapf(err, "botPGRepo.AddNewButtonToMainKeyboard.RowsAffected. params(%+v)", params)
+	}
+
+	if rowsAffected != 1 {
+		err := fmt.Errorf("wrong number of rows affected %d != 1", rowsAffected)
+		return errors.Wrapf(err, "botPGRepo.AddNewButtonToMainKeyboard. params(%+v)", params)
+	}
+
+	return nil
+}

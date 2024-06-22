@@ -55,11 +55,9 @@ func (u *botUC) HandleServiceCommand(ctx context.Context, chatID int64) error {
 		return nil
 	}
 
-	msg := tgbotapi.NewMessage(userInfo.TgChatID, "choose service action")
-	msg.ReplyMarkup = u.createServiceKeyboard()
-	if _, err := u.BotAPI.Send(msg); err != nil {
-		return errors.Wrapf(err, "BotUC.HandleServiceCommand.Send")
-	}
+	sendMessageParams := models.SendMessageParams{
+		ChatID: userInfo.TgChatID, Text: "choose service action", InlineKeyboard: u.createServiceKeyboard()}
+	u.sendMessage(sendMessageParams)
 
 	return nil
 }

@@ -21,8 +21,13 @@ type Usecase interface {
 	HandleAwaitingQuestion(context.Context, models.HandleAwaitingQuestionParams) error
 	HandleAwaitingAnswer(context.Context, models.HandleAwaitingAnswerParams) error
 	HandleAwaitingPrintAnswer(context.Context, models.HandleAwaitingPrintAnswerParams) error
+	// new handle awaiting text
+	HandleAwaitingNewMainButtonName(context.Context, models.HandleAwaitingNewMainButtonNameParams) error
+
 	// new callbacks
-	HandleActionsWithMainKeyboardCallback(context.Context, models.HandleActionsWithMainKeyboardCallback) error
+	HandleActionsWithMainKeyboardCallback(context.Context, models.HandleActionsWithMainKeyboardCallbackParams) error
+	HandleAddForUserMainKeyboardActionCallback(context.Context, models.HandleAddForUserMainKeyboardActionCallbackParams) error
+	HandleComeBackeToServiceButtonsCallback(context.Context, models.HandleComeBackeToServiceButtonsCallbackParams)
 
 	// workers
 	SyncMainKeyboardWorker()

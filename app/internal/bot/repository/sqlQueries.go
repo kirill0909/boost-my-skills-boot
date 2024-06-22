@@ -104,4 +104,9 @@ WHERE
         updated_at AS updated_at
     FROM users WHERE tg_chat_id = $1;
 	`
+
+	queryAddNewButtonToMainKeyboard = `
+	INSERT INTO main_buttons(name, only_for_admin, created_at)
+	VALUES($1, $2, NOW());
+	`
 )

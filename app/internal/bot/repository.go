@@ -18,6 +18,7 @@ type PgRepository interface {
 	GetAnswerByInfoID(context.Context, int) (string, error)
 	CreateInActiveUser(context.Context) (string, error)
 
+	AddNewButtonToMainKeyboard(context.Context, models.AddNewButtonToMainKeyboardParams) error
 	GetMainKeyboard(context.Context) ([]models.GetMainKeyboardResult, error)
 	GetUserInfo(context.Context, int64) (models.UserInfo, error)
 }

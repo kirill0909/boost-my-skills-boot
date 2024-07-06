@@ -5,7 +5,7 @@ import (
 )
 
 func FormatSnipets(message string) string {
-	reBegin := regexp.MustCompile("snipet (go|bash|sql|rust|proto|yaml|json|dockerfile) begin")
+	reBegin := regexp.MustCompile("snipet (go|bash|sql|rust|C|proto|yaml|json|dockerfile) begin")
 	reEnd := regexp.MustCompile("snipet end")
 
 	message = reBegin.ReplaceAllString(message, "```$1")

@@ -8,10 +8,12 @@ import (
 type Usecase interface {
 	// commands
 	HandleStartCommand(context.Context, models.HandleStartCommandParams) error
-	HandleCreateDirectionCommand(context.Context, models.HandleCreateDirectionCommandParams) error
-	HandleAddInfoCommand(context.Context, models.HandleAddInfoCommandParams) error
-	HandlePrintQuestionsCommand(context.Context, models.HandlePrintQuestionsCommandParams) error
-	HandleGetInviteLinkCommand(context.Context, int64) error
+	HandleCreateDirection(context.Context, models.HandleCreateDirectionParams) error
+	HandleAddInfo(context.Context, models.HandleAddInfoParams) error
+	HandlePrintQuestions(context.Context, models.HandlePrintQuestionsParams) error
+	HandleGetInviteLink(context.Context, int64) error
+	// new commands
+	HandleServiceCommand(context.Context, int64) error
 
 	GetAwaitingStatus(context.Context, int64) (int, error)
 	CreateDirection(context.Context, models.CreateDirectionParams) error
@@ -19,6 +21,13 @@ type Usecase interface {
 	HandleAwaitingQuestion(context.Context, models.HandleAwaitingQuestionParams) error
 	HandleAwaitingAnswer(context.Context, models.HandleAwaitingAnswerParams) error
 	HandleAwaitingPrintAnswer(context.Context, models.HandleAwaitingPrintAnswerParams) error
+	// new handle awaiting text
+	HandleAwaitingNewMainButtonName(context.Context, models.HandleAwaitingNewMainButtonNameParams) error
+
+	// new callbacks
+	HandleActionsWithMainKeyboardCallback(context.Context, models.HandleActionsWithMainKeyboardCallbackParams) error
+	HandleAddForUserMainKeyboardActionCallback(context.Context, models.HandleAddForUserMainKeyboardActionCallbackParams) error
+	HandleComeBackeToServiceButtonsCallback(context.Context, models.HandleComeBackeToServiceButtonsCallbackParams)
 
 	// workers
 	SyncMainKeyboardWorker()

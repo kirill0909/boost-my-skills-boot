@@ -2,9 +2,19 @@ package models
 
 import (
 	"database/sql"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"time"
 )
+
+type UserInfo struct {
+	ID        int          `db:"id"`
+	TgChatID  int64        `db:"tg_chat_id"`
+	TgName    string       `db:"tg_name"`
+	TgUUID    string       `db:"tg_uuid"`
+	IsActive  bool         `db:"is_active"`
+	IsAdmin   bool         `db:"is_admin"`
+	CreatedAt time.Time    `db:"created_at"`
+	UpdatedAt sql.NullTime `db:"updated_at"`
+}
 
 type CallbackInfo struct {
 	CallbackType int
@@ -44,30 +54,24 @@ type CreateDirectionParams struct {
 	DirectionName     string
 }
 
-type HandleStartCommandParams struct {
-	Text   string
-	ChatID int64
-	TgName string
-}
-
 type SetUserActiveParams struct {
 	TgName string
 	ChatID int64
 	UUID   string
 }
 
-type HandleCreateDirectionCommandParams struct {
+type HandleCreateDirectionParams struct {
 	Text              string
 	ChatID            int64
 	ParentDirectionID int
 }
 
-type HandleAddInfoCommandParams struct {
+type HandleAddInfoParams struct {
 	ChatID            int64
 	ParentDirectionID int
 }
 
-type HandlePrintQuestionsCommandParams struct {
+type HandlePrintQuestionsParams struct {
 	ChatID            int64
 	ParentDirectionID int
 }
@@ -113,13 +117,6 @@ type HandleAwaitingQuestionParams struct {
 type HandleAwaitingAnswerParams struct {
 	ChatID int64
 	Answer string
-}
-
-type SendMessageParams struct {
-	ChatID         int64
-	Text           string
-	Keyboard       tgbotapi.InlineKeyboardMarkup
-	IsNeedToRemove bool
 }
 
 type SetDirectionForInfoParams struct {

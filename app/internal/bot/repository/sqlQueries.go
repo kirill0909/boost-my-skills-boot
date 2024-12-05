@@ -6,6 +6,17 @@ const (
 	WHERE tg_uuid = $2 AND active IS FALSE
 	`
 
+	queryGetMainKeyboards = `
+	SELECT
+	id AS id,
+	name AS name,
+	only_for_admin AS only_for_admin,
+	created_at AS created_at,
+	updated_at AS updated_at
+	FROM main_buttons ORDER BY id;
+	`
+
+	// TODO: Remove
 	queryGetMainButtons = `
 	SELECT
 	name AS name,
@@ -79,5 +90,23 @@ WHERE
 
 	queryCreateInActiveUser = `
 	INSERT INTO users(active, created_at) VALUES(false, NOW()) RETURNING tg_uuid;
+	`
+
+	queryGetUserInfo = `
+	SELECT
+		id AS id,
+   		tg_name AS tg_name,
+     	tg_chat_id AS tg_chat_id,
+      	tg_uuid AS tg_uuid,
+       	active AS is_active,
+        is_admin AS is_admin,
+        created_at AS created_at,
+        updated_at AS updated_at
+    FROM users WHERE tg_chat_id = $1;
+	`
+
+	queryAddNewButtonToMainKeyboard = `
+	INSERT INTO main_buttons(name, only_for_admin, created_at)
+	VALUES($1, $2, NOW());
 	`
 )
